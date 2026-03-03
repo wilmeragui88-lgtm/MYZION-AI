@@ -1,204 +1,295 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MYZION AI - Super App</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYZION AI - Sistema Operativo Pro</title>
 
-<style>
-body{
-    margin:0;
-    font-family:Arial, Helvetica, sans-serif;
-    background:#050a14;
-    color:#00ffff;
-    overflow:hidden;
-}
+    <style>
+        :root {
+            --primary: #00ffff;
+            --bg: #050a14;
+            --panel-bg: rgba(10, 17, 31, 0.95);
+        }
 
-.grid{
-    position:fixed;
-    width:100%;
-    height:100%;
-    background:
-    linear-gradient(rgba(0,255,255,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,255,255,0.05) 1px, transparent 1px);
-    background-size:40px 40px;
-    z-index:-1;
-}
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--primary);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            transition: background 1s ease;
+        }
 
-.center{
-    position:absolute;
-    top:35%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    text-align:center;
-}
+        .grid {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background:
+                linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -1;
+        }
 
-.core{
-    width:200px;
-    height:200px;
-    border-radius:50%;
-    border:3px solid #00ffff;
-    box-shadow:0 0 40px #00ffff;
-    animation:rotate 8s linear infinite;
-    transition:0.3s;
-}
+        .center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
 
-.listening{
-    border-color:lime;
-    box-shadow:0 0 60px lime;
-}
+        .core {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 4px solid var(--primary);
+            box-shadow: 0 0 30px var(--primary), inset 0 0 15px var(--primary);
+            animation: rotate 10s linear infinite;
+            transition: all 0.5s ease;
+            cursor: pointer;
+        }
 
-.speaking{
-    border-color:orange;
-    box-shadow:0 0 60px orange;
-}
+        .listening {
+            border-color: #00ff00 !important;
+            box-shadow: 0 0 50px #00ff00 !important;
+            animation: rotate 2s linear infinite, pulse 0.7s ease-in-out infinite;
+        }
 
-@keyframes rotate{
-    from{transform:rotate(0deg);}
-    to{transform:rotate(360deg);}
-}
+        .speaking {
+            border-color: #ffaa00 !important;
+            box-shadow: 0 0 50px #ffaa00 !important;
+            animation: rotate 4s linear infinite, pulse 1s ease-in-out infinite;
+        }
 
-.panel{
-    position:absolute;
-    bottom:0;
-    width:100%;
-    height:40%;
-    background:#0a111f;
-    overflow-y:auto;
-    padding:15px;
-}
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-input{
-    width:75%;
-    padding:10px;
-    background:#111a2e;
-    border:none;
-    color:#00ffff;
-}
+        .panel {
+            height: 45%;
+            background: var(--panel-bg);
+            border-top: 2px solid var(--primary);
+            padding: 15px;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
 
-button{
-    padding:10px;
-    background:#00ffff;
-    border:none;
-    cursor:pointer;
-}
+        .task-list {
+            background: rgba(0, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
 
-h1{
-    letter-spacing:5px;
-}
-</style>
+        .controls {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #0a111f;
+            padding: 10px;
+            display: flex;
+            gap: 5px;
+            box-sizing: border-box;
+        }
+
+        input {
+            flex: 1;
+            padding: 12px;
+            background: #111a2e;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            outline: none;
+        }
+
+        button {
+            padding: 10px;
+            background: var(--primary);
+            border: none;
+            color: #050a14;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .memoria-old { opacity: 0.3; font-size: 0.8em; border-left: 2px solid var(--primary); padding-left: 8px; margin-bottom: 5px; }
+        h1 { letter-spacing: 5px; margin: 0 0 10px 0; text-shadow: 0 0 10px var(--primary); font-size: 1.5em; }
+    </style>
 </head>
-
 <body>
 
 <div class="grid"></div>
 
 <div class="center">
     <h1>MYZION AI</h1>
-    <div id="core" class="core"></div>
-    <br><br>
-    <button onclick="activarVoz()">Activar Voz</button>
+    <div id="core" class="core" onclick="activarVoz()"></div>
+    <br>
+    <button onclick="activarVoz()">🎙️ COMANDO DE VOZ</button>
 </div>
 
 <div class="panel" id="panel">
-    <p>🚀 Sistema MYZION iniciado...</p>
-    <input type="text" id="input" placeholder="Escribe un comando...">
-    <button onclick="enviar()">Enviar</button>
+    <div id="tasks-container" class="task-list">
+        <strong>📌 TAREAS PENDIENTES:</strong>
+        <ul id="listado-tareas"></ul>
+    </div>
+    <div id="chat-log"></div>
+    
+    <div class="controls">
+        <input type="text" id="input" placeholder="Dime: 'Añadir tarea...' o haz una pregunta">
+        <button onclick="enviar()">ENVIAR</button>
+        <button onclick="limpiarCerebro()" style="background:#ff4444; color:white;">RESET</button>
+    </div>
 </div>
 
 <script>
+    const core = document.getElementById("core");
+    const chatLog = document.getElementById("chat-log");
+    const inputField = document.getElementById("input");
+    const listaTareasUI = document.getElementById("listado-tareas");
 
-const core = document.getElementById("core");
-const panel = document.getElementById("panel");
-
-function hablar(texto){
-    core.classList.remove("listening");
-    core.classList.add("speaking");
-
-    const speech = new SpeechSynthesisUtterance(texto);
-    speech.lang="es-ES";
-    speech.rate=0.9;
-    speech.pitch=0.7;
-
-    speech.onend = () => {
-        core.classList.remove("speaking");
-    };
-
-    speechSynthesis.speak(speech);
-}
-
-function respuestaLocal(texto){
-
-    texto = texto.toLowerCase();
-
-    if(texto.includes("hora")){
-        return "La hora actual es " + new Date().toLocaleTimeString();
+    // --- MEMORIA CENTRAL ---
+    function guardarDato(clave, valor) {
+        localStorage.setItem(clave, JSON.stringify(valor));
     }
 
-    if(texto.includes("fecha")){
-        return "Hoy es " + new Date().toLocaleDateString();
+    function obtenerDato(clave) {
+        return JSON.parse(localStorage.getItem(clave)) || [];
     }
 
-    if(texto.includes("quien eres")){
-        return "Soy MYZION AI, tu sistema inteligente avanzado.";
+    function cargarTodo() {
+        // Cargar historial
+        const memoria = obtenerDato("cerebro_myzion");
+        memoria.forEach(m => {
+            chatLog.innerHTML += `<div class="memoria-old"><b>Tú:</b> ${m.user} | <b>AI:</b> ${m.ai}</div>`;
+        });
+        // Cargar tareas
+        renderizarTareas();
+        chatLog.innerHTML += "<p>🌐 <i>MYZION Online. Todos los sistemas cargados.</i></p>";
+        scrollFinal();
     }
 
-    if(texto.includes("abrir google")){
-        window.open("https://www.google.com");
-        return "Abriendo Google.";
+    // --- GESTIÓN DE TAREAS ---
+    function gestionarTarea(texto) {
+        let tareas = obtenerDato("mis_tareas");
+        if (texto.includes("añadir tarea") || texto.includes("recordar")) {
+            let nueva = texto.replace("añadir tarea", "").replace("recordar", "").trim();
+            if(nueva) {
+                tareas.push(nueva);
+                guardarDato("mis_tareas", tareas);
+                renderizarTareas();
+                return `He anotado: "${nueva}" en tus pendientes.`;
+            }
+        }
+        if (texto.includes("borrar tareas") || texto.includes("limpiar lista")) {
+            guardarDato("mis_tareas", []);
+            renderizarTareas();
+            return "Lista de tareas vaciada.";
+        }
+        return null;
     }
 
-    return "Comando recibido. Próximamente conectado a inteligencia artificial avanzada.";
-}
+    function renderizarTareas() {
+        const tareas = obtenerDato("mis_tareas");
+        listaTareasUI.innerHTML = tareas.length ? "" : "<li>No hay pendientes</li>";
+        tareas.forEach(t => {
+            listaTareasUI.innerHTML += `<li>${t}</li>`;
+        });
+    }
 
-function enviar(){
+    function limpiarCerebro() {
+        if(confirm("¿Formatear toda la memoria de MYZION?")) {
+            localStorage.clear();
+            location.reload();
+        }
+    }
 
-    const input = document.getElementById("input");
-    const texto = input.value;
+    // --- VOZ ---
+    function hablar(texto) {
+        window.speechSynthesis.cancel();
+        core.classList.add("speaking");
+        const msg = new SpeechSynthesisUtterance(texto);
+        msg.lang = "es-ES";
+        msg.onend = () => core.classList.remove("speaking");
+        window.speechSynthesis.speak(msg);
+    }
 
-    if(!texto) return;
+    // --- CEREBRO DE RESPUESTAS ---
+    function procesar(texto) {
+        const t = texto.toLowerCase();
 
-    panel.innerHTML += "<p><b>Tú:</b> "+texto+"</p>";
+        // 1. Verificar Tareas
+        const tareaMsg = gestionarTarea(t);
+        if(tareaMsg) return tareaMsg;
 
-    const respuesta = respuestaLocal(texto);
+        // 2. Modos de Color
+        if (t.includes("modo guerra")) { document.body.style.background = "#300"; return "Protocolo de combate activo."; }
+        if (t.includes("modo paz")) { document.body.style.background = "#050a14"; return "Paz restaurada."; }
+        if (t.includes("modo neón")) { document.body.style.background = "#1a0033"; return "Cambiando a estética vaporwave."; }
 
-    panel.innerHTML += "<p><b>MYZION:</b> "+respuesta+"</p>";
-    panel.scrollTop = panel.scrollHeight;
+        // 3. Comandos Web
+        if (t.includes("busca en youtube")) {
+            let q = t.replace("busca en youtube", "").trim();
+            window.open(`https://www.youtube.com/results?search_query=${q}`);
+            return "Buscando en YouTube...";
+        }
+        if (t.includes("busca en google")) {
+            let q = t.replace("busca en google", "").trim();
+            window.open(`https://www.google.com/search?q=${q}`);
+            return "Buscando en Google...";
+        }
 
-    hablar(respuesta);
+        // 4. Info Básica
+        if (t.includes("hora")) return "Son las " + new Date().toLocaleTimeString();
+        if (t.includes("fecha")) return "Hoy es " + new Date().toLocaleDateString();
 
-    input.value="";
-}
+        return "Información procesada y almacenada en la memoria.";
+    }
 
-function activarVoz(){
+    // --- ACCIONES ---
+    function enviar() {
+        const val = inputField.value;
+        if (!val) return;
 
-    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    recognition.lang="es-ES";
+        chatLog.innerHTML += `<p><b>Tú:</b> ${val}</p>`;
+        const resp = procesar(val);
+        chatLog.innerHTML += `<p><b>MYZION:</b> ${resp}</p>`;
 
-    recognition.onstart = () => {
-        core.classList.add("listening");
-    };
+        // Guardar en historial
+        let hist = obtenerDato("cerebro_myzion");
+        hist.push({ user: val, ai: resp });
+        guardarDato("cerebro_myzion", hist);
 
-    recognition.onresult = (event) => {
-        const texto = event.results[0][0].transcript;
-        panel.innerHTML += "<p><b>Tú:</b> "+texto+"</p>";
+        hablar(resp);
+        inputField.value = "";
+        scrollFinal();
+    }
 
-        const respuesta = respuestaLocal(texto);
+    function activarVoz() {
+        const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!Speech) return alert("Navegador no soporta voz.");
+        const rec = new Speech();
+        rec.lang = "es-ES";
+        rec.onstart = () => core.classList.add("listening");
+        rec.onresult = (e) => {
+            inputField.value = e.results[0][0].transcript;
+            enviar();
+        };
+        rec.onend = () => core.classList.remove("listening");
+        rec.start();
+    }
 
-        panel.innerHTML += "<p><b>MYZION:</b> "+respuesta+"</p>";
-        panel.scrollTop = panel.scrollHeight;
+    function scrollFinal() {
+        const p = document.getElementById("panel");
+        p.scrollTop = p.scrollHeight;
+    }
 
-        hablar(respuesta);
-    };
-
-    recognition.onend = () => {
-        core.classList.remove("listening");
-    };
-
-    recognition.start();
-}
-
+    inputField.addEventListener("keypress", (e) => { if(e.key === "Enter") enviar(); });
+    window.onload = cargarTodo;
 </script>
-
 </body>
 </html>

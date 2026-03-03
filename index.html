@@ -3,310 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MYZION AI - Sistema Operativo Total</title>
-
+    <title>MYZION AI - Sistema Integrado Total</title>
     <style>
-        :root {
-            --primary: #00ffff;
-            --bg: #050a14;
-            --panel-bg: rgba(10, 17, 31, 0.95);
-        }
+        :root { --primary: #00ffff; --bg: #02050a; --panel: rgba(10, 17, 31, 0.95); }
+        
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--primary); height: 100vh; display: flex; flex-direction: column; overflow: hidden; transition: background 1s ease; }
+        
+        /* Fondo Cyberpunk */
+        .grid { position: fixed; width: 200%; height: 200%; background-image: linear-gradient(var(--primary) 1px, transparent 1px), linear-gradient(90deg, var(--primary) 1px, transparent 1px); background-size: 50px 50px; opacity: 0.05; transform: perspective(500px) rotateX(60deg); z-index: -1; animation: moveGrid 15s linear infinite; }
+        @keyframes moveGrid { from { transform: translateY(0); } to { transform: translateY(50px); } }
 
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--bg);
-            color: var(--primary);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            transition: background 1s ease;
-        }
+        /* Interfaz */
+        .header { padding: 10px; text-align: center; border-bottom: 1px solid rgba(0, 255, 255, 0.2); background: rgba(0,0,0,0.8); z-index: 10; }
+        h1 { margin: 0; letter-spacing: 5px; font-size: 1.1rem; text-shadow: 0 0 10px var(--primary); }
 
-        /* Fondo de rejilla digital */
-        .grid {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background:
-                linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: -1;
-        }
+        .chat-area { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; }
+        .msg { max-width: 85%; padding: 10px 15px; border-radius: 12px; font-size: 0.9rem; line-height: 1.4; position: relative; }
+        .user-msg { align-self: flex-end; background: rgba(0, 255, 255, 0.1); border: 1px solid var(--primary); color: #fff; }
+        .ai-msg { align-self: flex-start; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); }
 
-        .center {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
-        }
+        /* Panel de Tareas */
+        .task-panel { background: rgba(0, 255, 255, 0.05); border: 1px dashed var(--primary); margin: 10px; padding: 10px; border-radius: 8px; font-size: 0.8rem; }
+        .task-panel ul { margin: 5px 0; padding-left: 20px; }
 
-        /* Núcleo Central Dinámico */
-        .core {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            border: 4px solid var(--primary);
-            box-shadow: 0 0 30px var(--primary), inset 0 0 15px var(--primary);
-            animation: rotate 10s linear infinite;
-            transition: all 0.5s ease;
-            cursor: pointer;
-        }
+        /* Núcleo Visualizador */
+        .core-box { display: flex; justify-content: center; align-items: center; padding: 10px; }
+        .core { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--primary); box-shadow: 0 0 15px var(--primary); transition: 0.4s; }
+        .listening { border-color: #00ff00; box-shadow: 0 0 30px #00ff00; transform: scale(1.2); }
+        .thinking { border-color: #ffaa00; animation: pulse 0.8s infinite alternate; }
+        @keyframes pulse { from { opacity: 0.4; } to { opacity: 1; transform: scale(1.1); } }
 
-        .listening { border-color: #00ff00 !important; box-shadow: 0 0 50px #00ff00 !important; animation: rotate 2s linear infinite, pulse 0.7s ease-in-out infinite; }
-        .speaking { border-color: #ffaa00 !important; box-shadow: 0 0 50px #ffaa00 !important; animation: rotate 4s linear infinite, pulse 1s ease-in-out infinite; }
-
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-
-        /* Panel de Control y Memoria */
-        .panel {
-            height: 50%;
-            background: var(--panel-bg);
-            border-top: 2px solid var(--primary);
-            padding: 15px;
-            overflow-y: auto;
-            box-sizing: border-box;
-        }
-
-        .task-list {
-            background: rgba(0, 255, 255, 0.08);
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border: 1px dashed var(--primary);
-        }
-
-        .controls {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: #0a111f;
-            padding: 10px;
-            display: flex;
-            gap: 8px;
-            box-sizing: border-box;
-            z-index: 10;
-        }
-
-        input {
-            flex: 1;
-            padding: 12px;
-            background: #111a2e;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            outline: none;
-            border-radius: 4px;
-        }
-
-        button {
-            padding: 10px 15px;
-            background: var(--primary);
-            border: none;
-            color: #050a14;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: 0.3s;
-        }
-
-        button:hover { opacity: 0.8; box-shadow: 0 0 10px var(--primary); }
-
-        .memoria-old { opacity: 0.35; font-size: 0.85em; border-left: 2px solid var(--primary); padding-left: 10px; margin-bottom: 10px; }
-        h1 { letter-spacing: 6px; margin: 0 0 10px 0; text-shadow: 0 0 15px var(--primary); font-size: 1.8em; }
-        ul { margin: 5px 0; padding-left: 20px; }
+        /* Controles */
+        .controls { background: #0a111f; padding: 12px; display: flex; gap: 8px; border-top: 1px solid var(--primary); }
+        input { flex: 1; background: #111a2e; border: 1px solid var(--primary); color: white; padding: 10px; border-radius: 5px; outline: none; }
+        button { background: var(--primary); color: #000; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .btn-reset { background: #ff4444; color: white; }
     </style>
 </head>
 <body>
 
 <div class="grid"></div>
+<div class="header"><h1>MYZION AI - CORE INTEGRATED</h1></div>
 
-<div class="center">
-    <h1>MYZION AI</h1>
-    <div id="core" class="core" onclick="activarVoz()"></div>
-    <br>
-    <button onclick="activarVoz()" style="padding: 15px 30px;">🎙️ ACTIVAR MICROFONO</button>
+<div class="task-panel">
+    <strong>📌 TAREAS ACTIVAS:</strong>
+    <ul id="task-list"></ul>
 </div>
 
-<div class="panel" id="panel">
-    <div id="tasks-container" class="task-list">
-        <strong>📌 MEMORIA DE TAREAS:</strong>
-        <ul id="listado-tareas"></ul>
-    </div>
-    
-    <div id="chat-log"></div>
-    
-    <div class="controls">
-        <input type="text" id="input" placeholder="Comandos: 'Añadir tarea...', 'Busca en Youtube...', 'Modo guerra'...">
-        <button onclick="enviar()">ENVIAR</button>
-        <button onclick="limpiarCerebro()" style="background:#ff4444; color:white;">RESET</button>
-    </div>
+<div id="chat" class="chat-area"></div>
+
+<div class="core-box">
+    <div id="core" class="core"></div>
+</div>
+
+<div class="controls">
+    <button onclick="activarVoz()">🎙️</button>
+    <input type="text" id="userInput" placeholder="Escribe un comando o pregunta...">
+    <button onclick="handleSend()">ENVIAR</button>
+    <button class="btn-reset" onclick="resetMemory()">RESET</button>
 </div>
 
 <script>
-    const core = document.getElementById("core");
-    const chatLog = document.getElementById("chat-log");
-    const inputField = document.getElementById("input");
-    const listaTareasUI = document.getElementById("listado-tareas");
+    // --- CONFIGURACIÓN E INICIALIZACIÓN ---
+    const API_KEY = 'AIzaSyBf_shZMc7pa6q9BhX9i2njKW1G_O9Iegg';
+    const chat = document.getElementById('chat');
+    const input = document.getElementById('userInput');
+    const core = document.getElementById('core');
+    const taskListUI = document.getElementById('task-list');
 
-    // --- CEREBRO (STORAGE) ---
-    function guardarDato(clave, valor) { localStorage.setItem(clave, JSON.stringify(valor)); }
-    function obtenerDato(clave) { return JSON.parse(localStorage.getItem(clave)) || []; }
+    let chatHistory = []; // Memoria de la sesión actual
 
-    // --- VOZ ---
+    // --- FUNCIONES DE VOZ ---
     function hablar(texto) {
         window.speechSynthesis.cancel();
-        core.classList.add("speaking");
         const msg = new SpeechSynthesisUtterance(texto);
-        msg.lang = "es-ES";
-        msg.rate = 1.0;
-        msg.pitch = 0.9;
-        msg.onend = () => core.classList.remove("speaking");
+        msg.lang = 'es-ES';
+        msg.onend = () => core.classList.remove('thinking');
         window.speechSynthesis.speak(msg);
-    }
-
-    // --- FUNCIÓN DE BIENVENIDA COMPLETA ---
-    function bienvenidaProactiva() {
-        const textoBienvenida = "Sistema MYZION iniciado. Soy tu asistente inteligente avanzado. Mis funciones incluyen: gestión de tareas con memoria persistente, búsquedas en tiempo real en YouTube, Wikipedia y Google, y control de interfaz mediante comandos de voz o texto. También puedo cambiar mi entorno visual según tu preferencia. ¿En qué puedo asistirte hoy?";
-        
-        chatLog.innerHTML += `<p style="color: #ffaa00; border: 1px solid #ffaa00; padding: 10px; border-radius: 5px;"><b>MYZION:</b> ${textoBienvenida}</p>`;
-        hablar(textoBienvenida);
-    }
-
-    function cargarSistema() {
-        // Cargar historial de chat
-        const memoria = obtenerDato("cerebro_myzion");
-        memoria.forEach(m => {
-            chatLog.innerHTML += `<div class="memoria-old"><b>Tú:</b> ${m.user} | <b>AI:</b> ${m.ai}</div>`;
-        });
-        
-        renderizarTareas();
-        scrollFinal();
-        
-        // Retraso pequeño para asegurar que la voz cargue bien
-        setTimeout(bienvenidaProactiva, 1200);
-    }
-
-    // --- GESTOR DE TAREAS ---
-    function gestionarTarea(texto) {
-        let tareas = obtenerDato("mis_tareas");
-        if (texto.includes("añadir tarea") || texto.includes("recordar")) {
-            let nueva = texto.replace("añadir tarea", "").replace("recordar", "").trim();
-            if(nueva) {
-                tareas.push(nueva);
-                guardarDato("mis_tareas", tareas);
-                renderizarTareas();
-                return `Tarea registrada en memoria: ${nueva}`;
-            }
-        }
-        if (texto.includes("borrar tareas") || texto.includes("limpiar lista")) {
-            guardarDato("mis_tareas", []);
-            renderizarTareas();
-            return "He vaciado tu lista de pendientes.";
-        }
-        return null;
-    }
-
-    function renderizarTareas() {
-        const tareas = obtenerDato("mis_tareas");
-        listaTareasUI.innerHTML = tareas.length ? "" : "<li>No hay tareas pendientes.</li>";
-        tareas.forEach(t => { listaTareasUI.innerHTML += `<li>${t}</li>`; });
-    }
-
-    // --- PROCESADOR DE INTELIGENCIA ---
-    function procesarInteligencia(texto) {
-        const t = texto.toLowerCase();
-
-        // 1. Tareas
-        const msgTarea = gestionarTarea(t);
-        if(msgTarea) return msgTarea;
-
-        // 2. Modos de Pantalla
-        if (t.includes("modo guerra") || t.includes("rojo")) { document.body.style.background = "#2a0000"; return "Protocolo de combate activo. Interfaz en rojo."; }
-        if (t.includes("modo paz") || t.includes("azul")) { document.body.style.background = "#050a14"; return "Estabilidad restaurada."; }
-        if (t.includes("modo bosque") || t.includes("verde")) { document.body.style.background = "#001a05"; return "Modo ecológico activado."; }
-
-        // 3. Búsquedas
-        if (t.includes("busca en youtube") || t.includes("reproduce")) {
-            let q = t.replace("busca en youtube", "").replace("reproduce", "").trim();
-            window.open(`https://www.youtube.com/results?search_query=${q}`);
-            return "Abriendo YouTube para buscar " + q;
-        }
-        if (t.includes("qué es") || t.includes("busca en wikipedia")) {
-            let q = t.replace("busca en wikipedia", "").replace("qué es", "").trim();
-            window.open(`https://es.wikipedia.org/wiki/${q}`);
-            return "Consultando Wikipedia.";
-        }
-        if (t.includes("busca")) {
-            let q = t.replace("busca", "").trim();
-            window.open(`https://www.google.com/search?q=${q}`);
-            return "Buscando en Google.";
-        }
-
-        // 4. Utilidades
-        if (t.includes("hora")) return "La hora actual es " + new Date().toLocaleTimeString();
-        if (t.includes("fecha")) return "Hoy es " + new Date().toLocaleDateString();
-        if (t.includes("quien eres")) return "Soy MYZION, tu sistema de inteligencia artificial personal.";
-
-        return "He procesado tu comando y lo he almacenado en mi memoria central.";
-    }
-
-    function enviar() {
-        const val = inputField.value;
-        if (!val) return;
-
-        chatLog.innerHTML += `<p><b>Tú:</b> ${val}</p>`;
-        const resp = procesarInteligencia(val);
-        chatLog.innerHTML += `<p><b>MYZION:</b> ${resp}</p>`;
-
-        // Guardar en memoria de chat
-        let hist = obtenerDato("cerebro_myzion");
-        hist.push({ user: val, ai: resp });
-        guardarDato("cerebro_myzion", hist);
-
-        hablar(resp);
-        inputField.value = "";
-        scrollFinal();
     }
 
     function activarVoz() {
         const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!Speech) return alert("Navegador no compatible con reconocimiento de voz.");
-        
+        if (!Speech) return alert("Navegador no compatible.");
         const rec = new Speech();
-        rec.lang = "es-ES";
-        rec.onstart = () => core.classList.add("listening");
+        rec.lang = 'es-ES';
+        rec.onstart = () => core.classList.add('listening');
+        rec.onend = () => core.classList.remove('listening');
         rec.onresult = (e) => {
-            inputField.value = e.results[0][0].transcript;
-            enviar();
+            input.value = e.results[0][0].transcript;
+            handleSend();
         };
-        rec.onend = () => core.classList.remove("listening");
         rec.start();
     }
 
-    function limpiarCerebro() {
-        if(confirm("¿Deseas formatear toda la memoria y reiniciar el sistema?")) {
+    // --- GESTIÓN DE TAREAS Y MEMORIA ---
+    function updateTasks() {
+        const tasks = JSON.parse(localStorage.getItem('myzion_tasks')) || [];
+        taskListUI.innerHTML = tasks.length ? "" : "<li>No hay pendientes.</li>";
+        tasks.forEach(t => { taskListUI.innerHTML += `<li>${t}</li>`; });
+    }
+
+    function saveTask(texto) {
+        let tasks = JSON.parse(localStorage.getItem('myzion_tasks')) || [];
+        tasks.push(texto);
+        localStorage.setItem('myzion_tasks', JSON.stringify(tasks));
+        updateTasks();
+    }
+
+    function resetMemory() {
+        if(confirm("¿Reiniciar MYZION? Se borrarán tareas y chat.")) {
             localStorage.clear();
             location.reload();
         }
     }
 
-    function scrollFinal() {
-        const p = document.getElementById("panel");
-        p.scrollTop = p.scrollHeight;
+    // --- LÓGICA DE APPS ---
+    function abrirApp(url) {
+        const win = window.open(url, '_blank');
+        if (!win) alert("Permite las ventanas emergentes para abrir aplicaciones.");
     }
 
-    // Eventos de teclado
-    inputField.addEventListener("keypress", (e) => { if(e.key === "Enter") enviar(); });
-    
-    // Iniciar
-    window.onload = cargarSistema;
+    // --- PROCESAMIENTO E IA ---
+    function addMsg(role, text) {
+        const d = document.createElement('div');
+        d.className = `msg ${role === 'user' ? 'user-msg' : 'ai-msg'}`;
+        d.innerText = text;
+        chat.appendChild(d);
+        chat.scrollTop = chat.scrollHeight;
+    }
+
+    async function handleSend() {
+        const rawText = input.value.trim();
+        if(!rawText) return;
+
+        addMsg('user', rawText);
+        input.value = '';
+        core.classList.add('thinking');
+
+        const lowText = rawText.toLowerCase();
+
+        // 1. Comandos Locales Inmediatos
+        if (lowText.includes("añadir tarea") || lowText.includes("recordar")) {
+            let t = rawText.replace(/añadir tarea|recordar/gi, "").trim();
+            saveTask(t);
+            const r = "He guardado tu tarea: " + t;
+            addMsg('ai', r); hablar(r);
+            return;
+        }
+
+        if (lowText.includes("youtube") || lowText.includes("reproduce")) {
+            let q = lowText.replace("busca en youtube", "").replace("reproduce", "").trim();
+            abrirApp(`https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`);
+            const r = "Abriendo YouTube para buscar " + q;
+            addMsg('ai', r); hablar(r);
+            return;
+        }
+
+        if (lowText.includes("modo guerra")) { document.body.style.background = "#300"; addMsg('ai', "Modo alerta activa."); return; }
+
+        // 2. Consulta a IA Avanzada (Gemini)
+        chatHistory.push({ role: "user", parts: [{ text: rawText }] });
+
+        try {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: chatHistory })
+            });
+
+            const data = await res.json();
+            const aiText = data.candidates[0].content.parts[0].text;
+
+            addMsg('ai', aiText);
+            hablar(aiText);
+            chatHistory.push({ role: "model", parts: [{ text: aiText }] });
+
+        } catch (e) {
+            addMsg('ai', "Error de conexión neuronal.");
+        } finally {
+            core.classList.remove('thinking');
+        }
+    }
+
+    // --- INICIO ---
+    window.onload = () => {
+        updateTasks();
+        const intro = "Sistema MYZION en línea. Soy tu IA avanzada. Puedo gestionar tus tareas, abrir aplicaciones y razonar contigo. ¿Qué misión tenemos hoy?";
+        addMsg('ai', intro);
+        hablar(intro);
+    };
+
+    input.addEventListener("keypress", (e) => { if(e.key === "Enter") handleSend(); });
 </script>
 </body>
 </html>

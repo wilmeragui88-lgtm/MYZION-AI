@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MYZION OS | TOTAL-OMNI v19.0</title>
+    <title>MYZION OS | VOICE-COMMAND v20.0</title>
     
-    <link rel="manifest" href="manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -26,118 +25,115 @@
             display: flex; flex-direction: column; overflow: hidden; text-transform: uppercase;
         }
 
-        header { padding: 10px; background: #000; border-bottom: 2px solid var(--blue); display: flex; justify-content: space-between; align-items: center; z-index: 100; }
-        .brand { font-family: 'Orbitron'; font-size: 0.7rem; letter-spacing: 1px; }
+        header { padding: 10px; background: #000; border-bottom: 2px solid var(--blue); display: flex; justify-content: space-between; align-items: center; }
+        .brand { font-family: 'Orbitron'; font-size: 0.7rem; }
 
-        .viewport { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 12px; padding-bottom: 110px; }
-        .panel { background: var(--glass); border: 1px solid rgba(0,242,255,0.2); padding: 12px; border-radius: 5px; backdrop-filter: blur(10px); }
-        .panel-label { font-size: 0.5rem; color: var(--blue); border-left: 2px solid var(--blue); padding-left: 5px; margin-bottom: 8px; display: block; }
+        .viewport { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; padding-bottom: 120px; }
+        .panel { background: var(--glass); border: 1px solid rgba(0,242,255,0.2); padding: 10px; border-radius: 5px; }
 
-        /* CAPA DE CÁMARA DUAL (TEXTO + IMAGEN) */
+        /* HUD DE CÁMARA */
         #cam-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 9000; flex-direction: column; }
-        .cam-view { position: relative; width: 100%; height: 70%; overflow: hidden; border-bottom: 2px solid var(--purple); }
-        #video { width: 100%; height: 100%; object-fit: cover; }
-        .scan-hud {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 85%; height: 50%; border: 2px solid var(--cyan); border-radius: 8px;
-            box-shadow: 0 0 0 2000px rgba(0,0,0,0.6);
-        }
-        .laser {
-            position: absolute; width: 100%; height: 2px; background: var(--cyan);
-            top: 0; animation: laserMove 2s infinite linear; box-shadow: 0 0 15px var(--cyan);
-        }
-        @keyframes laserMove { 0% { top: 0; } 100% { top: 100%; } }
+        #video { width: 100%; height: 70%; object-fit: cover; border-bottom: 2px solid var(--purple); }
 
-        /* PAPEL DIGITAL */
+        /* PAPEL DE ESCRIBA */
         #paper {
-            background: #fff; color: #000; padding: 25px; min-height: 280px;
-            border-radius: 2px; font-family: 'Times New Roman', serif; text-transform: none;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.1); position: relative;
+            background: #fff; color: #111; padding: 20px; min-height: 300px;
+            border-radius: 2px; font-family: 'serif'; text-transform: none;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
         }
-        #editable-content { outline: none; font-size: 1rem; line-height: 1.6; min-height: 200px; white-space: pre-wrap; color: #111; }
+        #editable-content { outline: none; font-size: 1rem; line-height: 1.5; min-height: 250px; white-space: pre-wrap; }
 
-        /* BOTONES */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .btn {
-            background: rgba(0,114,255,0.1); border: 1px solid var(--blue);
-            color: #fff; padding: 12px; font-size: 0.55rem; font-family: 'Orbitron'; cursor: pointer;
+        /* INDICADOR DE VOZ */
+        .voice-indicator {
+            display: inline-block; width: 12px; height: 12px; border-radius: 50%;
+            background: #333; margin-right: 5px;
         }
-        .btn-capture-text { background: var(--purple); border: none; width: 70px; height: 70px; border-radius: 50%; color: white; font-weight: bold; }
-        .btn-capture-img { background: var(--green); border: none; width: 70px; height: 70px; border-radius: 50%; color: black; font-weight: bold; }
+        .voice-active { background: var(--green); box-shadow: 0 0 10px var(--green); animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-        footer { position: fixed; bottom: 0; width: 100%; background: #000; padding: 10px; border-top: 1px solid var(--blue); display: flex; gap: 8px; z-index: 500; }
-        #proc-screen { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10000; display: none; align-items: center; justify-content: center; flex-direction: column; color: var(--green); }
+        footer { position: fixed; bottom: 0; width: 100%; background: #000; padding: 10px; border-top: 1px solid var(--blue); display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn { background: #081a2d; border: 1px solid var(--blue); color: #fff; padding: 12px; font-family: 'Orbitron'; font-size: 0.6rem; cursor: pointer; }
+        .btn-voice { background: var(--purple); grid-column: span 2; font-weight: bold; border: none; }
     </style>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-        const config = {
-            apiKey: "AIzaSyAVuB6irppG-_9VbKSVY93P1dG6ZmC1KCY",
-            authDomain: "myzion-os-master.firebaseapp.com",
-            projectId: "myzion-os-master",
-            appId: "1:262714217017:web:fae14ece4afb7cd16cb3e8"
-        };
-        const app = initializeApp(config);
-        window.db = getDatabase(app);
-        window.fb = { ref, push };
-        setTimeout(() => initOS(), 1000);
-    </script>
 </head>
 <body>
 
-<div id="proc-screen">PROCESANDO...</div>
-
 <div id="cam-overlay">
-    <div class="cam-view">
-        <video id="video" autoplay playsinline></video>
-        <div class="scan-hud"><div class="laser"></div></div>
-    </div>
+    <video id="video" autoplay playsinline></video>
     <div style="flex:1; display:flex; justify-content:space-around; align-items:center; background:#000;">
-        <button class="btn" onclick="closeCam()">SALIR</button>
-        <div style="text-align:center;"><button class="btn-capture-text" onclick="captureText()">T</button><br><small>TEXTO</small></div>
-        <div style="text-align:center;"><button class="btn-capture-img" onclick="captureImageDoc()">I</button><br><small>IMAGEN</small></div>
+        <button class="btn" onclick="closeCam()">CERRAR</button>
+        <button onclick="captureAll()" style="width:70px; height:70px; border-radius:50%; background:var(--green); border:none;"></button>
     </div>
 </div>
 
 <header>
-    <div class="brand">MYZION TOTAL <span style="color:var(--purple)">v19.0</span></div>
-    <div style="font-size:0.5rem; color:var(--green)">● MULTI-SCAN_READY</div>
+    <div class="brand">MYZION VOICE-OS <span style="color:var(--purple)">v20.0</span></div>
+    <div style="font-size:0.5rem;"><span id="v-dot" class="voice-indicator"></span> IA VOICE ACTIVE</div>
 </header>
 
 <main class="viewport">
-    <section class="panel"><div style="height:80px;"><canvas id="mainChart"></canvas></div></section>
-
     <section class="panel">
         <div id="paper">
-            <div style="font-size:0.6rem; color:#666; border-bottom:1px solid #ddd; margin-bottom:10px;">MAESTRO: REGISTRO MYZION | FECHA: <span id="cur-date"></span></div>
-            <div id="editable-content" contenteditable="true">Escriba opiniones o escanee...</div>
-            <div id="image-preview" style="margin-top:15px; display:none;"><img id="doc-img" style="width:100%; border:1px solid #ccc;"></div>
+            <div style="font-size:0.6rem; color:#888; border-bottom:1px solid #eee; margin-bottom:10px;">ESCRIBAS EN TIEMPO REAL</div>
+            <div id="editable-content" contenteditable="true">Diga "Empezar" o use el botón de voz...</div>
         </div>
     </section>
 
-    <section class="panel">
-        <div class="grid">
-            <button class="btn" style="border-color:var(--purple)" onclick="openCam()">ABRIR CÁMARA</button>
-            <button class="btn" onclick="saveCloud()">NUBE FIREBASE</button>
-            <button class="btn" onclick="savePDF()">GUARDAR PDF</button>
-            <button class="btn" style="color:var(--green)" onclick="saveFullIMG()">EXPORTAR PNG</button>
-        </div>
+    <section class="panel" class="grid" style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
+        <button class="btn" onclick="openCam()">CÁMARA IA</button>
+        <button class="btn" onclick="readAloud()">LEER TEXTO</button>
+        <button class="btn" onclick="savePDF()">EXPORTAR PDF</button>
+        <button class="btn" onclick="clearPaper()">LIMPIAR TODO</button>
     </section>
 </main>
 
 <footer>
-    <input type="text" id="cmd" style="flex:1; background:#111; border:1px solid var(--blue); color:white; padding:10px;" placeholder="Nota rápida...">
-    <button class="btn" style="width:70px" onclick="startVoice()">VOZ</button>
+    <button class="btn btn-voice" onclick="toggleVoice()">ACTIVAR IA DE VOZ Y COMANDOS</button>
+    <button class="btn" onclick="saveCloud()">NUBE</button>
+    <button class="btn" onclick="saveIMG()">IMAGEN</button>
 </footer>
 
 <script>
-    document.getElementById('cur-date').innerText = new Date().toLocaleDateString();
+    let isListening = false;
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'es-ES';
+    recognition.continuous = true;
+    recognition.interimResults = false;
 
-    function initOS() {
-        const ctx = document.getElementById('mainChart').getContext('2d');
-        new Chart(ctx, { type: 'line', data: { labels: ['L','M','M','J','V'], datasets: [{ data: [15,20,10,25,18], borderColor: '#00f2ff' }] }, options: { maintainAspectRatio: false } });
+    function speak(text) {
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.lang = 'es-ES';
+        window.speechSynthesis.speak(msg);
     }
+
+    function toggleVoice() {
+        if (!isListening) {
+            recognition.start();
+            document.getElementById('v-dot').classList.add('voice-active');
+            speak("IA de voz activada. Escuchando comandos y escribas.");
+            isListening = true;
+        } else {
+            recognition.stop();
+            document.getElementById('v-dot').classList.remove('voice-active');
+            isListening = false;
+        }
+    }
+
+    recognition.onresult = (event) => {
+        const command = event.results[event.results.length - 1][0].transcript.toLowerCase();
+        const paper = document.getElementById('editable-content');
+
+        // LÓGICA DE COMANDOS DE VOZ
+        if (command.includes("abrir cámara")) { openCam(); speak("Abriendo cámara"); }
+        else if (command.includes("guardar pdf")) { savePDF(); speak("Generando archivo P D F"); }
+        else if (command.includes("limpiar papel")) { clearPaper(); speak("Papel limpio"); }
+        else if (command.includes("leer texto")) { readAloud(); }
+        else {
+            // SI NO ES COMANDO, ES ESCRIBA (DICTADO)
+            if(paper.innerText.includes("Diga")) paper.innerText = "";
+            paper.innerText += " " + command;
+        }
+    };
 
     async function openCam() {
         const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
@@ -151,68 +147,40 @@
         document.getElementById('cam-overlay').style.display = 'none';
     }
 
-    // FUNCIÓN 1: ESCANEAR TEXTO (Mantiene la limpieza de ruido)
-    async function captureText() {
-        document.getElementById('proc-screen').style.display = 'flex';
+    async function captureAll() {
         const v = document.getElementById('video');
         const c = document.createElement('canvas');
         c.width = v.videoWidth; c.height = v.videoHeight;
         const ctx = c.getContext('2d');
-        ctx.filter = 'grayscale(1) contrast(2.5)';
+        ctx.filter = 'grayscale(1) contrast(2)';
         ctx.drawImage(v, 0, 0);
         
-        try {
-            const res = await Tesseract.recognize(c.toDataURL(), 'spa', {
-                workerOptions: { tessedit_char_whitelist: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZáéíóúÁÉÍÓÚñÑ.,:;()/- ' }
-            });
-            document.getElementById('editable-content').innerText += "\n" + res.data.text.trim();
-        } finally {
-            document.getElementById('proc-screen').style.display = 'none';
-            closeCam();
-        }
-    }
-
-    // FUNCIÓN 2: ESCANEAR IMAGEN (Guarda el documento tal cual se ve)
-    function captureImageDoc() {
-        const v = document.getElementById('video');
-        const c = document.createElement('canvas');
-        c.width = v.videoWidth; c.height = v.videoHeight;
-        c.getContext('2d').drawImage(v, 0, 0);
-        
-        const imgTag = document.getElementById('doc-img');
-        imgTag.src = c.toDataURL('image/png');
-        document.getElementById('image-preview').style.display = 'block';
+        const res = await Tesseract.recognize(c.toDataURL(), 'spa');
+        document.getElementById('editable-content').innerText += "\n" + res.data.text.trim();
+        speak("Escaneo completado con éxito.");
         closeCam();
     }
+
+    function readAloud() {
+        const text = document.getElementById('editable-content').innerText;
+        speak("Iniciando lectura del documento: " + text);
+    }
+
+    function clearPaper() { document.getElementById('editable-content').innerText = ""; }
 
     function savePDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         doc.text(document.getElementById('editable-content').innerText, 15, 20);
-        doc.save("Zion_Doc.pdf");
+        doc.save("Escriba_Zion.pdf");
     }
 
-    async function saveFullIMG() {
+    async function saveIMG() {
         const canvas = await html2canvas(document.getElementById('paper'));
         const link = document.createElement('a');
         link.download = 'Myzion_Captura.png';
         link.href = canvas.toDataURL();
         link.click();
-    }
-
-    function saveCloud() {
-        window.fb.push(window.fb.ref(window.db, 'registros/'), {
-            texto: document.getElementById('editable-content').innerText,
-            fecha: new Date().toLocaleString()
-        });
-        alert("Enviado a la Nube");
-    }
-
-    function startVoice() {
-        const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const r = new Rec(); r.lang = 'es-ES';
-        r.onresult = (e) => { document.getElementById('editable-content').innerText += " " + e.results[0][0].transcript; };
-        r.start();
     }
 </script>
 </body>

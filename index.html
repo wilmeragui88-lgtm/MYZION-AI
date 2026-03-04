@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MYZION OS | OMNI-RECONSTRUCTION v17.0</title>
+    <title>MYZION OS | ARMOR-READ v18.0</title>
     
     <link rel="manifest" href="manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
@@ -23,60 +23,44 @@
         body {
             margin: 0; font-family: 'JetBrains Mono', monospace;
             background: var(--bg); color: var(--cyan); height: 100vh;
-            display: flex; flex-direction: column; overflow: hidden; text-transform: uppercase;
+            display: flex; flex-direction: column; overflow: hidden;
         }
 
-        header { padding: 10px; background: #000; border-bottom: 2px solid var(--blue); display: flex; justify-content: space-between; align-items: center; z-index: 100; }
+        header { padding: 10px; background: #000; border-bottom: 2px solid var(--blue); display: flex; justify-content: space-between; align-items: center; }
         .brand { font-family: 'Orbitron'; font-size: 0.7rem; letter-spacing: 1px; }
 
-        .viewport { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 12px; padding-bottom: 110px; }
-        .panel { background: var(--glass); border: 1px solid rgba(0,242,255,0.2); padding: 12px; border-radius: 5px; backdrop-filter: blur(10px); }
-        .panel-label { font-size: 0.5rem; color: var(--blue); border-left: 2px solid var(--blue); padding-left: 5px; margin-bottom: 8px; display: block; }
-
-        /* HUD DE CÁMARA CON RECONSTRUCCIÓN */
+        /* CAPA DE ESCANEO PROFESIONAL */
         #cam-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 9000; flex-direction: column; }
-        .cam-view { position: relative; width: 100%; height: 75%; overflow: hidden; border-bottom: 2px solid var(--purple); }
+        .cam-view { position: relative; width: 100%; height: 75%; overflow: hidden; }
         #video { width: 100%; height: 100%; object-fit: cover; }
-        .scan-hud {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 85%; height: 50%; border: 2px solid var(--green); border-radius: 8px;
-            box-shadow: 0 0 0 2000px rgba(0,0,0,0.6);
-        }
-        .laser {
-            position: absolute; width: 100%; height: 2px; background: var(--green);
-            top: 0; animation: laserMove 2s infinite linear; box-shadow: 0 0 15px var(--green);
-        }
-        @keyframes laserMove { 0% { top: 0; } 100% { top: 100%; } }
-        #live-msg { position: absolute; bottom: 15px; width: 100%; text-align: center; color: var(--green); font-size: 0.7rem; background: rgba(0,0,0,0.5); padding: 5px; }
-
-        /* PAPEL DIGITAL EDITABLE */
-        #paper {
-            background: #fff; color: #000; padding: 25px; min-height: 280px;
-            border-radius: 2px; font-family: 'Times New Roman', serif; text-transform: none;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.1); position: relative;
-        }
-        .paper-header { border-bottom: 1px solid #333; margin-bottom: 15px; font-family: 'Orbitron'; font-size: 0.6rem; color: #555; display: flex; justify-content: space-between; }
-        #editable-content { outline: none; font-size: 1rem; line-height: 1.6; min-height: 200px; white-space: pre-wrap; color: #111; }
-
-        /* UI ELEMENTS */
-        .chart-box { height: 100px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .btn {
-            background: rgba(0,114,255,0.1); border: 1px solid var(--blue);
-            color: #fff; padding: 12px; font-size: 0.55rem; font-family: 'Orbitron'; cursor: pointer;
-        }
-        .btn-purple { border-color: var(--purple); color: var(--purple); font-weight: bold; }
-        .btn-capture { width: 80px; height: 80px; border-radius: 50%; background: var(--green); border: 4px solid #fff; box-shadow: 0 0 20px var(--green); }
-
-        footer { position: fixed; bottom: 0; width: 100%; background: #000; padding: 10px; border-top: 1px solid var(--blue); display: flex; gap: 8px; z-index: 500; }
-        input { flex: 1; background: #080808; border: 1px solid var(--blue); color: #fff; padding: 10px; font-family: 'JetBrains Mono'; font-size: 0.7rem; }
         
-        #proc-screen { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10000; display: none; align-items: center; justify-content: center; flex-direction: column; color: var(--green); }
+        /* GUÍA DE ENFOQUE */
+        .focus-guide {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 85%; height: 50%; border: 2px solid var(--cyan);
+            box-shadow: 0 0 0 2000px rgba(0,0,0,0.7); border-radius: 10px;
+        }
+        .scan-line {
+            position: absolute; width: 100%; height: 3px; background: var(--cyan);
+            box-shadow: 0 0 15px var(--cyan); animation: scanLoop 3s infinite linear;
+        }
+        @keyframes scanLoop { 0% { top: 0; } 100% { top: 100%; } }
+
+        /* PANEL DE DOCUMENTO LIMPIO */
+        .viewport { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; padding-bottom: 120px; }
+        #paper { background: #fff; color: #111; padding: 25px; min-height: 350px; border-radius: 4px; box-shadow: inset 0 0 10px rgba(0,0,0,0.1); }
+        #editable-content { outline: none; font-size: 1.05rem; line-height: 1.6; font-family: 'serif'; white-space: pre-wrap; text-transform: none; }
+
+        footer { position: fixed; bottom: 0; width: 100%; background: #000; padding: 10px; border-top: 1px solid var(--blue); display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn { background: #081a2d; border: 1px solid var(--blue); color: #fff; padding: 15px; font-family: 'Orbitron'; font-size: 0.6rem; text-transform: uppercase; }
+        .btn-main { background: var(--purple); border: none; font-weight: bold; }
+        
+        #status-box { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); padding: 25px; border: 2px solid var(--green); color: var(--green); z-index: 10000; display: none; text-align: center; font-size: 0.8rem; }
     </style>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
         const config = {
             apiKey: "AIzaSyAVuB6irppG-_9VbKSVY93P1dG6ZmC1KCY",
             authDomain: "myzion-os-master.firebaseapp.com",
@@ -87,97 +71,56 @@
         };
         const app = initializeApp(config);
         window.db = getDatabase(app);
-        window.fb = { ref, push, onValue };
-        setTimeout(() => startOS(), 1000);
+        window.fb = { ref, push };
     </script>
 </head>
 <body>
 
-<div id="proc-screen">
-    <div style="font-size: 1.5rem; margin-bottom: 10px;">PROCESANDO...</div>
-    <div style="font-size: 0.7rem;">RECONSTRUYENDO TEXTO Y ELIMINANDO RUIDO</div>
-</div>
+<div id="status-box">RECONSTRUYENDO DOCUMENTO...<br>LIMPIANDO CARACTERES INVÁLIDOS</div>
 
 <div id="cam-overlay">
     <div class="cam-view">
         <video id="video" autoplay playsinline></video>
-        <div class="scan-hud"><div class="laser"></div></div>
-        <div id="live-msg">SISTEMA DE RECONSTRUCCIÓN ACTIVO</div>
+        <div class="focus-guide"><div class="scan-line"></div></div>
     </div>
-    <div style="flex:1; display:flex; justify-content:space-around; align-items:center; background:#000;">
-        <button class="btn" onclick="closeCam()">SALIR</button>
-        <button class="btn-capture" onclick="ultraCapture()"></button>
+    <div style="height: 100px; display: flex; justify-content: space-around; align-items: center; background: #000;">
+        <button class="btn" onclick="closeCam()">CERRAR</button>
+        <button onclick="smartCapture()" style="width:75px; height:75px; border-radius:50%; background:var(--green); border:4px solid #fff;"></button>
         <div style="width:60px"></div>
     </div>
 </div>
 
-<header>
-    <div class="brand">MYZION OMNI <span style="color:var(--purple)">v17.0</span></div>
-    <div style="font-size:0.5rem; color:var(--green)">● ULTRA_PRECISION_ON</div>
-</header>
-
 <main class="viewport">
-    <section class="panel">
-        <span class="panel-label">FLUJO DE TRABAJO SEMANAL</span>
-        <div class="chart-box"><canvas id="mainChart"></canvas></div>
-    </section>
+    <header>
+        <div class="brand">MYZION ARMOR-READ <span style="color:var(--purple)">v18.0</span></div>
+        <div style="font-size: 0.5rem; color: var(--green);">MÓDULO ANTI-RUIDO ACTIVO</div>
+    </header>
 
-    <section class="panel">
-        <span class="panel-label">DOCUMENTO DE RECONSTRUCCIÓN (EDITABLE)</span>
-        <div id="paper">
-            <div class="paper-header">
-                <span>REGISTRO MAESTRO</span>
-                <span id="date-tag">--/--/--</span>
-            </div>
-            <div id="editable-content" contenteditable="true">Inicie el escáner avanzado para digitalizar o use el teclado para sus opiniones...</div>
+    <div id="paper">
+        <div style="border-bottom: 1px solid #ccc; margin-bottom: 15px; font-size: 0.7rem; color: #666;">
+            MAESTRO: REGISTRO MYZION | FECHA: <span id="date-el"></span>
         </div>
-    </section>
+        <div id="editable-content" contenteditable="true">Esperando captura de alta precisión...</div>
+    </div>
 
-    <section class="panel">
-        <span class="panel-label">MÓDULOS DE EXPORTACIÓN</span>
-        <div class="grid">
-            <button class="btn btn-purple" onclick="openCam()">ESCANEAR (IA)</button>
-            <button class="btn" onclick="saveCloud()">NUBE FIREBASE</button>
-            <button class="btn" onclick="savePDF()">GUARDAR PDF</button>
-            <button class="btn" style="color:var(--green)" onclick="saveIMG()">GUARDAR IMAGEN</button>
-        </div>
-    </section>
+    <button class="btn btn-main" onclick="openCam()">ESCANEAR CON LIMPIEZA IA</button>
 </main>
 
 <footer>
-    <input type="text" id="manual-input" placeholder="Comando rápido o nota...">
-    <button class="btn" style="width:70px" onclick="voiceInput()">VOZ</button>
+    <button class="btn" onclick="savePDF()">GUARDAR PDF</button>
+    <button class="btn" onclick="saveIMG()">GUARDAR IMAGEN</button>
+    <button class="btn" onclick="saveCloud()" style="grid-column: span 2;">SUBIR A FIREBASE</button>
 </footer>
 
 <script>
-    let chart;
-    document.getElementById('date-tag').innerText = new Date().toLocaleDateString();
+    document.getElementById('date-el').innerText = new Date().toLocaleDateString();
 
-    function startOS() {
-        const ctx = document.getElementById('mainChart').getContext('2d');
-        chart = new Chart(ctx, {
-            type: 'line',
-            data: { labels: ['L','M','M','J','V'], datasets: [{ label: 'FLUJO', data: [10,25,15,30,20], borderColor: '#00f2ff', tension: 0.4 }] },
-            options: { responsive: true, maintainAspectRatio: false }
-        });
-        speak("Sistema Myzion Omni diecisiete punto cero iniciado. Motor de reconstrucción listo.");
-    }
-
-    function speak(t) {
-        const m = new SpeechSynthesisUtterance(t);
-        m.lang = 'es-ES';
-        window.speechSynthesis.speak(m);
-    }
-
-    // --- CÁMARA Y RECONSTRUCCIÓN ---
     async function openCam() {
-        try {
-            const s = await navigator.mediaDevices.getUserMedia({ 
-                video: { facingMode: "environment", width: { ideal: 1920 } } 
-            });
-            document.getElementById('video').srcObject = s;
-            document.getElementById('cam-overlay').style.display = 'flex';
-        } catch(e) { alert("Error de cámara"); }
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 } } 
+        });
+        document.getElementById('video').srcObject = stream;
+        document.getElementById('cam-overlay').style.display = 'flex';
     }
 
     function closeCam() {
@@ -186,75 +129,66 @@
         document.getElementById('cam-overlay').style.display = 'none';
     }
 
-    async function ultraCapture() {
-        const proc = document.getElementById('proc-screen');
-        proc.style.display = 'flex';
+    async function smartCapture() {
+        const status = document.getElementById('status-box');
+        status.style.display = 'block';
         
-        const v = document.getElementById('video');
-        const c = document.createElement('canvas');
-        c.width = v.videoWidth; c.height = v.videoHeight;
-        const ctx = c.getContext('2d');
+        const video = document.getElementById('video');
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
         
-        // Pre-procesamiento para eliminar ruido visual
-        ctx.filter = 'grayscale(1) contrast(2.5) brightness(0.8)';
-        ctx.drawImage(v, 0, 0);
+        // --- FILTRO DE LIMPIEZA PROFUNDA ---
+        ctx.filter = 'grayscale(1) contrast(3) brightness(0.7) blur(0.5px)';
+        ctx.drawImage(video, 0, 0);
         
         try {
-            const res = await Tesseract.recognize(c.toDataURL('image/png'), 'spa', {
+            const result = await Tesseract.recognize(canvas.toDataURL('image/png'), 'spa', {
                 workerOptions: { 
-                    tessedit_char_whitelist: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789áéíóúÁÉÍÓÚñÑ.,:;()/- ' 
+                    // BLOQUEAMOS NÚMEROS EXTRAÑOS Y SÍMBOLOS QUE ENSUCIAN EL TEXTO
+                    tessedit_char_whitelist: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZáéíóúÁÉÍÓÚñÑ.,:;()/- ' 
                 }
             });
 
-            const paper = document.getElementById('editable-content');
-            if(paper.innerText.includes("Inicie el escáner")) paper.innerText = "";
+            const target = document.getElementById('editable-content');
+            if(target.innerText.includes("Esperando")) target.innerText = "";
             
-            // Limpieza final de caracteres extraños
-            const cleanText = res.data.text.replace(/[^\w\sáéíóúÁÉÍÓÚñÑ.,:;()/-]/gi, '');
-            paper.innerText += "\n" + cleanText.trim();
-            
-            if(window.navigator.vibrate) window.navigator.vibrate(200);
-            speak("Documento reconstruido.");
-        } catch(e) { alert("Error en procesamiento."); }
-        finally { proc.style.display = 'none'; closeCam(); }
-    }
+            // ELIMINACIÓN DE CARACTERES SOLITARIOS (BASURA)
+            const cleanedText = result.data.text.split('\n')
+                .map(line => line.length < 3 && !line.includes('.') ? '' : line)
+                .join('\n');
 
-    // --- EXPORTACIÓN Y CLOUD ---
-    function saveCloud() {
-        const txt = document.getElementById('editable-content').innerText;
-        window.fb.push(window.fb.ref(window.db, 'registros/'), {
-            tipo: 'OMNI_DOC', detalle: txt, fecha: new Date().toLocaleString()
-        });
-        speak("Sincronizado con Firebase.");
+            target.innerText += "\n" + cleanedText.trim();
+            if(window.navigator.vibrate) window.navigator.vibrate(200);
+            
+        } catch(e) { alert("Error de procesamiento"); }
+        finally { status.style.display = 'none'; closeCam(); }
     }
 
     function savePDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const txt = document.getElementById('editable-content').innerText;
-        doc.setFont("helvetica", "bold");
-        doc.text("MYZION OS v17.0 - REPORTE OFICIAL", 15, 15);
-        doc.setFont("times", "normal");
         doc.setFontSize(11);
-        doc.text(doc.splitTextToSize(txt, 180), 15, 30);
-        doc.save(`Zion_Final_${Date.now()}.pdf`);
+        doc.text(doc.splitTextToSize(txt, 180), 15, 20);
+        doc.save("Registro_Limpio.pdf");
     }
 
     async function saveIMG() {
         const canvas = await html2canvas(document.getElementById('paper'));
         const link = document.createElement('a');
-        link.download = 'Myzion_Captura.png';
+        link.download = 'Captura_Zion.png';
         link.href = canvas.toDataURL();
         link.click();
     }
 
-    function voiceInput() {
-        const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const r = new Rec(); r.lang = 'es-ES';
-        r.onresult = (e) => {
-            document.getElementById('editable-content').innerText += " " + e.results[0][0].transcript;
-        };
-        r.start();
+    function saveCloud() {
+        const txt = document.getElementById('editable-content').innerText;
+        window.fb.push(window.fb.ref(window.db, 'registros/'), {
+            detalle: txt, fecha: new Date().toLocaleString()
+        });
+        alert("Sincronizado correctamente.");
     }
 </script>
 </body>

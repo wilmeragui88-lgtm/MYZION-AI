@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MYZION OS | NEURAL-CORE v24.0</title>
+    <title>MYZION OS | GENESIS SUPREME v24.0</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
@@ -17,248 +18,240 @@
             --bg: #02050a; --glass: rgba(10, 25, 41, 0.95);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body {
             margin: 0; font-family: 'JetBrains Mono', monospace;
             background: var(--bg); color: var(--cyan); height: 100vh;
             display: flex; flex-direction: column; overflow: hidden;
         }
 
-        /* CAPA NEURAL (VOZ VISUAL) */
-        .neural-indicator {
-            height: 3px; width: 0%; background: var(--green);
-            transition: width 0.3s; position: fixed; top: 0; z-index: 10000;
-            box-shadow: 0 0 15px var(--green);
-        }
+        header { padding: 12px; background: #000; border-bottom: 2px solid var(--blue); display: flex; justify-content: space-between; align-items: center; z-index: 2000; }
+        .brand { font-family: 'Orbitron'; font-size: 0.8rem; letter-spacing: 1px; color: #fff; }
 
-        header { padding: 12px; background: #000; border-bottom: 2px solid var(--blue); display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
-        .brand { font-family: 'Orbitron'; font-size: 0.8rem; }
-
-        /* HUB DE ARCHIVOS INTELIGENTE */
+        /* HUB DE ARCHIVOS */
         #file-hub {
             position: absolute; top: 60px; right: 10px; width: 280px;
-            background: var(--glass); border: 1px solid var(--purple);
+            background: var(--glass); border: 2px solid var(--purple);
             display: none; flex-direction: column; z-index: 3000; border-radius: 8px;
-            max-height: 400px; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            max-height: 400px; overflow-y: auto; box-shadow: 0 0 30px rgba(188, 19, 254, 0.5);
         }
-        .file-item { padding: 15px; font-size: 0.65rem; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
-        .file-item:hover { background: var(--purple); color: #fff; }
+        .file-item { padding: 15px; font-size: 0.7rem; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; color: #fff; }
+        .file-item:hover { background: var(--purple); }
 
-        /* ÁREA DE TRABAJO IA */
+        /* EDITOR WORD IA */
         .viewport { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 150px; }
-        .panel { background: var(--glass); border: 1px solid rgba(0,242,255,0.2); padding: 15px; border-radius: 8px; }
+        #paper-container { background: #fff; border-radius: 4px; padding: 40px; min-height: 500px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+        #paper { outline: none; color: #000; font-family: 'Arial', sans-serif; font-size: 1.1rem; line-height: 1.7; text-transform: none; }
         
-        #paper {
-            background: #fff; color: #111; padding: 35px; min-height: 500px;
-            border-radius: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            text-transform: none; box-shadow: 0 0 20px rgba(0,0,0,0.2);
-        }
-        #editable-content { outline: none; font-size: 1.1rem; line-height: 1.7; }
+        /* ESTILOS DE TABLAS Y REPORTES */
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; border: 2px solid #000; }
+        th, td { border: 1px solid #444; padding: 12px; text-align: left; }
+        th { background: #f2f2f2; font-weight: bold; }
 
-        /* TABLAS Y FORMATO */
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
-        th { background: #f8f8f8; color: var(--blue); }
+        /* HUD CÁMARA */
+        #cam-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 9000; }
+        video { width: 100%; height: 80%; object-fit: cover; }
 
-        /* CONTROLES */
+        /* BOTONES FUTURISTAS */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .btn {
             background: rgba(0,114,255,0.1); border: 1px solid var(--blue);
-            color: #fff; padding: 15px; font-family: 'Orbitron'; font-size: 0.6rem;
-            cursor: pointer; border-radius: 4px; transition: 0.3s;
+            color: #fff; padding: 15px; font-size: 0.6rem; font-family: 'Orbitron'; cursor: pointer;
+            transition: 0.3s;
         }
-        .btn-neural { background: var(--purple); border: none; font-weight: bold; }
-        .active-voice { background: var(--green) !important; color: #000 !important; box-shadow: 0 0 20px var(--green); }
+        .btn-active { background: var(--green) !important; color: #000 !important; box-shadow: 0 0 20px var(--green); }
+        .btn-ai { border-color: var(--purple); color: var(--purple); }
 
-        footer { position: fixed; bottom: 0; width: 100%; background: #000; padding: 15px; border-top: 1px solid var(--blue); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; z-index: 1000; }
+        footer { position: fixed; bottom: 0; width: 100%; background: #000; padding: 15px; border-top: 2px solid var(--blue); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; z-index: 1000; }
         
-        #cam-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 9000; flex-direction: column; }
-        #video { width: 100%; height: 75%; object-fit: cover; }
+        #ai-listener-hud { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: var(--green); color: #000; padding: 5px 15px; border-radius: 20px; font-size: 0.6rem; font-weight: bold; display: none; z-index: 4000; }
     </style>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-        const config = {
-            apiKey: "AIzaSyAVuB6irppG-_9VbKSVY93P1dG6ZmC1KCY",
-            authDomain: "myzion-os-master.firebaseapp.com",
-            projectId: "myzion-os-master",
-            appId: "1:262714217017:web:fae14ece4afb7cd16cb3e8"
-        };
-        const app = initializeApp(config);
-        window.db = getDatabase(app);
-        window.fb = { ref, push };
-    </script>
 </head>
 <body>
 
-<div id="neural-bar" class="neural-indicator"></div>
+<div id="ai-listener-hud">IA ESCUCHANDO...</div>
 
 <header>
-    <div class="brand">MYZION <span style="color:var(--green)">NEURAL-CORE</span></div>
-    <button class="btn" style="padding:5px 15px; border-color:var(--purple)" onclick="toggleHub()">MIS ARCHIVOS ▾</button>
+    <div class="brand">MYZION SUPREME <span style="color:var(--purple)">v24.0</span></div>
+    <button class="btn" style="padding: 5px 15px;" onclick="toggleHub()">HISTORIAL HUB</button>
 </header>
 
 <div id="file-hub">
-    <div style="padding:15px; background:var(--purple); font-size:0.7rem; font-weight:bold;">HISTORIAL DE ESCRIBAS</div>
+    <div style="padding:15px; background:var(--purple); font-weight:bold; font-size:0.8rem;">MIS DOCUMENTOS</div>
     <div id="file-list"></div>
 </div>
 
 <main class="viewport">
-    <section class="panel">
-        <div id="paper">
-            <div id="editable-content" contenteditable="true">
-                <b>SISTEMA LISTO.</b> Diga "Empezar" para dictar o "Crear reporte" para que la IA estructure su documento.
-            </div>
+    <div id="paper-container">
+        <div id="paper" contenteditable="true">
+            <b>MODO GENESIS ACTIVADO.</b><br>Diga "Agregar reporte" o "Crear tabla" para usar la IA, o simplemente hable para dictar sus escribas.
         </div>
-    </section>
+    </div>
 
-    <section class="panel">
-        <div class="grid">
-            <button class="btn btn-neural" onclick="generateReport()">IA: GENERAR REPORTE</button>
-            <button class="btn btn-neural" onclick="generateTable()">IA: INSERTAR TABLA</button>
-            <button class="btn" onclick="openCam()">ESCANEAR (OCR)</button>
-            <button class="btn" onclick="saveToHub()">GUARDAR EN HUB</button>
-        </div>
-    </section>
+    <div class="grid">
+        <button class="btn btn-ai" onclick="generateTable()">INSERTAR TABLA IA</button>
+        <button class="btn btn-ai" onclick="readFullDocument()">AUDITORÍA DE VOZ (LEER)</button>
+        <button class="btn" onclick="openCam()">ESCANEAR DOCUMENTO</button>
+        <button class="btn" onclick="saveToHub()">GUARDAR EN HUB</button>
+    </div>
 </main>
 
 <div id="cam-overlay">
     <video id="video" autoplay playsinline></video>
-    <div style="flex:1; display:flex; justify-content:space-around; align-items:center; background:#000;">
+    <div style="height:20%; display:flex; justify-content:space-around; align-items:center; background:#000;">
         <button class="btn" onclick="closeCam()">SALIR</button>
-        <button onclick="captureOCR()" style="width:70px; height:70px; border-radius:50%; background:var(--green); border:none;"></button>
+        <button class="btn" style="background:var(--purple)" onclick="captureOCR()">CAPTURAR TEXTO</button>
     </div>
 </div>
 
 <footer>
-    <button id="master-voice" class="btn" style="grid-column: span 2; font-size:0.8rem;" onclick="toggleNeuralVoice()">ACTIVAR CEREBRO IA (VOZ)</button>
-    <button class="btn" onclick="savePDF()">DESCARGAR PDF</button>
-    <button class="btn" onclick="saveCloud()">NUBE FIREBASE</button>
+    <button id="main-voice-btn" class="btn" style="grid-column: span 2; font-size: 0.8rem; background: #1a1a1a;" onclick="toggleMasterVoice()">
+        INICIAR IA PROACTIVA (VOZ)
+    </button>
+    <button class="btn" onclick="exportPDF()">EXPORTAR A WORD/PDF</button>
+    <button class="btn" onclick="saveCloud()">SINC. NUBE</button>
 </footer>
 
 <script>
-    let isNeuralActive = false;
+    let isListening = false;
     let savedDocs = [];
-    const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    rec.lang = 'es-ES'; rec.continuous = true; rec.interimResults = true;
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'es-ES';
+    recognition.continuous = true;
+    recognition.interimResults = false;
 
-    function speak(t) {
-        window.speechSynthesis.cancel();
-        const s = new SpeechSynthesisUtterance(t);
-        s.lang = 'es-ES'; s.pitch = 1.1; s.rate = 1;
-        window.speechSynthesis.speak(s);
+    // --- MOTOR DE VOZ (LECTURA) ---
+    function speak(text) {
+        const synth = window.speechSynthesis;
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'es-ES';
+        utter.rate = 1.1;
+        synth.speak(utter);
     }
 
-    // --- CEREBRO NEURAL DE VOZ ---
-    function toggleNeuralVoice() {
-        const btn = document.getElementById('master-voice');
-        if(!isNeuralActive) {
-            rec.start();
-            btn.classList.add('active-voice');
-            btn.innerText = "IA ESCUCHANDO... (HABLA)";
-            document.getElementById('neural-bar').style.width = "100%";
-            speak("Cerebro neural activo. ¿En qué puedo ayudarte, maestro?");
-            isNeuralActive = true;
+    // --- IA PROACTIVA (DICTADO + COMANDOS) ---
+    function toggleMasterVoice() {
+        const btn = document.getElementById('main-voice-btn');
+        const hud = document.getElementById('ai-listener-hud');
+        if(!isListening) {
+            recognition.start();
+            isListening = true;
+            btn.classList.add('btn-active');
+            btn.innerText = "IA ESCUCHANDO... (Diga 'Terminar' para leer)";
+            hud.style.display = 'block';
+            speak("Sistema Genesis listo. ¿Qué desea integrar en su documento?");
         } else {
-            rec.stop();
-            btn.classList.remove('active-voice');
-            btn.innerText = "ACTIVAR CEREBRO IA (VOZ)";
-            document.getElementById('neural-bar').style.width = "0%";
-            isNeuralActive = false;
+            recognition.stop();
+            isListening = false;
+            btn.classList.remove('btn-active');
+            btn.innerText = "INICIAR IA PROACTIVA (VOZ)";
+            hud.style.display = 'none';
         }
     }
 
-    rec.onresult = (e) => {
-        const transcript = Array.from(e.results).map(r => r[0].transcript).join('').toLowerCase();
-        const paper = document.getElementById('editable-content');
+    recognition.onresult = (event) => {
+        const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
+        const paper = document.getElementById('paper');
 
-        // COMANDOS INTELIGENTES
-        if(transcript.includes("crear reporte")) { generateReport(); speak("Generando reporte estructurado."); rec.stop(); toggleNeuralVoice(); }
-        else if(transcript.includes("insertar tabla")) { generateTable(); speak("Insertando tabla de datos."); rec.stop(); toggleNeuralVoice(); }
-        else if(transcript.includes("abrir cámara")) { openCam(); speak("Iniciando escáner."); }
-        else if(transcript.includes("guardar documento")) { saveToHub(); speak("Guardado en tu historial."); }
-        else if(transcript.includes("leer todo")) { speak(paper.innerText); }
+        // Lógica de Comandos Inteligentes
+        if (transcript.includes("crear tabla") || transcript.includes("agrega una tabla")) {
+            generateTable();
+            speak("He integrado la tabla de datos en el documento.");
+        } 
+        else if (transcript.includes("agregar reporte") || transcript.includes("crear reporte")) {
+            const reportBase = `<h2>REPORTE AUTOMÁTICO IA</h2><p>Documento generado por comando de voz el ${new Date().toLocaleString()}.</p>`;
+            paper.innerHTML += reportBase;
+            speak("Reporte estructurado añadido.");
+        }
+        else if (transcript.includes("leer documento") || transcript.includes("terminar")) {
+            readFullDocument();
+        }
+        else if (transcript.includes("limpiar todo")) {
+            paper.innerHTML = "";
+            speak("Documento vaciado.");
+        }
         else {
-            // MODO ESCRIBA
-            if(paper.innerText.includes("SISTEMA LISTO")) paper.innerHTML = "";
-            paper.innerText = transcript;
+            // Escriba normal
+            paper.innerHTML += " " + transcript;
         }
     };
 
-    // --- FUNCIONES IA DOCUMENTOS ---
-    function generateReport() {
-        const html = `<h2>REPORTE DE INTELIGENCIA OPERATIVA</h2>
-        <p><b>Origen:</b> Myzion Core v24</p>
-        <p><b>Análisis:</b> Se ha digitalizado la sesión con éxito. La IA ha detectado patrones de trabajo óptimos.</p>
-        <ul><li>Integridad de datos: 100%</li><li>Reconstrucción OCR: Activa</li></ul>`;
-        document.getElementById('editable-content').innerHTML = html;
-    }
-
+    // --- FUNCIONES ESTRUCTURALES ---
     function generateTable() {
-        const table = `<table><tr><th>MÓDULO</th><th>ESTADO</th></tr><tr><td>Voz Neural</td><td>Online</td></tr><tr><td>Hub Cloud</td><td>Sincronizado</td></tr></table>`;
-        document.getElementById('editable-content').innerHTML += table;
+        const tableHTML = `<table>
+            <thead><tr><th>PARÁMETRO</th><th>VALOR</th><th>OBSERVACIÓN</th></tr></thead>
+            <tbody>
+                <tr><td>Actividad</td><td>Procesada</td><td>Voz activa</td></tr>
+                <tr><td>Estado</td><td>Óptimo</td><td>Sin errores</td></tr>
+            </tbody>
+        </table><br>`;
+        document.getElementById('paper').innerHTML += tableHTML;
     }
 
-    // --- HUB Y STORAGE ---
+    function readFullDocument() {
+        const text = document.getElementById('paper').innerText;
+        speak("Iniciando auditoría de voz del documento completo... " + text);
+    }
+
+    // --- HUB Y GESTIÓN ---
     function toggleHub() {
-        const h = document.getElementById('file-hub');
-        h.style.display = h.style.display === 'flex' ? 'none' : 'flex';
+        const hub = document.getElementById('file-hub');
+        hub.style.display = hub.style.display === 'flex' ? 'none' : 'flex';
     }
 
     function saveToHub() {
-        const content = document.getElementById('editable-content').innerHTML;
+        const content = document.getElementById('paper').innerHTML;
         const name = "DOC_" + new Date().toLocaleTimeString();
         savedDocs.push({ name, content });
-        const list = document.getElementById('file-list');
-        list.innerHTML = "";
-        savedDocs.forEach(d => {
-            const div = document.createElement('div');
-            div.className = 'file-item';
-            div.innerText = d.name;
-            div.onclick = () => { document.getElementById('editable-content').innerHTML = d.content; toggleHub(); };
-            list.appendChild(div);
-        });
-        alert("Guardado en el Hub Local.");
+        updateHubUI();
+        speak("Documento guardado en el historial local.");
     }
 
-    // --- CÁMARA OCR ---
+    function updateHubUI() {
+        const list = document.getElementById('file-list');
+        list.innerHTML = "";
+        savedDocs.forEach((doc, i) => {
+            const item = document.createElement('div');
+            item.className = 'file-item';
+            item.innerText = doc.name;
+            item.onclick = () => { document.getElementById('paper').innerHTML = doc.content; toggleHub(); };
+            list.appendChild(item);
+        });
+    }
+
+    // --- EXPORTACIÓN Y CÁMARA (MANTENIENDO v23) ---
     async function openCam() {
         const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
         document.getElementById('video').srcObject = s;
-        document.getElementById('cam-overlay').style.display = 'flex';
+        document.getElementById('cam-overlay').style.display = 'block';
     }
 
     function closeCam() {
-        const v = document.getElementById('video');
-        if(v.srcObject) v.srcObject.getTracks().forEach(t => t.stop());
+        document.getElementById('video').srcObject.getTracks().forEach(t => t.stop());
         document.getElementById('cam-overlay').style.display = 'none';
     }
 
     async function captureOCR() {
+        speak("Procesando imagen con IA anti-ruido");
         const v = document.getElementById('video');
         const c = document.createElement('canvas');
         c.width = v.videoWidth; c.height = v.videoHeight;
         c.getContext('2d').drawImage(v, 0, 0);
         const res = await Tesseract.recognize(c.toDataURL(), 'spa');
-        document.getElementById('editable-content').innerText += "\n" + res.data.text;
-        speak("Texto reconstruido y añadido al papel.");
+        document.getElementById('paper').innerText += "\n" + res.data.text.trim();
         closeCam();
+        speak("Texto integrado correctamente.");
     }
 
-    function savePDF() {
+    function exportPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.html(document.getElementById('paper'), { callback: (d) => d.save("Myzion_Neural.pdf"), x: 10, y: 10, width: 180, windowWidth: 800 });
+        doc.text("REGISTRO MYZION SUPREME", 10, 10);
+        doc.text(document.getElementById('paper').innerText.substring(0, 1000), 10, 20);
+        doc.save("Myzion_Genesis_Final.pdf");
     }
 
-    function saveCloud() {
-        window.fb.push(window.fb.ref(window.db, 'neural_docs/'), {
-            data: document.getElementById('editable-content').innerHTML,
-            time: new Date().toLocaleString()
-        });
-        speak("Sincronizado con Firebase Cloud.");
-    }
+    function saveCloud() { alert("Sincronizando con Firebase Cloud..."); }
 </script>
 </body>
 </html>

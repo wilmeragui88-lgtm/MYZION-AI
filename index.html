@@ -3,284 +3,285 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MYZION OS | OMNIPOTENT v28.0</title>
+    <title>MYZION OS | OMNI-COMMAND v29.0</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     
     <style>
         :root {
-            --cyan: #00f2ff; --green: #00ff9d; --blue: #0072ff; --purple: #bc13fe;
-            --bg: #010206;
+            --cyan: #00f2ff; --green: #00ff9d; --purple: #bc13fe; --bg: #010409;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; font-family: 'Rajdhani', sans-serif; background: var(--bg); color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
-
-        header { padding: 15px; background: #000; border-bottom: 2px solid var(--blue); display: flex; justify-content: space-between; align-items: center; z-index: 100; }
-        .logo { font-family: 'Orbitron'; font-size: 0.9rem; letter-spacing: 2px; color: var(--cyan); }
-
-        /* PANEL DESPLEGABLE (DRAWER) */
-        #doc-drawer {
-            position: fixed; top: 0; right: -100%; width: 95%; height: 100%;
-            background: #fff; color: #000; z-index: 2000; transition: 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
-            display: flex; flex-direction: column; box-shadow: -10px 0 50px rgba(0,0,0,0.9);
+        body { 
+            margin: 0; font-family: 'JetBrains Mono', monospace; 
+            background: var(--bg); color: #fff; height: 100vh; 
+            display: flex; flex-direction: column; overflow: hidden;
         }
-        #doc-drawer.active { right: 0; }
-        .drawer-header { background: #111; color: var(--cyan); padding: 15px; display: flex; justify-content: space-between; align-items: center; font-family: 'Orbitron'; font-size: 0.7rem; }
 
-        /* EDITOR DINÁMICO */
-        #editor-container { flex: 1; overflow-y: auto; padding: 30px; }
-        #document-content { outline: none; font-size: 1.1rem; line-height: 1.6; font-family: 'Arial', sans-serif; min-height: 100%; text-transform: none; }
+        /* HEADER PROFESIONAL */
+        header { 
+            padding: 10px 20px; background: #000; border-bottom: 2px solid var(--cyan);
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+        }
+        .status-light { width: 10px; height: 10px; background: var(--green); border-radius: 50%; display: inline-block; margin-right: 8px; box-shadow: 0 0 10px var(--green); }
+
+        /* CONTENEDOR PRINCIPAL: SPLIT VIEW */
+        .master-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* EDITOR DE DOCUMENTOS (WORD-CORE) */
+        #work-area { 
+            flex: 2; background: #fff; color: #000; margin: 15px; border-radius: 4px;
+            padding: 40px; overflow-y: auto; box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+        }
+        #editor { outline: none; font-size: 1rem; line-height: 1.6; font-family: 'Arial', sans-serif; min-height: 100%; }
+
+        /* PANEL DE CONTROL INTEGRADO (DASHBOARD) */
+        .control-panel { 
+            background: rgba(0,0,0,0.9); border-top: 1px solid #333;
+            padding: 15px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+        }
+
+        /* BOTONES TÉCNICOS */
+        .btn-tech {
+            background: rgba(255,255,255,0.05); border: 1px solid #444; color: #fff;
+            padding: 12px; font-family: 'Orbitron'; font-size: 0.6rem; cursor: pointer;
+            transition: 0.3s; text-transform: uppercase; border-radius: 2px;
+        }
+        .btn-tech:hover { border-color: var(--cyan); background: rgba(0, 242, 255, 0.1); }
+        .btn-ai { border-color: var(--purple); color: var(--purple); font-weight: bold; }
+        .btn-active { background: var(--green) !important; color: #000 !important; border-color: var(--green); }
 
         /* TABLAS INTERACTIVAS */
-        table { width: 100%; border-collapse: collapse; margin: 15px 0; border: 2px solid #444; }
-        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; position: relative; }
-        td:focus { background: rgba(0, 242, 255, 0.1); border: 2px solid var(--blue); }
-        .table-controls { display: flex; gap: 5px; margin-top: 5px; font-size: 0.6rem; }
-        .btn-table-action { background: #eee; border: 1px solid #ccc; padding: 3px 8px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; border: 2px solid #000; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        .cell-focus { background: rgba(0, 242, 255, 0.1) !important; border: 2px solid var(--cyan) !important; }
 
-        /* INTERFAZ PRINCIPAL */
-        .main-ui { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; }
-        .btn-futurism { background: rgba(0, 114, 255, 0.1); border: 1px solid var(--blue); color: #fff; padding: 18px; font-family: 'Orbitron'; font-size: 0.6rem; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
-        .btn-active { background: var(--green) !important; color: #000; border-color: var(--green); box-shadow: 0 0 20px var(--green); }
-        
-        footer { padding: 15px; background: #000; border-top: 2px solid var(--purple); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        #voice-hud { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: var(--green); color: #000; padding: 8px 25px; border-radius: 30px; font-weight: bold; font-family: 'Orbitron'; font-size: 0.6rem; display: none; z-index: 3000; }
+        /* MODALES Y OVERLAYS */
+        #cam-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 5000; }
+        #voice-indicator { 
+            position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
+            background: var(--purple); color: #fff; padding: 5px 20px; border-radius: 20px;
+            font-size: 0.6rem; display: none; z-index: 6000; font-family: 'Orbitron';
+        }
+
+        /* BARRA DE EXPORTACIÓN */
+        .export-bar { background: #111; padding: 10px; display: flex; justify-content: space-around; border-top: 1px solid #222; }
     </style>
 </head>
-<body>
+<body onload="initSystem()">
 
-<div id="voice-hud">IA: PROCESANDO VOZ</div>
+<div id="voice-indicator">SISTEMA ESCUCHANDO...</div>
 
 <header>
-    <div class="logo">MYZION <span style="color:var(--purple)">OMNIPOTENT</span> v28</div>
-    <button class="btn-futurism" style="padding: 10px 15px;" onclick="toggleDoc()">DOCUMENTO ▾</button>
+    <div style="font-family:'Orbitron'; font-size:0.8rem;">
+        <span class="status-light"></span>MYZION <span style="color:var(--cyan)">OS v29</span>
+    </div>
+    <div id="clock" style="font-size:0.7rem; color:var(--cyan)">00:00:00</div>
 </header>
 
-<div id="doc-drawer">
-    <div class="drawer-header">
-        <span>CENTRO DE EDICIÓN DINÁMICA</span>
-        <button onclick="toggleDoc()" style="background:none; border:none; color:var(--cyan); cursor:pointer;">[ CERRAR ]</button>
-    </div>
-    <div id="editor-container">
-        <div id="document-content" contenteditable="true">
-            <h2 style="text-align:center;">REPORTE INTERACTIVO</h2>
-            <p>El sistema está listo. Use "Crear tabla" y "Llenar tabla" para iniciar.</p>
+<main class="master-container">
+    <div id="work-area">
+        <div id="editor" contenteditable="true">
+            <h2 style="text-align:center;">NÚCLEO DE DOCUMENTACIÓN</h2>
+            <p>Esperando instrucciones de voz o manuales...</p>
         </div>
     </div>
-    <div style="padding:15px; background:#f0f0f0; display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">
-        <button onclick="exportPDF()" style="background:#e74c3c; color:white; border:none; padding:10px; font-family:'Orbitron'; font-size:0.6rem;">PDF</button>
-        <button onclick="exportWord()" style="background:#3498db; color:white; border:none; padding:10px; font-family:'Orbitron'; font-size:0.6rem;">WORD</button>
-        <button onclick="exportPNG()" style="background:#2ecc71; color:white; border:none; padding:10px; font-family:'Orbitron'; font-size:0.6rem;">PNG</button>
-    </div>
-</div>
 
-<main class="main-ui">
-    <div style="height:80px; background:rgba(255,255,255,0.05); border-radius:10px;"><canvas id="chart"></canvas></div>
-    
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-        <button class="btn-futurism" style="border-color:var(--purple)" onclick="iaCreateTable()">+ NUEVA TABLA</button>
-        <button class="btn-futurism" style="border-color:var(--green); color:var(--green);" onclick="startTableFill()">LLENAR TABLA IA</button>
-        <button class="btn-futurism" onclick="openCam()">OMNI-SCANNER</button>
-        <button class="btn-futurism" onclick="iaAudit()">AUDITORÍA VOZ</button>
+    <div class="control-panel">
+        <button class="btn-tech btn-ai" onclick="cmdCreateTable()">NUEVA TABLA IA</button>
+        <button class="btn-tech btn-ai" onclick="startTableFill()">LLENAR TABLA (VOZ)</button>
+        <button class="btn-tech" onclick="openScanner()">ESCANEAR OCR</button>
+        <button class="btn-tech" onclick="iaAudit()">AUDITORÍA FINAL</button>
+        <button id="voice-master-btn" class="btn-tech" style="grid-column: span 2; border-color: var(--green);" onclick="toggleVoice()">INICIAR INTERFAZ DE VOZ</button>
     </div>
 </main>
 
-<footer>
-    <button id="v-btn" class="btn-futurism" style="grid-column: span 2; font-weight:bold; border-color:var(--cyan);" onclick="toggleVoice()">INTERFAZ DE VOZ MAESTRA</button>
-    <button class="btn-futurism" onclick="saveCloud()">NUBE SINCRO</button>
-    <button class="btn-futurism" onclick="clearEditor()">LIMPIAR</button>
-</footer>
+<div class="export-bar">
+    <button class="btn-tech" onclick="exportPDF()" style="color:red">PDF</button>
+    <button class="btn-tech" onclick="exportWord()" style="color:blue">WORD</button>
+    <button class="btn-tech" onclick="exportPNG()" style="color:green">PNG</button>
+    <button class="btn-tech" onclick="clearAll()">RESET</button>
+</div>
 
-<div id="cam-overlay" style="display:none; position:fixed; inset:0; background:#000; z-index:4000;">
-    <video id="v-feed" style="width:100%; height:80%; object-fit:cover;" autoplay playsinline></video>
-    <div style="height:20%; display:flex; justify-content:space-around; align-items:center;">
-        <button class="btn-futurism" onclick="closeCam()">CANCELAR</button>
-        <button class="btn-futurism" style="background:var(--purple)" onclick="runOCR()">RECONSTRUIR TEXTO</button>
+<div id="cam-overlay">
+    <video id="v-feed" style="width:100%; height:85%; object-fit:cover;" autoplay playsinline></video>
+    <div style="height:15%; display:flex; justify-content:space-around; align-items:center;">
+        <button class="btn-tech" onclick="closeScanner()">CERRAR</button>
+        <button class="btn-tech" style="background:var(--purple)" onclick="processOCR()">CAPTURAR TEXTO</button>
     </div>
 </div>
 
 <script>
     let isListening = false;
-    let fillingTable = false;
-    let currentTableCell = null;
+    let isFilling = false;
+    let activeCell = null;
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = 'es-ES';
     recognition.continuous = true;
 
-    function iaSpeak(msg) {
-        const u = new SpeechSynthesisUtterance(msg);
-        u.lang = 'es-ES'; u.rate = 1.1;
+    function speak(text) {
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'es-ES'; u.rate = 1;
         window.speechSynthesis.speak(u);
     }
 
-    function toggleDoc() { document.getElementById('doc-drawer').classList.toggle('active'); }
+    // --- BIENVENIDA E INSTRUCCIONES ---
+    function initSystem() {
+        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+        
+        setTimeout(() => {
+            speak("Sistemas Myzion operativos. Soy su asistente inteligente v29. " +
+                  "Mis funciones incluyen: Dictado de escribas, creación de tablas dinámicas, " +
+                  "llenado guiado por voz, escáner OCR anti-ruido y exportación a PDF, Word e Imagen. " +
+                  "Para comenzar, pulse el botón verde de interfaz de voz o use los controles táctiles inferiores.");
+        }, 1000);
+    }
 
+    // --- GESTIÓN DE VOZ ---
     function toggleVoice() {
-        const btn = document.getElementById('v-btn');
-        const hud = document.getElementById('voice-hud');
+        const btn = document.getElementById('voice-master-btn');
+        const ind = document.getElementById('voice-indicator');
         if(!isListening) {
             recognition.start();
             isListening = true;
             btn.classList.add('btn-active');
-            hud.style.display = 'block';
-            iaSpeak("Sistemas activos. ¿Dónde desea escribir hoy?");
+            ind.style.display = 'block';
+            speak("Interfaz de voz activa. ¿En qué puedo ayudarle?");
         } else {
             recognition.stop();
             isListening = false;
             btn.classList.remove('btn-active');
-            hud.style.display = 'none';
+            ind.style.display = 'none';
         }
     }
 
     recognition.onresult = (e) => {
-        const cmd = e.results[e.results.length - 1][0].transcript.toLowerCase();
-        const doc = document.getElementById('document-content');
+        const msg = e.results[e.results.length - 1][0].transcript.toLowerCase();
+        const editor = document.getElementById('editor');
 
-        if(cmd.includes("crear tabla")) { iaCreateTable(); }
-        else if(cmd.includes("llenar tabla")) { startTableFill(); }
-        else if(cmd.includes("agregar fila")) { addRow(); iaSpeak("Fila añadida."); }
-        else if(cmd.includes("borrar todo")) { clearEditor(); }
-        else if(cmd.includes("auditoría")) { iaAudit(); }
-        else if(cmd.includes("escribir fuera")) { fillingTable = false; iaSpeak("Modo escritura de documento."); }
+        if(msg.includes("crear tabla")) { cmdCreateTable(); }
+        else if(msg.includes("llenar tabla")) { startTableFill(); }
+        else if(msg.includes("limpiar documento")) { clearAll(); }
+        else if(msg.includes("auditoría")) { iaAudit(); }
+        else if(msg.includes("escribir fuera")) { isFilling = false; speak("Dictado de texto libre activo."); }
         else {
-            if(fillingTable && currentTableCell) {
-                currentTableCell.innerText = cmd;
-                moveToNextCell();
+            if(isFilling && activeCell) {
+                activeCell.innerText = msg;
+                moveToNext();
             } else {
-                doc.innerHTML += " " + cmd;
+                editor.innerHTML += " " + msg;
             }
         }
     };
 
-    // --- FUNCIONES DE TABLA DINÁMICA ---
-    function iaCreateTable() {
-        const id = "table_" + Date.now();
-        const html = `<div id="${id}_wrap">
+    // --- TABLAS DINÁMICAS ---
+    function cmdCreateTable() {
+        const id = "T_" + Date.now();
+        const html = `<div id="${id}_container" style="margin-bottom:20px;">
             <table id="${id}">
-                <thead><tr><th contenteditable="true">Encabezado 1</th><th contenteditable="true">Encabezado 2</th></tr></thead>
+                <thead><tr><th contenteditable="true">ITEM</th><th contenteditable="true">ESTADO</th></tr></thead>
                 <tbody><tr><td contenteditable="true">...</td><td contenteditable="true">...</td></tr></tbody>
             </table>
-            <div class="table-controls">
-                <button class="btn-table-action" onclick="addRow('${id}')">+ Fila</button>
-                <button class="btn-table-action" onclick="addCol('${id}')">+ Columna</button>
-                <button class="btn-table-action" style="color:red" onclick="this.parentElement.parentElement.remove()">Eliminar</button>
+            <div style="margin-top:5px; display:flex; gap:10px;">
+                <button onclick="addRow('${id}')" style="font-size:0.6rem; cursor:pointer;">+ Fila</button>
+                <button onclick="document.getElementById('${id}_container').remove()" style="font-size:0.6rem; color:red; cursor:pointer;">Eliminar</button>
             </div>
-        </div><br>`;
-        document.getElementById('document-content').innerHTML += html;
-        iaSpeak("Tabla dinámica insertada. Puede modificar las casillas manualmente o por voz.");
+        </div>`;
+        document.getElementById('editor').innerHTML += html;
+        speak("Tabla insertada. ¿Desea que la llenemos juntos?");
     }
 
-    function addRow(tableId) {
-        const table = document.getElementById(tableId);
-        const newRow = table.insertRow(-1);
-        const colCount = table.rows[0].cells.length;
-        for(let i=0; i<colCount; i++) {
-            let cell = newRow.insertCell(i);
-            cell.contentEditable = "true";
-            cell.innerText = "...";
+    function addRow(tid) {
+        const t = document.getElementById(tid);
+        const r = t.insertRow(-1);
+        for(let i=0; i<t.rows[0].cells.length; i++) {
+            let c = r.insertCell(i); c.contentEditable = "true"; c.innerText = "...";
         }
     }
 
-    function addCol(tableId) {
-        const table = document.getElementById(tableId);
-        for(let i=0; i<table.rows.length; i++) {
-            let cell = table.rows[i].insertCell(-1);
-            cell.contentEditable = "true";
-            cell.innerText = "...";
-        }
-    }
-
-    // --- LLENADO GUIADO IA ---
+    // --- LLENADO POR VOZ ---
     function startTableFill() {
         const tables = document.getElementsByTagName('table');
-        if(tables.length === 0) {
-            iaSpeak("No hay tablas en el documento. Creando una para usted.");
-            iaCreateTable();
-            return;
-        }
-        fillingTable = true;
-        const firstCell = tables[tables.length - 1].rows[1].cells[0];
-        focusCell(firstCell);
+        if(tables.length === 0) { speak("No hay tablas. Creando una."); cmdCreateTable(); return; }
+        isFilling = true;
+        const target = tables[tables.length - 1].rows[1].cells[0];
+        focusOn(target);
     }
 
-    function focusCell(cell) {
-        currentTableCell = cell;
+    function focusOn(cell) {
+        if(activeCell) activeCell.classList.remove('cell-focus');
+        activeCell = cell;
+        cell.classList.add('cell-focus');
         cell.focus();
-        const headerName = cell.closest('table').rows[0].cells[cell.cellIndex].innerText;
-        iaSpeak("¿Qué dato va en " + headerName + "?");
+        const header = cell.closest('table').rows[0].cells[cell.cellIndex].innerText;
+        speak("Ingrese dato para: " + header);
     }
 
-    function moveToNextCell() {
-        let next = currentTableCell.nextElementSibling;
+    function moveToNext() {
+        let next = activeCell.nextElementSibling;
         if(!next) {
-            let nextRow = currentTableCell.parentElement.nextElementSibling;
+            let nextRow = activeCell.parentElement.nextElementSibling;
             if(nextRow) next = nextRow.cells[0];
         }
-        
-        if(next) {
-            focusCell(next);
-        } else {
-            fillingTable = false;
-            iaSpeak("Tabla completada. ¿Desea agregar una fila más?");
-        }
+        if(next) focusOn(next);
+        else { isFilling = false; speak("Llenado de tabla finalizado."); activeCell.classList.remove('cell-focus'); }
     }
 
-    // --- EXPORTACIÓN Y AUDITORÍA ---
-    function iaAudit() { iaSpeak("Auditoría iniciada: " + document.getElementById('document-content').innerText); }
-    
-    function exportPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        doc.text("MYZION OMNIPOTENT REPORT", 10, 10);
-        doc.text(doc.splitTextToSize(document.getElementById('document-content').innerText, 180), 10, 20);
-        doc.save("Zion_Omni_v28.pdf");
-    }
-
-    function exportWord() {
-        const content = document.getElementById('document-content').innerText;
-        const blob = new Blob(['\ufeff' + content], { type: 'application/msword' });
-        saveAs(blob, "Zion_Document.doc");
-    }
-
-    async function exportPNG() {
-        const canvas = await html2canvas(document.getElementById('editor-container'));
-        const link = document.createElement('a');
-        link.download = 'Myzion_Screen.png';
-        link.href = canvas.toDataURL();
-        link.click();
-    }
-
-    // --- OMNI-SCANNER MANTENIDO ---
-    async function openCam() {
+    // --- OCR & EXPORT ---
+    async function openScanner() {
         const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
         document.getElementById('v-feed').srcObject = s;
         document.getElementById('cam-overlay').style.display = 'block';
+        speak("Escáner listo.");
     }
-    function closeCam() { document.getElementById('v-feed').srcObject.getTracks().forEach(t => t.stop()); document.getElementById('cam-overlay').style.display = 'none'; }
-    async function runOCR() {
-        iaSpeak("Escaneando con motor anti-ruido.");
+
+    function closeScanner() {
+        document.getElementById('v-feed').srcObject.getTracks().forEach(t => t.stop());
+        document.getElementById('cam-overlay').style.display = 'none';
+    }
+
+    async function processOCR() {
+        speak("Procesando imagen.");
         const v = document.getElementById('v-feed');
         const c = document.createElement('canvas');
         c.width = v.videoWidth; c.height = v.videoHeight;
         c.getContext('2d').drawImage(v, 0, 0);
         const res = await Tesseract.recognize(c.toDataURL(), 'spa');
-        document.getElementById('document-content').innerText += "\n" + res.data.text.trim();
-        closeCam();
-        iaSpeak("Sincronizado.");
+        document.getElementById('editor').innerText += "\n" + res.data.text.trim();
+        closeScanner();
+        speak("Texto integrado.");
     }
 
-    function clearEditor() { document.getElementById('document-content').innerHTML = ""; iaSpeak("Memoria vaciada."); }
-    function saveCloud() { iaSpeak("Registros enviados a Firebase."); }
+    function exportPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text(doc.splitTextToSize(document.getElementById('editor').innerText, 180), 10, 20);
+        doc.save("Reporte_Zion.pdf");
+    }
 
-    const ctx = document.getElementById('chart').getContext('2d');
-    new Chart(ctx, { type: 'line', data: { labels: ['V1','V2','V3','V4'], datasets: [{ data: [15,35,25,45], borderColor: '#bc13fe' }] }, options: { maintainAspectRatio: false } });
+    function exportWord() {
+        const content = document.getElementById('editor').innerText;
+        const blob = new Blob(['\ufeff' + content], { type: 'application/msword' });
+        saveAs(blob, "Documento_Zion.doc");
+    }
+
+    async function exportPNG() {
+        const canvas = await html2canvas(document.getElementById('work-area'));
+        const link = document.createElement('a');
+        link.download = 'Captura_Zion.png';
+        link.href = canvas.toDataURL();
+        link.click();
+    }
+
+    function iaAudit() { speak("Auditoría completa: " + document.getElementById('editor').innerText); }
+    function clearAll() { document.getElementById('editor').innerHTML = ""; speak("Sistema reiniciado."); }
 </script>
 </body>
 </html>

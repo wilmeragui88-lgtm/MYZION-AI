@@ -1,212 +1,344 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MYZION OS PRO</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MYZION OS PRO | NEURAL APP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --neon-cyan: #00f2ff;
+            --neon-green: #00ff9d;
+            --neon-pink: #ff00ff;
+            --bg-deep: #02050a;
+            --glass: rgba(10, 25, 41, 0.9);
+            --border: rgba(0, 242, 255, 0.3);
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-<style>
-body{
-    margin:0;
-    font-family:'Roboto',Arial,sans-serif;
-    background:#050a14;
-    color:#00ffff;
-    display:flex;
-    flex-direction:column;
-    height:100vh;
-}
+        body {
+            margin: 0; padding: 0;
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-deep);
+            color: var(--neon-cyan);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            text-transform: uppercase;
+        }
 
-.top-bar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:10px 20px;
-    background:#0a111f;
-    border-bottom:2px solid #00ffff;
-}
+        /* --- UI OVERLAY --- */
+        body::after {
+            content: " ";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 1000;
+        }
 
-.top-bar h1{margin:0;font-size:1.5rem;}
-.status{
-    display:flex;
-    align-items:center;
-    gap:15px;
-}
-.status span{font-weight:bold;}
+        /* --- HEADER --- */
+        .os-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #000;
+            border-bottom: 2px solid var(--neon-cyan);
+            z-index: 100;
+        }
 
-.main{
-    display:flex;
-    flex:1;
-    overflow:hidden;
-}
+        .brand { font-family: 'Orbitron'; font-size: 0.9rem; letter-spacing: 2px; }
+        .sys-status { font-size: 0.6rem; text-align: right; color: var(--neon-pink); }
 
-.center{
-    flex:2;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-}
+        /* --- CONTENEDOR APP --- */
+        .app-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding-bottom: 100px;
+        }
 
-.core{
-    width:200px;
-    height:200px;
-    border-radius:50%;
-    border:4px solid #00ffff;
-    box-shadow:0 0 50px #00ffff;
-    animation:rotate 10s linear infinite;
-    transition:0.3s;
-}
-.listening{border-color:lime;box-shadow:0 0 80px lime;}
-.speaking{border-color:orange;box-shadow:0 0 80px orange;}
-@keyframes rotate{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+        .panel {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 5px;
+            backdrop-filter: blur(10px);
+        }
 
-.panel-chat{
-    flex:3;
-    display:flex;
-    flex-direction:column;
-    background:#0a111f;
-    padding:10px;
-    overflow-y:auto;
-}
+        .panel-title {
+            font-size: 0.6rem;
+            margin-bottom: 12px;
+            color: rgba(0, 242, 255, 0.7);
+            border-left: 2px solid var(--neon-cyan);
+            padding-left: 8px;
+        }
 
-.panel-chat p{
-    margin:5px 0;
-}
+        /* --- CORE VISUAL --- */
+        .core-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 180px;
+        }
 
-.user-msg{color:#00ff99;}
-.ai-msg{color:#ffcc00;}
+        .core-sphere {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 0 0 25px var(--neon-cyan);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, rgba(0,242,255,0.15) 0%, transparent 70%);
+            transition: 0.4s;
+            position: relative;
+        }
 
-.commands{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    margin-top:5px;
-}
+        .core-sphere.listening { border-color: var(--neon-green); box-shadow: 0 0 40px var(--neon-green); }
+        .core-sphere.speaking { border-color: var(--neon-pink); animation: corePulse 0.6s infinite alternate; }
 
-button, .appButton{
-    padding:8px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    background:#00ffff;
-    color:#050a14;
-    font-weight:bold;
-    transition:0.3s;
-}
-button:hover, .appButton:hover{background:#00ffcc;}
-</style>
+        @keyframes corePulse {
+            from { transform: scale(1); box-shadow: 0 0 20px var(--neon-pink); }
+            to { transform: scale(1.1); box-shadow: 0 0 50px var(--neon-pink); }
+        }
+
+        /* --- TELEMETRÍA --- */
+        .stat-line { margin-bottom: 12px; }
+        .stat-info { display: flex; justify-content: space-between; font-size: 0.7rem; margin-bottom: 4px; }
+        .bar-wrap { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
+        .bar-fill { height: 100%; background: var(--neon-cyan); transition: width 0.8s ease-in-out; }
+
+        /* --- BOTONES DE ACCIÓN --- */
+        .grid-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn {
+            background: rgba(0, 242, 255, 0.05);
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 12px;
+            font-size: 0.65rem;
+            font-family: 'Orbitron';
+            text-align: center;
+            cursor: pointer;
+        }
+        .btn:active { background: var(--neon-cyan); color: #000; }
+
+        /* --- TERMINAL --- */
+        #terminal {
+            height: 150px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.4);
+            padding: 10px;
+            font-size: 0.7rem;
+            border: 1px inset var(--border);
+        }
+        .user-log { color: var(--neon-green); margin-top: 5px; }
+        .ai-log { color: #fff; margin-top: 5px; opacity: 0.9; }
+
+        /* --- FOOTER INPUT --- */
+        .os-footer {
+            position: fixed;
+            bottom: 0; width: 100%;
+            background: #000;
+            padding: 15px;
+            border-top: 1px solid var(--border);
+            display: flex; gap: 10px;
+            z-index: 200;
+        }
+
+        .os-footer input {
+            flex: 1;
+            background: transparent;
+            border: 1px solid var(--neon-cyan);
+            color: #fff;
+            padding: 10px;
+            outline: none;
+            font-family: 'JetBrains Mono';
+        }
+
+        .btn-mic {
+            background: var(--neon-cyan);
+            border: none;
+            padding: 0 15px;
+            font-weight: bold;
+            font-family: 'Orbitron';
+            font-size: 0.7rem;
+        }
+
+    </style>
 </head>
-
 <body>
-<div class="top-bar">
-    <h1>MYZION OS PRO</h1>
-    <div class="status">
-        <span id="micStatus">🔴 Inactivo</span>
-        <select id="voiceSelect" onchange="modoVoz=this.value">
-            <option value="normal">Voz Normal</option>
-            <option value="profesional">Voz Profesional</option>
-        </select>
-    </div>
-</div>
 
-<div class="main">
-    <div class="center">
-        <div id="core" class="core"></div>
-        <button onclick="activarEscucha()">Escucha Continua</button>
+<header class="os-header">
+    <div class="brand">MYZION OS <span>V4.0</span></div>
+    <div class="sys-status">
+        <div id="clock">00:00:00</div>
+        <div>UPLINK: ACTIVE</div>
     </div>
-    <div class="panel-chat" id="panel">
-        <p>🚀 MYZION OS PRO inicializado...</p>
-        <input type="text" id="input" placeholder="Escribe o di: MYZION ...">
-        <button onclick="enviarManual()">Enviar</button>
-        <div class="commands">
-            <span class="appButton" onclick="ejecutarComandoGlobal('abrir_web','https://www.google.com')">Google</span>
-            <span class="appButton" onclick="ejecutarComandoGlobal('modo_oscuro','')">Modo Oscuro</span>
-            <span class="appButton" onclick="ejecutarComandoGlobal('modo_claro','')">Modo Claro</span>
-            <span class="appButton" onclick="ejecutarComandoGlobal('alert','¡Hola desde MYZION OS!')">Notificación</span>
-            <span class="appButton" onclick="ejecutarComandoGlobal('linterna_on','')">Linterna ON</span>
-            <span class="appButton" onclick="ejecutarComandoGlobal('linterna_off','')">Linterna OFF</span>
+</header>
+
+<main class="app-container">
+    
+    <section class="core-box">
+        <div id="core" class="core-sphere">
+            <span id="core-state" style="font-size: 0.6rem;">READY</span>
         </div>
-    </div>
-</div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-title">Neural Telemetry</div>
+        <div class="stat-line">
+            <div class="stat-info"><span>CPU LOAD</span><span id="cpu-txt">12%</span></div>
+            <div class="bar-wrap"><div id="cpu-bar" class="bar-fill" style="width: 12%"></div></div>
+        </div>
+        <div class="stat-line">
+            <div class="stat-info"><span>RAM SYNC</span><span id="ram-txt">34%</span></div>
+            <div class="bar-wrap"><div id="ram-bar" class="bar-fill" style="width: 34%; background: var(--neon-pink);"></div></div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-title">Global Commands</div>
+        <div class="grid-actions">
+            <div class="btn" onclick="ejecutar('scan')">Full Scan</div>
+            <div class="btn" onclick="ejecutar('purge')">Purge Logs</div>
+            <div class="btn" onclick="ejecutar('secure')">Secure Mode</div>
+            <div class="btn" onclick="ejecutar('reboot')">Reboot AI</div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-title">Terminal Stream</div>
+        <div id="terminal">
+            <div class="ai-log">> Myzion OS Pro initialized...</div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="os-footer">
+    <input type="text" id="userInput" placeholder="Esperando comando..." onkeypress="if(event.key==='Enter') enviarTexto()">
+    <button class="btn-mic" onclick="activarVoz()">Voz</button>
+</footer>
 
 <script>
-const core=document.getElementById("core");
-const panel=document.getElementById("panel");
-const micStatus=document.getElementById("micStatus");
-let modoVoz="normal";
-let WAKE_WORD="myzión";
-let historial=[{role:"system", content:"Eres MYZION OS PRO, sistema operativo inteligente futurista"}];
+    const core = document.getElementById('core');
+    const coreState = document.getElementById('core-state');
+    const terminal = document.getElementById('terminal');
+    const input = document.getElementById('userInput');
 
-window.speechSynthesis.onvoiceschanged=()=>{speechSynthesis.getVoices();};
+    // --- RELOJ ---
+    setInterval(() => {
+        document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+    }, 1000);
 
-async function hablar(texto){
-    core.classList.remove("listening");
-    core.classList.add("speaking");
-    if(modoVoz==="normal"){
-        const s=new SpeechSynthesisUtterance(texto);
-        s.lang="es-ES"; s.rate=0.9; s.pitch=0.8;
-        const voces=speechSynthesis.getVoices();
-        const vozE=voces.find(v=>v.lang.includes("es"));
-        if(vozE)s.voice=vozE;
-        s.onend=()=>core.classList.remove("speaking");
-        speechSynthesis.speak(s);
-    }else{
-        try{
-            const res=await fetch("https://TU_BACKEND.com/api/voz_profesional",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({texto})});
-            const data=await res.json();
-            const audio=new Audio(data.url);
-            audio.onended=()=>core.classList.remove("speaking");
-            audio.play();
-        }catch(err){console.log("Error voz profesional",err);}
+    // --- TELEMETRÍA DINÁMICA ---
+    setInterval(() => {
+        const cpu = Math.floor(Math.random() * 30) + 10;
+        const ram = Math.floor(Math.random() * 20) + 40;
+        document.getElementById('cpu-txt').innerText = cpu + "%";
+        document.getElementById('cpu-bar').style.width = cpu + "%";
+        document.getElementById('ram-txt').innerText = ram + "%";
+        document.getElementById('ram-bar').style.width = ram + "%";
+    }, 4000);
+
+    // --- MOTOR DE VOZ (IA) ---
+    function hablar(texto) {
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(texto);
+        msg.lang = 'es-ES';
+        msg.rate = 1.1;
+        msg.pitch = 0.9;
+
+        msg.onstart = () => {
+            core.classList.add('speaking');
+            coreState.innerText = "TALKING";
+        };
+        msg.onend = () => {
+            core.classList.remove('speaking');
+            coreState.innerText = "READY";
+        };
+        window.speechSynthesis.speak(msg);
     }
-}
 
-async function enviarIA(texto){
-    panel.innerHTML+=`<p class="user-msg">Tú: ${texto}</p>`;
-    try{
-        const res=await fetch("https://TU_BACKEND.com/api/ai",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({mensaje:texto,historial})});
-        const data=await res.json();
-        let json=data;
-        panel.innerHTML+=`<p class="ai-msg">MYZION: ${json.respuesta}</p>`;
-        panel.scrollTop=panel.scrollHeight;
-        await hablar(json.respuesta);
-        if(json.tipo==='comando') ejecutarComandoGlobal(json.accion,json.parametro);
-        historial.push({role:"user",content:texto});
-        historial.push({role:"assistant",content:json.respuesta});
-    }catch(err){panel.innerHTML+="<p class='ai-msg'>Error al conectar IA</p>";}
-}
-
-function enviarManual(){
-    const texto=document.getElementById("input").value;
-    if(texto) enviarIA(texto);
-    document.getElementById("input").value="";
-}
-
-function ejecutarComandoGlobal(accion,parametro){
-    switch(accion){
-        case "abrir_web": window.open(parametro); break;
-        case "modo_oscuro": document.body.style.background="#000"; break;
-        case "modo_claro": document.body.style.background="#050a14"; break;
-        case "alert": alert(parametro); break;
-        case "linterna_on": console.log("Linterna ON"); break;
-        case "linterna_off": console.log("Linterna OFF"); break;
-        case "gps": console.log("Mostrar GPS"); break;
-        default: console.log("Comando desconocido",accion);
+    // --- LOGICA DE RESPUESTA ---
+    function log(texto, isUser = false) {
+        const d = document.createElement('div');
+        d.className = isUser ? 'user-log' : 'ai-log';
+        d.innerText = (isUser ? '> USER: ' : '> AI: ') + texto;
+        terminal.appendChild(d);
+        terminal.scrollTop = terminal.scrollHeight;
     }
-}
 
-function activarEscucha(){
-    const recognition=new (window.SpeechRecognition||window.webkitSpeechRecognition)();
-    recognition.lang="es-ES"; recognition.continuous=true;
-    micStatus.textContent="🟢 Escuchando...";
-    recognition.onresult=(event)=>{
-        const texto=event.results[event.results.length-1][0].transcript.toLowerCase();
-        if(texto.includes(WAKE_WORD)) enviarIA(texto);
-    };
-    recognition.start();
-}
+    function procesar(comando) {
+        log(comando, true);
+        coreState.innerText = "THINKING";
+        
+        setTimeout(() => {
+            let respuesta = "Comando procesado en el núcleo central.";
+            
+            if(comando.includes("hola")) respuesta = "Hola. Sistema Myzion operando. ¿Qué necesitas?";
+            if(comando.includes("estado")) respuesta = "Todos los sistemas están funcionando de manera óptima.";
+            
+            log(respuesta);
+            hablar(respuesta);
+        }, 600);
+    }
+
+    // --- FUNCIONES DE BOTONES CON VOZ ---
+    function ejecutar(tipo) {
+        let frase = "";
+        switch(tipo) {
+            case 'scan': frase = "Iniciando escaneo completo de biometría y archivos."; break;
+            case 'purge': 
+                terminal.innerHTML = ""; 
+                frase = "Registros eliminados. Memoria temporal liberada."; 
+                break;
+            case 'secure': frase = "Protocolo de encriptación máxima activado."; break;
+            case 'reboot': frase = "Reiniciando núcleos neuronales. Espere un momento."; break;
+        }
+        log(frase);
+        hablar(frase);
+    }
+
+    // --- ENTRADAS ---
+    function enviarTexto() {
+        if(input.value.trim()) {
+            procesar(input.value.toLowerCase());
+            input.value = "";
+        }
+    }
+
+    function activarVoz() {
+        const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if(!Speech) return alert("Navegador no compatible");
+
+        const rec = new Speech();
+        rec.lang = 'es-ES';
+        rec.onstart = () => {
+            core.classList.add('listening');
+            coreState.innerText = "LISTENING";
+        };
+        rec.onresult = (e) => {
+            const result = e.results[0][0].transcript;
+            procesar(result);
+        };
+        rec.onend = () => {
+            core.classList.remove('listening');
+            if(!core.classList.contains('speaking')) coreState.innerText = "READY";
+        };
+        rec.start();
+    }
 </script>
 
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MYZION OS | OMNI-FLOW v14.0</title>
+    <title>MYZION OS | OMNI-RECONSTRUCTION v17.0</title>
     
     <link rel="manifest" href="manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
@@ -29,47 +29,49 @@
         header { padding: 10px; background: #000; border-bottom: 2px solid var(--blue); display: flex; justify-content: space-between; align-items: center; z-index: 100; }
         .brand { font-family: 'Orbitron'; font-size: 0.7rem; letter-spacing: 1px; }
 
-        .viewport { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 12px; padding-bottom: 100px; }
+        .viewport { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 12px; padding-bottom: 110px; }
         .panel { background: var(--glass); border: 1px solid rgba(0,242,255,0.2); padding: 12px; border-radius: 5px; backdrop-filter: blur(10px); }
         .panel-label { font-size: 0.5rem; color: var(--blue); border-left: 2px solid var(--blue); padding-left: 5px; margin-bottom: 8px; display: block; }
 
-        /* HUD DE ESCANEO EN TIEMPO REAL */
+        /* HUD DE CÁMARA CON RECONSTRUCCIÓN */
         #cam-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 9000; flex-direction: column; }
-        .cam-view { position: relative; width: 100%; height: 70%; overflow: hidden; border-bottom: 2px solid var(--purple); }
+        .cam-view { position: relative; width: 100%; height: 75%; overflow: hidden; border-bottom: 2px solid var(--purple); }
         #video { width: 100%; height: 100%; object-fit: cover; }
         .scan-hud {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 85%; height: 45%; border: 2px solid var(--cyan); border-radius: 8px;
+            width: 85%; height: 50%; border: 2px solid var(--green); border-radius: 8px;
             box-shadow: 0 0 0 2000px rgba(0,0,0,0.6);
         }
         .laser {
-            position: absolute; width: 100%; height: 2px; background: var(--cyan);
-            top: 0; animation: laserMove 2s infinite linear; box-shadow: 0 0 10px var(--cyan);
+            position: absolute; width: 100%; height: 2px; background: var(--green);
+            top: 0; animation: laserMove 2s infinite linear; box-shadow: 0 0 15px var(--green);
         }
         @keyframes laserMove { 0% { top: 0; } 100% { top: 100%; } }
-        #live-msg { position: absolute; bottom: 15px; width: 100%; text-align: center; color: var(--green); font-size: 0.7rem; }
+        #live-msg { position: absolute; bottom: 15px; width: 100%; text-align: center; color: var(--green); font-size: 0.7rem; background: rgba(0,0,0,0.5); padding: 5px; }
 
         /* PAPEL DIGITAL EDITABLE */
         #paper {
-            background: #fff; color: #000; padding: 25px; min-height: 250px;
+            background: #fff; color: #000; padding: 25px; min-height: 280px;
             border-radius: 2px; font-family: 'Times New Roman', serif; text-transform: none;
             box-shadow: inset 0 0 15px rgba(0,0,0,0.1); position: relative;
         }
         .paper-header { border-bottom: 1px solid #333; margin-bottom: 15px; font-family: 'Orbitron'; font-size: 0.6rem; color: #555; display: flex; justify-content: space-between; }
-        #editable-content { outline: none; font-size: 1rem; line-height: 1.6; min-height: 150px; }
+        #editable-content { outline: none; font-size: 1rem; line-height: 1.6; min-height: 200px; white-space: pre-wrap; color: #111; }
 
-        /* GRÁFICO Y BOTONES */
+        /* UI ELEMENTS */
         .chart-box { height: 100px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .btn {
             background: rgba(0,114,255,0.1); border: 1px solid var(--blue);
-            color: #fff; padding: 12px; font-size: 0.55rem; font-family: 'Orbitron';
+            color: #fff; padding: 12px; font-size: 0.55rem; font-family: 'Orbitron'; cursor: pointer;
         }
-        .btn-purple { border-color: var(--purple); color: var(--purple); }
-        .btn-capture { width: 75px; height: 75px; border-radius: 50%; background: var(--cyan); border: 4px solid #fff; }
+        .btn-purple { border-color: var(--purple); color: var(--purple); font-weight: bold; }
+        .btn-capture { width: 80px; height: 80px; border-radius: 50%; background: var(--green); border: 4px solid #fff; box-shadow: 0 0 20px var(--green); }
 
         footer { position: fixed; bottom: 0; width: 100%; background: #000; padding: 10px; border-top: 1px solid var(--blue); display: flex; gap: 8px; z-index: 500; }
         input { flex: 1; background: #080808; border: 1px solid var(--blue); color: #fff; padding: 10px; font-family: 'JetBrains Mono'; font-size: 0.7rem; }
+        
+        #proc-screen { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10000; display: none; align-items: center; justify-content: center; flex-direction: column; color: var(--green); }
     </style>
 
     <script type="module">
@@ -86,74 +88,79 @@
         const app = initializeApp(config);
         window.db = getDatabase(app);
         window.fb = { ref, push, onValue };
-        setTimeout(() => startSystem(), 1000);
+        setTimeout(() => startOS(), 1000);
     </script>
 </head>
 <body>
+
+<div id="proc-screen">
+    <div style="font-size: 1.5rem; margin-bottom: 10px;">PROCESANDO...</div>
+    <div style="font-size: 0.7rem;">RECONSTRUYENDO TEXTO Y ELIMINANDO RUIDO</div>
+</div>
 
 <div id="cam-overlay">
     <div class="cam-view">
         <video id="video" autoplay playsinline></video>
         <div class="scan-hud"><div class="laser"></div></div>
-        <div id="live-msg">ESCÁNER LISTO: APUNTE Y CAPTURE</div>
+        <div id="live-msg">SISTEMA DE RECONSTRUCCIÓN ACTIVO</div>
     </div>
     <div style="flex:1; display:flex; justify-content:space-around; align-items:center; background:#000;">
         <button class="btn" onclick="closeCam()">SALIR</button>
-        <button class="btn-capture" onclick="takeSnap()"></button>
+        <button class="btn-capture" onclick="ultraCapture()"></button>
         <div style="width:60px"></div>
     </div>
 </div>
 
 <header>
-    <div class="brand">MYZION OMNI <span style="color:var(--purple)">v14.0</span></div>
-    <div id="status" style="font-size:0.5rem; color:var(--green)">● ONLINE_SYNC</div>
+    <div class="brand">MYZION OMNI <span style="color:var(--purple)">v17.0</span></div>
+    <div style="font-size:0.5rem; color:var(--green)">● ULTRA_PRECISION_ON</div>
 </header>
 
 <main class="viewport">
     <section class="panel">
-        <span class="panel-label">MÉTRICAS DE ACTIVIDAD</span>
+        <span class="panel-label">FLUJO DE TRABAJO SEMANAL</span>
         <div class="chart-box"><canvas id="mainChart"></canvas></div>
     </section>
 
     <section class="panel">
-        <span class="panel-label">DOCUMENTO EN TIEMPO REAL</span>
+        <span class="panel-label">DOCUMENTO DE RECONSTRUCCIÓN (EDITABLE)</span>
         <div id="paper">
             <div class="paper-header">
-                <span>REPORTE MAESTRO</span>
-                <span id="date-now">--/--/--</span>
+                <span>REGISTRO MAESTRO</span>
+                <span id="date-tag">--/--/--</span>
             </div>
-            <div id="editable-content" contenteditable="true">Inicie el escáner para digitalizar documentos o escriba sus opiniones aquí...</div>
+            <div id="editable-content" contenteditable="true">Inicie el escáner avanzado para digitalizar o use el teclado para sus opiniones...</div>
         </div>
     </section>
 
     <section class="panel">
-        <span class="panel-label">CONSOLA DE MANDO</span>
+        <span class="panel-label">MÓDULOS DE EXPORTACIÓN</span>
         <div class="grid">
-            <button class="btn btn-purple" onclick="openCam()">VISIÓN IA (SCAN)</button>
+            <button class="btn btn-purple" onclick="openCam()">ESCANEAR (IA)</button>
             <button class="btn" onclick="saveCloud()">NUBE FIREBASE</button>
-            <button class="btn" onclick="savePDF()">EXPORTAR PDF</button>
+            <button class="btn" onclick="savePDF()">GUARDAR PDF</button>
             <button class="btn" style="color:var(--green)" onclick="saveIMG()">GUARDAR IMAGEN</button>
         </div>
     </section>
 </main>
 
 <footer>
-    <input type="text" id="cmd" placeholder="Comando rápido...">
-    <button class="btn" style="width:70px" onclick="startVoz()">VOZ</button>
+    <input type="text" id="manual-input" placeholder="Comando rápido o nota...">
+    <button class="btn" style="width:70px" onclick="voiceInput()">VOZ</button>
 </footer>
 
 <script>
     let chart;
-    document.getElementById('date-now').innerText = new Date().toLocaleDateString();
+    document.getElementById('date-tag').innerText = new Date().toLocaleDateString();
 
-    function startSystem() {
+    function startOS() {
         const ctx = document.getElementById('mainChart').getContext('2d');
         chart = new Chart(ctx, {
             type: 'line',
-            data: { labels: ['L','M','M','J','V'], datasets: [{ label: 'FLUJO', data: [5,12,8,15,10], borderColor: '#00f2ff', tension: 0.3 }] },
+            data: { labels: ['L','M','M','J','V'], datasets: [{ label: 'FLUJO', data: [10,25,15,30,20], borderColor: '#00f2ff', tension: 0.4 }] },
             options: { responsive: true, maintainAspectRatio: false }
         });
-        speak("Sistema Myzion Omni catorce punto cero, totalmente integrado.");
+        speak("Sistema Myzion Omni diecisiete punto cero iniciado. Motor de reconstrucción listo.");
     }
 
     function speak(t) {
@@ -162,11 +169,15 @@
         window.speechSynthesis.speak(m);
     }
 
-    // --- LÓGICA DE CÁMARA ---
+    // --- CÁMARA Y RECONSTRUCCIÓN ---
     async function openCam() {
-        const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-        document.getElementById('video').srcObject = s;
-        document.getElementById('cam-overlay').style.display = 'flex';
+        try {
+            const s = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: "environment", width: { ideal: 1920 } } 
+            });
+            document.getElementById('video').srcObject = s;
+            document.getElementById('cam-overlay').style.display = 'flex';
+        } catch(e) { alert("Error de cámara"); }
     }
 
     function closeCam() {
@@ -175,44 +186,58 @@
         document.getElementById('cam-overlay').style.display = 'none';
     }
 
-    async function takeSnap() {
+    async function ultraCapture() {
+        const proc = document.getElementById('proc-screen');
+        proc.style.display = 'flex';
+        
         const v = document.getElementById('video');
         const c = document.createElement('canvas');
-        const msg = document.getElementById('live-msg');
-        msg.innerText = "IA PROCESANDO...";
-        
         c.width = v.videoWidth; c.height = v.videoHeight;
-        c.getContext('2d').drawImage(v, 0, 0);
+        const ctx = c.getContext('2d');
+        
+        // Pre-procesamiento para eliminar ruido visual
+        ctx.filter = 'grayscale(1) contrast(2.5) brightness(0.8)';
+        ctx.drawImage(v, 0, 0);
         
         try {
-            const res = await Tesseract.recognize(c.toDataURL(), 'spa+eng');
-            const target = document.getElementById('editable-content');
-            if(target.innerText.includes("Inicie el escáner")) target.innerText = "";
-            target.innerText += "\n" + res.data.text.trim();
-            msg.innerText = "¡CAPTURADO CON ÉXITO!";
-            if(window.navigator.vibrate) window.navigator.vibrate(100);
-        } catch(e) { msg.innerText = "ERROR EN LECTURA"; }
-        finally { setTimeout(() => { msg.innerText = "ESCÁNER LISTO"; }, 2000); }
+            const res = await Tesseract.recognize(c.toDataURL('image/png'), 'spa', {
+                workerOptions: { 
+                    tessedit_char_whitelist: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789áéíóúÁÉÍÓÚñÑ.,:;()/- ' 
+                }
+            });
+
+            const paper = document.getElementById('editable-content');
+            if(paper.innerText.includes("Inicie el escáner")) paper.innerText = "";
+            
+            // Limpieza final de caracteres extraños
+            const cleanText = res.data.text.replace(/[^\w\sáéíóúÁÉÍÓÚñÑ.,:;()/-]/gi, '');
+            paper.innerText += "\n" + cleanText.trim();
+            
+            if(window.navigator.vibrate) window.navigator.vibrate(200);
+            speak("Documento reconstruido.");
+        } catch(e) { alert("Error en procesamiento."); }
+        finally { proc.style.display = 'none'; closeCam(); }
     }
 
     // --- EXPORTACIÓN Y CLOUD ---
     function saveCloud() {
         const txt = document.getElementById('editable-content').innerText;
         window.fb.push(window.fb.ref(window.db, 'registros/'), {
-            tipo: 'DOC_OMNI', detalle: txt, fecha: new Date().toLocaleString()
+            tipo: 'OMNI_DOC', detalle: txt, fecha: new Date().toLocaleString()
         });
-        speak("Documento sincronizado en Firebase.");
+        speak("Sincronizado con Firebase.");
     }
 
     function savePDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const txt = document.getElementById('editable-content').innerText;
-        doc.setFontSize(14);
-        doc.text("MYZION OS - REPORTE OFICIAL", 15, 15);
-        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text("MYZION OS v17.0 - REPORTE OFICIAL", 15, 15);
+        doc.setFont("times", "normal");
+        doc.setFontSize(11);
         doc.text(doc.splitTextToSize(txt, 180), 15, 30);
-        doc.save(`Zion_Report_${Date.now()}.pdf`);
+        doc.save(`Zion_Final_${Date.now()}.pdf`);
     }
 
     async function saveIMG() {
@@ -223,7 +248,7 @@
         link.click();
     }
 
-    function startVoz() {
+    function voiceInput() {
         const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
         const r = new Rec(); r.lang = 'es-ES';
         r.onresult = (e) => {

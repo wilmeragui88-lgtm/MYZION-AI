@@ -3,343 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MYZION OS PRO | NEURAL APP</title>
+    <title>MYZION OS | OMNI MASTER v10.5</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0072ff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     
     <style>
         :root {
-            --neon-cyan: #00f2ff;
-            --neon-green: #00ff9d;
-            --neon-pink: #ff00ff;
-            --bg-deep: #02050a;
-            --glass: rgba(10, 25, 41, 0.9);
-            --border: rgba(0, 242, 255, 0.3);
+            --cyan: #00f2ff; --green: #00ff9d; --blue: #0072ff; --purple: #bc13fe;
+            --bg: #02050a; --glass: rgba(10, 25, 41, 0.9); --border: rgba(0, 242, 255, 0.2);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body {
-            margin: 0; padding: 0;
-            font-family: 'JetBrains Mono', monospace;
-            background: var(--bg-deep);
-            color: var(--neon-cyan);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            text-transform: uppercase;
+            margin: 0; padding: 0; font-family: 'JetBrains Mono', monospace;
+            background: var(--bg); color: var(--cyan); height: 100vh;
+            display: flex; flex-direction: column; overflow: hidden; text-transform: uppercase;
         }
 
-        /* --- UI OVERLAY --- */
-        body::after {
-            content: " ";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
-            background-size: 100% 4px;
-            pointer-events: none;
-            z-index: 1000;
+        /* HEADER */
+        header { 
+            padding: 12px; background: #000; border-bottom: 2px solid var(--blue); 
+            display: flex; justify-content: space-between; align-items: center; z-index: 100;
         }
+        .brand { font-family: 'Orbitron'; font-size: 0.8rem; letter-spacing: 2px; }
 
-        /* --- HEADER --- */
-        .os-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background: #000;
-            border-bottom: 2px solid var(--neon-cyan);
-            z-index: 100;
-        }
+        /* VIEWPORT */
+        .viewport { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 12px; padding-bottom: 100px; }
+        .panel { background: var(--glass); border: 1px solid var(--border); padding: 12px; border-radius: 5px; backdrop-filter: blur(10px); }
+        .panel-label { font-size: 0.5rem; color: var(--blue); border-left: 2px solid var(--blue); padding-left: 5px; margin-bottom: 8px; display: block; }
 
-        .brand { font-family: 'Orbitron'; font-size: 0.9rem; letter-spacing: 2px; }
-        .sys-status { font-size: 0.6rem; text-align: right; color: var(--neon-pink); }
+        /* ESCÁNER OVERLAY */
+        #scan-layer { display: none; position: fixed; inset: 0; background: #000; z-index: 5000; flex-direction: column; }
+        #video { width: 100%; height: 65%; object-fit: cover; }
+        .scan-ui { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg); gap: 15px; }
+        
+        /* GRÁFICO */
+        .chart-wrap { height: 130px; }
 
-        /* --- CONTENEDOR APP --- */
-        .app-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            padding-bottom: 100px;
-        }
+        /* LISTA DATOS */
+        .data-list { max-height: 110px; overflow-y: auto; font-size: 0.55rem; background: rgba(0,0,0,0.4); }
+        .data-item { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; }
 
-        .panel {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            padding: 15px;
-            border-radius: 5px;
-            backdrop-filter: blur(10px);
-        }
-
-        .panel-title {
-            font-size: 0.6rem;
-            margin-bottom: 12px;
-            color: rgba(0, 242, 255, 0.7);
-            border-left: 2px solid var(--neon-cyan);
-            padding-left: 8px;
-        }
-
-        /* --- CORE VISUAL --- */
-        .core-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 180px;
-        }
-
-        .core-sphere {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            border: 2px solid var(--neon-cyan);
-            box-shadow: 0 0 25px var(--neon-cyan);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: radial-gradient(circle, rgba(0,242,255,0.15) 0%, transparent 70%);
-            transition: 0.4s;
-            position: relative;
-        }
-
-        .core-sphere.listening { border-color: var(--neon-green); box-shadow: 0 0 40px var(--neon-green); }
-        .core-sphere.speaking { border-color: var(--neon-pink); animation: corePulse 0.6s infinite alternate; }
-
-        @keyframes corePulse {
-            from { transform: scale(1); box-shadow: 0 0 20px var(--neon-pink); }
-            to { transform: scale(1.1); box-shadow: 0 0 50px var(--neon-pink); }
-        }
-
-        /* --- TELEMETRÍA --- */
-        .stat-line { margin-bottom: 12px; }
-        .stat-info { display: flex; justify-content: space-between; font-size: 0.7rem; margin-bottom: 4px; }
-        .bar-wrap { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
-        .bar-fill { height: 100%; background: var(--neon-cyan); transition: width 0.8s ease-in-out; }
-
-        /* --- BOTONES DE ACCIÓN --- */
-        .grid-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        /* BOTONES */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .btn {
-            background: rgba(0, 242, 255, 0.05);
-            border: 1px solid var(--border);
-            color: #fff;
-            padding: 12px;
-            font-size: 0.65rem;
-            font-family: 'Orbitron';
-            text-align: center;
-            cursor: pointer;
+            background: rgba(0, 114, 255, 0.1); border: 1px solid var(--blue);
+            color: #fff; padding: 12px; font-size: 0.55rem; font-family: 'Orbitron'; transition: 0.2s;
         }
-        .btn:active { background: var(--neon-cyan); color: #000; }
+        .btn:active { background: var(--blue); transform: scale(0.95); }
+        .btn-ai { border-color: var(--purple); color: var(--purple); }
 
-        /* --- TERMINAL --- */
-        #terminal {
-            height: 150px;
-            overflow-y: auto;
-            background: rgba(0,0,0,0.4);
-            padding: 10px;
-            font-size: 0.7rem;
-            border: 1px inset var(--border);
-        }
-        .user-log { color: var(--neon-green); margin-top: 5px; }
-        .ai-log { color: #fff; margin-top: 5px; opacity: 0.9; }
+        /* FOOTER */
+        footer { position: fixed; bottom: 0; width: 100%; background: #000; padding: 12px; border-top: 1px solid var(--blue); display: flex; gap: 8px; z-index: 500;}
+        input { flex: 1; background: #080808; border: 1px solid var(--blue); color: #fff; padding: 10px; font-family: 'JetBrains Mono'; }
+        .mic { background: var(--blue); border: none; padding: 0 15px; color: #fff; font-weight: bold; cursor: pointer; }
 
-        /* --- FOOTER INPUT --- */
-        .os-footer {
-            position: fixed;
-            bottom: 0; width: 100%;
-            background: #000;
-            padding: 15px;
-            border-top: 1px solid var(--border);
-            display: flex; gap: 10px;
-            z-index: 200;
-        }
-
-        .os-footer input {
-            flex: 1;
-            background: transparent;
-            border: 1px solid var(--neon-cyan);
-            color: #fff;
-            padding: 10px;
-            outline: none;
-            font-family: 'JetBrains Mono';
-        }
-
-        .btn-mic {
-            background: var(--neon-cyan);
-            border: none;
-            padding: 0 15px;
-            font-weight: bold;
-            font-family: 'Orbitron';
-            font-size: 0.7rem;
-        }
-
+        #ocr-load { font-size: 0.6rem; color: var(--green); display: none; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
     </style>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const config = {
+            apiKey: "AIzaSyAVuB6irppG-_9VbKSVY93P1dG6ZmC1KCY",
+            authDomain: "myzion-os-master.firebaseapp.com",
+            projectId: "myzion-os-master",
+            storageBucket: "myzion-os-master.firebasestorage.app",
+            messagingSenderId: "262714217017",
+            appId: "1:262714217017:web:fae14ece4afb7cd16cb3e8"
+        };
+
+        const app = initializeApp(config);
+        window.db = getDatabase(app);
+        window.fb = { ref, push, onValue };
+        setTimeout(() => initMyzion(), 1000);
+    </script>
 </head>
 <body>
 
-<header class="os-header">
-    <div class="brand">MYZION OS <span>V4.0</span></div>
-    <div class="sys-status">
-        <div id="clock">00:00:00</div>
-        <div>UPLINK: ACTIVE</div>
+<div id="scan-layer">
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+    <div class="scan-ui">
+        <div id="ocr-load">IA PROCESANDO Y TRADUCIENDO...</div>
+        <button class="btn" style="width:75px; height:75px; border-radius:50%; border:4px solid var(--purple)" onclick="runOCR()"></button>
+        <button class="btn" onclick="closeScan()">CERRAR CÁMARA</button>
     </div>
+</div>
+
+<header>
+    <div class="brand">MYZION OMNI <span style="color:var(--purple)">v10.5</span></div>
+    <div style="font-size:0.5rem; color:var(--green)">● CLOUD_LINK_OK</div>
 </header>
 
-<main class="app-container">
-    
-    <section class="core-box">
-        <div id="core" class="core-sphere">
-            <span id="core-state" style="font-size: 0.6rem;">READY</span>
-        </div>
+<main class="viewport">
+    <section class="panel">
+        <span class="panel-label">ESTADÍSTICAS DEL MAESTRO</span>
+        <div class="chart-wrap"><canvas id="statsChart"></canvas></div>
     </section>
 
     <section class="panel">
-        <div class="panel-title">Neural Telemetry</div>
-        <div class="stat-line">
-            <div class="stat-info"><span>CPU LOAD</span><span id="cpu-txt">12%</span></div>
-            <div class="bar-wrap"><div id="cpu-bar" class="bar-fill" style="width: 12%"></div></div>
-        </div>
-        <div class="stat-line">
-            <div class="stat-info"><span>RAM SYNC</span><span id="ram-txt">34%</span></div>
-            <div class="bar-wrap"><div id="ram-bar" class="bar-fill" style="width: 34%; background: var(--neon-pink);"></div></div>
-        </div>
+        <span class="panel-label">ÚLTIMOS REGISTROS FIREBASE</span>
+        <div id="data-view" class="data-list">CONECTANDO AL SERVIDOR...</div>
     </section>
 
     <section class="panel">
-        <div class="panel-title">Global Commands</div>
-        <div class="grid-actions">
-            <div class="btn" onclick="ejecutar('scan')">Full Scan</div>
-            <div class="btn" onclick="ejecutar('purge')">Purge Logs</div>
-            <div class="btn" onclick="ejecutar('secure')">Secure Mode</div>
-            <div class="btn" onclick="ejecutar('reboot')">Reboot AI</div>
+        <span class="panel-label">MÓDULOS OMNI-OPERATIVOS</span>
+        <div class="grid">
+            <button class="btn btn-ai" onclick="openScan()">VISION OCR</button>
+            <button class="btn" onclick="saveData('ASISTENCIA', 'PRESENTE')">PASE LISTA</button>
+            <button class="btn" onclick="aiPlanify()">PLANIFICAR</button>
+            <button class="btn" style="color:var(--green)" onclick="generatePDF()">REPORTE PDF</button>
         </div>
     </section>
-
-    <section class="panel">
-        <div class="panel-title">Terminal Stream</div>
-        <div id="terminal">
-            <div class="ai-log">> Myzion OS Pro initialized...</div>
-        </div>
-    </section>
-
 </main>
 
-<footer class="os-footer">
-    <input type="text" id="userInput" placeholder="Esperando comando..." onkeypress="if(event.key==='Enter') enviarTexto()">
-    <button class="btn-mic" onclick="activarVoz()">Voz</button>
+<footer>
+    <input type="text" id="cmd" placeholder="Comando manual o texto..." onkeypress="if(event.key==='Enter') execCmd()">
+    <button class="mic" onclick="startListen()">VOZ</button>
 </footer>
 
 <script>
-    const core = document.getElementById('core');
-    const coreState = document.getElementById('core-state');
-    const terminal = document.getElementById('terminal');
-    const input = document.getElementById('userInput');
+    let chart;
+    let localStore = [];
 
-    // --- RELOJ ---
-    setInterval(() => {
-        document.getElementById('clock').innerText = new Date().toLocaleTimeString();
-    }, 1000);
-
-    // --- TELEMETRÍA DINÁMICA ---
-    setInterval(() => {
-        const cpu = Math.floor(Math.random() * 30) + 10;
-        const ram = Math.floor(Math.random() * 20) + 40;
-        document.getElementById('cpu-txt').innerText = cpu + "%";
-        document.getElementById('cpu-bar').style.width = cpu + "%";
-        document.getElementById('ram-txt').innerText = ram + "%";
-        document.getElementById('ram-bar').style.width = ram + "%";
-    }, 4000);
-
-    // --- MOTOR DE VOZ (IA) ---
-    function hablar(texto) {
+    function speak(txt) {
         window.speechSynthesis.cancel();
-        const msg = new SpeechSynthesisUtterance(texto);
+        const msg = new SpeechSynthesisUtterance(txt);
         msg.lang = 'es-ES';
-        msg.rate = 1.1;
-        msg.pitch = 0.9;
-
-        msg.onstart = () => {
-            core.classList.add('speaking');
-            coreState.innerText = "TALKING";
-        };
-        msg.onend = () => {
-            core.classList.remove('speaking');
-            coreState.innerText = "READY";
-        };
         window.speechSynthesis.speak(msg);
     }
 
-    // --- LOGICA DE RESPUESTA ---
-    function log(texto, isUser = false) {
-        const d = document.createElement('div');
-        d.className = isUser ? 'user-log' : 'ai-log';
-        d.innerText = (isUser ? '> USER: ' : '> AI: ') + texto;
-        terminal.appendChild(d);
-        terminal.scrollTop = terminal.scrollHeight;
-    }
-
-    function procesar(comando) {
-        log(comando, true);
-        coreState.innerText = "THINKING";
+    function initMyzion() {
+        speak("Myzion OMNI listo. Sistema sincronizado.");
         
-        setTimeout(() => {
-            let respuesta = "Comando procesado en el núcleo central.";
-            
-            if(comando.includes("hola")) respuesta = "Hola. Sistema Myzion operando. ¿Qué necesitas?";
-            if(comando.includes("estado")) respuesta = "Todos los sistemas están funcionando de manera óptima.";
-            
-            log(respuesta);
-            hablar(respuesta);
-        }, 600);
+        const ctx = document.getElementById('statsChart').getContext('2d');
+        chart = new Chart(ctx, {
+            type: 'bar',
+            data: { 
+                labels: ['ASIST', 'PLAN', 'OCR', 'VOZ'], 
+                datasets: [{ 
+                    label: 'ACCIONES', 
+                    data: [0,0,0,0], 
+                    backgroundColor: ['#00f2ff', '#00ff9d', '#bc13fe', '#0072ff'] 
+                }] 
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        window.fb.onValue(window.fb.ref(window.db, 'registros/'), (snap) => {
+            const view = document.getElementById('data-view');
+            view.innerHTML = "";
+            localStore = [];
+            let stats = { ASISTENCIA: 0, PLANIFICACION: 0, OCR_READ: 0, VOZ: 0 };
+
+            if(snap.val()) {
+                Object.values(snap.val()).reverse().slice(0, 12).forEach(item => {
+                    localStore.push(item);
+                    if(stats[item.tipo] !== undefined) stats[item.tipo]++;
+                    view.innerHTML += `<div class="data-item"><span><b>${item.tipo}</b></span> <span>${item.fecha.split(',')[1]}</span></div>`;
+                });
+                chart.data.datasets[0].data = [stats.ASISTENCIA, stats.PLANIFICACION, stats.OCR_READ, stats.VOZ];
+                chart.update();
+            }
+        });
     }
 
-    // --- FUNCIONES DE BOTONES CON VOZ ---
-    function ejecutar(tipo) {
-        let frase = "";
-        switch(tipo) {
-            case 'scan': frase = "Iniciando escaneo completo de biometría y archivos."; break;
-            case 'purge': 
-                terminal.innerHTML = ""; 
-                frase = "Registros eliminados. Memoria temporal liberada."; 
-                break;
-            case 'secure': frase = "Protocolo de encriptación máxima activado."; break;
-            case 'reboot': frase = "Reiniciando núcleos neuronales. Espere un momento."; break;
+    function saveData(tipo, detalle) {
+        window.fb.push(window.fb.ref(window.db, 'registros/'), {
+            tipo, detalle, fecha: new Date().toLocaleString()
+        }).then(() => speak(tipo + " sincronizado."));
+    }
+
+    // --- MÓDULO VISIÓN OCR ---
+    async function openScan() {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        document.getElementById('video').srcObject = stream;
+        document.getElementById('scan-layer').style.display = 'flex';
+        speak("Iniciando visión artificial.");
+    }
+
+    function closeScan() {
+        document.getElementById('video').srcObject.getTracks().forEach(t => t.stop());
+        document.getElementById('scan-layer').style.display = 'none';
+    }
+
+    async function runOCR() {
+        const v = document.getElementById('video');
+        const c = document.getElementById('canvas');
+        const loader = document.getElementById('ocr-load');
+        loader.style.display = 'block';
+
+        c.width = v.videoWidth; c.height = v.videoHeight;
+        c.getContext('2d').drawImage(v, 0, 0);
+        
+        try {
+            const res = await Tesseract.recognize(c.toDataURL(), 'spa+eng');
+            saveData('OCR_READ', res.data.text.trim().substring(0, 150));
+            speak("Texto leído y traducido.");
+        } catch(e) { 
+            speak("Error en escaneo."); 
+        } finally {
+            loader.style.display = 'none';
+            closeScan();
         }
-        log(frase);
-        hablar(frase);
     }
 
-    // --- ENTRADAS ---
-    function enviarTexto() {
-        if(input.value.trim()) {
-            procesar(input.value.toLowerCase());
-            input.value = "";
-        }
+    // --- ASISTENTE PEDAGÓGICO ---
+    function aiPlanify() {
+        const p = "OBJETIVO: Análisis de ecosistemas. ACTIVIDAD: Mapa conceptual colaborativo. RECURSO: Tabletas y naturaleza.";
+        saveData('PLANIFICACION', p);
+        speak("Planificación generada por inteligencia artificial.");
     }
 
-    function activarVoz() {
-        const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if(!Speech) return alert("Navegador no compatible");
+    // --- REPORTES PDF ---
+    function generatePDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text("MYZION OS v10.5 - REPORTE HISTÓRICO", 10, 10);
+        localStore.forEach((r, i) => {
+            doc.text(`${i+1}. [${r.tipo}] - ${r.detalle.substring(0, 40)}`, 10, 20 + (i*8));
+        });
+        doc.save("Reporte_Myzion_Omni.pdf");
+    }
 
-        const rec = new Speech();
-        rec.lang = 'es-ES';
-        rec.onstart = () => {
-            core.classList.add('listening');
-            coreState.innerText = "LISTENING";
-        };
-        rec.onresult = (e) => {
-            const result = e.results[0][0].transcript;
-            procesar(result);
-        };
-        rec.onend = () => {
-            core.classList.remove('listening');
-            if(!core.classList.contains('speaking')) coreState.innerText = "READY";
-        };
-        rec.start();
+    // --- COMANDOS VOZ / TEXTO ---
+    function startListen() {
+        const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if(!Rec) return alert("No soportado");
+        const r = new Rec(); r.lang = 'es-ES';
+        r.onresult = (e) => saveData('VOZ', e.results[0][0].transcript);
+        r.start();
+    }
+
+    function execCmd() {
+        const el = document.getElementById('cmd');
+        saveData('MANUAL', el.value);
+        el.value = "";
     }
 </script>
-
 </body>
 </html>

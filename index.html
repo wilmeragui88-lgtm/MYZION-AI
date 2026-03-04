@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MYZION OS | ARMOR-READ v18.0</title>
+    <title>MYZION OS | TOTAL-OMNI v19.0</title>
     
     <link rel="manifest" href="manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
@@ -23,39 +23,50 @@
         body {
             margin: 0; font-family: 'JetBrains Mono', monospace;
             background: var(--bg); color: var(--cyan); height: 100vh;
-            display: flex; flex-direction: column; overflow: hidden;
+            display: flex; flex-direction: column; overflow: hidden; text-transform: uppercase;
         }
 
-        header { padding: 10px; background: #000; border-bottom: 2px solid var(--blue); display: flex; justify-content: space-between; align-items: center; }
+        header { padding: 10px; background: #000; border-bottom: 2px solid var(--blue); display: flex; justify-content: space-between; align-items: center; z-index: 100; }
         .brand { font-family: 'Orbitron'; font-size: 0.7rem; letter-spacing: 1px; }
 
-        /* CAPA DE ESCANEO PROFESIONAL */
+        .viewport { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 12px; padding-bottom: 110px; }
+        .panel { background: var(--glass); border: 1px solid rgba(0,242,255,0.2); padding: 12px; border-radius: 5px; backdrop-filter: blur(10px); }
+        .panel-label { font-size: 0.5rem; color: var(--blue); border-left: 2px solid var(--blue); padding-left: 5px; margin-bottom: 8px; display: block; }
+
+        /* CAPA DE CÁMARA DUAL (TEXTO + IMAGEN) */
         #cam-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 9000; flex-direction: column; }
-        .cam-view { position: relative; width: 100%; height: 75%; overflow: hidden; }
+        .cam-view { position: relative; width: 100%; height: 70%; overflow: hidden; border-bottom: 2px solid var(--purple); }
         #video { width: 100%; height: 100%; object-fit: cover; }
-        
-        /* GUÍA DE ENFOQUE */
-        .focus-guide {
+        .scan-hud {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 85%; height: 50%; border: 2px solid var(--cyan);
-            box-shadow: 0 0 0 2000px rgba(0,0,0,0.7); border-radius: 10px;
+            width: 85%; height: 50%; border: 2px solid var(--cyan); border-radius: 8px;
+            box-shadow: 0 0 0 2000px rgba(0,0,0,0.6);
         }
-        .scan-line {
-            position: absolute; width: 100%; height: 3px; background: var(--cyan);
-            box-shadow: 0 0 15px var(--cyan); animation: scanLoop 3s infinite linear;
+        .laser {
+            position: absolute; width: 100%; height: 2px; background: var(--cyan);
+            top: 0; animation: laserMove 2s infinite linear; box-shadow: 0 0 15px var(--cyan);
         }
-        @keyframes scanLoop { 0% { top: 0; } 100% { top: 100%; } }
+        @keyframes laserMove { 0% { top: 0; } 100% { top: 100%; } }
 
-        /* PANEL DE DOCUMENTO LIMPIO */
-        .viewport { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; padding-bottom: 120px; }
-        #paper { background: #fff; color: #111; padding: 25px; min-height: 350px; border-radius: 4px; box-shadow: inset 0 0 10px rgba(0,0,0,0.1); }
-        #editable-content { outline: none; font-size: 1.05rem; line-height: 1.6; font-family: 'serif'; white-space: pre-wrap; text-transform: none; }
+        /* PAPEL DIGITAL */
+        #paper {
+            background: #fff; color: #000; padding: 25px; min-height: 280px;
+            border-radius: 2px; font-family: 'Times New Roman', serif; text-transform: none;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.1); position: relative;
+        }
+        #editable-content { outline: none; font-size: 1rem; line-height: 1.6; min-height: 200px; white-space: pre-wrap; color: #111; }
 
-        footer { position: fixed; bottom: 0; width: 100%; background: #000; padding: 10px; border-top: 1px solid var(--blue); display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .btn { background: #081a2d; border: 1px solid var(--blue); color: #fff; padding: 15px; font-family: 'Orbitron'; font-size: 0.6rem; text-transform: uppercase; }
-        .btn-main { background: var(--purple); border: none; font-weight: bold; }
-        
-        #status-box { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); padding: 25px; border: 2px solid var(--green); color: var(--green); z-index: 10000; display: none; text-align: center; font-size: 0.8rem; }
+        /* BOTONES */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn {
+            background: rgba(0,114,255,0.1); border: 1px solid var(--blue);
+            color: #fff; padding: 12px; font-size: 0.55rem; font-family: 'Orbitron'; cursor: pointer;
+        }
+        .btn-capture-text { background: var(--purple); border: none; width: 70px; height: 70px; border-radius: 50%; color: white; font-weight: bold; }
+        .btn-capture-img { background: var(--green); border: none; width: 70px; height: 70px; border-radius: 50%; color: black; font-weight: bold; }
+
+        footer { position: fixed; bottom: 0; width: 100%; background: #000; padding: 10px; border-top: 1px solid var(--blue); display: flex; gap: 8px; z-index: 500; }
+        #proc-screen { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10000; display: none; align-items: center; justify-content: center; flex-direction: column; color: var(--green); }
     </style>
 
     <script type="module">
@@ -65,61 +76,72 @@
             apiKey: "AIzaSyAVuB6irppG-_9VbKSVY93P1dG6ZmC1KCY",
             authDomain: "myzion-os-master.firebaseapp.com",
             projectId: "myzion-os-master",
-            storageBucket: "myzion-os-master.firebasestorage.app",
-            messagingSenderId: "262714217017",
             appId: "1:262714217017:web:fae14ece4afb7cd16cb3e8"
         };
         const app = initializeApp(config);
         window.db = getDatabase(app);
         window.fb = { ref, push };
+        setTimeout(() => initOS(), 1000);
     </script>
 </head>
 <body>
 
-<div id="status-box">RECONSTRUYENDO DOCUMENTO...<br>LIMPIANDO CARACTERES INVÁLIDOS</div>
+<div id="proc-screen">PROCESANDO...</div>
 
 <div id="cam-overlay">
     <div class="cam-view">
         <video id="video" autoplay playsinline></video>
-        <div class="focus-guide"><div class="scan-line"></div></div>
+        <div class="scan-hud"><div class="laser"></div></div>
     </div>
-    <div style="height: 100px; display: flex; justify-content: space-around; align-items: center; background: #000;">
-        <button class="btn" onclick="closeCam()">CERRAR</button>
-        <button onclick="smartCapture()" style="width:75px; height:75px; border-radius:50%; background:var(--green); border:4px solid #fff;"></button>
-        <div style="width:60px"></div>
+    <div style="flex:1; display:flex; justify-content:space-around; align-items:center; background:#000;">
+        <button class="btn" onclick="closeCam()">SALIR</button>
+        <div style="text-align:center;"><button class="btn-capture-text" onclick="captureText()">T</button><br><small>TEXTO</small></div>
+        <div style="text-align:center;"><button class="btn-capture-img" onclick="captureImageDoc()">I</button><br><small>IMAGEN</small></div>
     </div>
 </div>
 
+<header>
+    <div class="brand">MYZION TOTAL <span style="color:var(--purple)">v19.0</span></div>
+    <div style="font-size:0.5rem; color:var(--green)">● MULTI-SCAN_READY</div>
+</header>
+
 <main class="viewport">
-    <header>
-        <div class="brand">MYZION ARMOR-READ <span style="color:var(--purple)">v18.0</span></div>
-        <div style="font-size: 0.5rem; color: var(--green);">MÓDULO ANTI-RUIDO ACTIVO</div>
-    </header>
+    <section class="panel"><div style="height:80px;"><canvas id="mainChart"></canvas></div></section>
 
-    <div id="paper">
-        <div style="border-bottom: 1px solid #ccc; margin-bottom: 15px; font-size: 0.7rem; color: #666;">
-            MAESTRO: REGISTRO MYZION | FECHA: <span id="date-el"></span>
+    <section class="panel">
+        <div id="paper">
+            <div style="font-size:0.6rem; color:#666; border-bottom:1px solid #ddd; margin-bottom:10px;">MAESTRO: REGISTRO MYZION | FECHA: <span id="cur-date"></span></div>
+            <div id="editable-content" contenteditable="true">Escriba opiniones o escanee...</div>
+            <div id="image-preview" style="margin-top:15px; display:none;"><img id="doc-img" style="width:100%; border:1px solid #ccc;"></div>
         </div>
-        <div id="editable-content" contenteditable="true">Esperando captura de alta precisión...</div>
-    </div>
+    </section>
 
-    <button class="btn btn-main" onclick="openCam()">ESCANEAR CON LIMPIEZA IA</button>
+    <section class="panel">
+        <div class="grid">
+            <button class="btn" style="border-color:var(--purple)" onclick="openCam()">ABRIR CÁMARA</button>
+            <button class="btn" onclick="saveCloud()">NUBE FIREBASE</button>
+            <button class="btn" onclick="savePDF()">GUARDAR PDF</button>
+            <button class="btn" style="color:var(--green)" onclick="saveFullIMG()">EXPORTAR PNG</button>
+        </div>
+    </section>
 </main>
 
 <footer>
-    <button class="btn" onclick="savePDF()">GUARDAR PDF</button>
-    <button class="btn" onclick="saveIMG()">GUARDAR IMAGEN</button>
-    <button class="btn" onclick="saveCloud()" style="grid-column: span 2;">SUBIR A FIREBASE</button>
+    <input type="text" id="cmd" style="flex:1; background:#111; border:1px solid var(--blue); color:white; padding:10px;" placeholder="Nota rápida...">
+    <button class="btn" style="width:70px" onclick="startVoice()">VOZ</button>
 </footer>
 
 <script>
-    document.getElementById('date-el').innerText = new Date().toLocaleDateString();
+    document.getElementById('cur-date').innerText = new Date().toLocaleDateString();
+
+    function initOS() {
+        const ctx = document.getElementById('mainChart').getContext('2d');
+        new Chart(ctx, { type: 'line', data: { labels: ['L','M','M','J','V'], datasets: [{ data: [15,20,10,25,18], borderColor: '#00f2ff' }] }, options: { maintainAspectRatio: false } });
+    }
 
     async function openCam() {
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 } } 
-        });
-        document.getElementById('video').srcObject = stream;
+        const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        document.getElementById('video').srcObject = s;
         document.getElementById('cam-overlay').style.display = 'flex';
     }
 
@@ -129,66 +151,68 @@
         document.getElementById('cam-overlay').style.display = 'none';
     }
 
-    async function smartCapture() {
-        const status = document.getElementById('status-box');
-        status.style.display = 'block';
-        
-        const video = document.getElementById('video');
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const ctx = canvas.getContext('2d');
-        
-        // --- FILTRO DE LIMPIEZA PROFUNDA ---
-        ctx.filter = 'grayscale(1) contrast(3) brightness(0.7) blur(0.5px)';
-        ctx.drawImage(video, 0, 0);
+    // FUNCIÓN 1: ESCANEAR TEXTO (Mantiene la limpieza de ruido)
+    async function captureText() {
+        document.getElementById('proc-screen').style.display = 'flex';
+        const v = document.getElementById('video');
+        const c = document.createElement('canvas');
+        c.width = v.videoWidth; c.height = v.videoHeight;
+        const ctx = c.getContext('2d');
+        ctx.filter = 'grayscale(1) contrast(2.5)';
+        ctx.drawImage(v, 0, 0);
         
         try {
-            const result = await Tesseract.recognize(canvas.toDataURL('image/png'), 'spa', {
-                workerOptions: { 
-                    // BLOQUEAMOS NÚMEROS EXTRAÑOS Y SÍMBOLOS QUE ENSUCIAN EL TEXTO
-                    tessedit_char_whitelist: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZáéíóúÁÉÍÓÚñÑ.,:;()/- ' 
-                }
+            const res = await Tesseract.recognize(c.toDataURL(), 'spa', {
+                workerOptions: { tessedit_char_whitelist: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZáéíóúÁÉÍÓÚñÑ.,:;()/- ' }
             });
+            document.getElementById('editable-content').innerText += "\n" + res.data.text.trim();
+        } finally {
+            document.getElementById('proc-screen').style.display = 'none';
+            closeCam();
+        }
+    }
 
-            const target = document.getElementById('editable-content');
-            if(target.innerText.includes("Esperando")) target.innerText = "";
-            
-            // ELIMINACIÓN DE CARACTERES SOLITARIOS (BASURA)
-            const cleanedText = result.data.text.split('\n')
-                .map(line => line.length < 3 && !line.includes('.') ? '' : line)
-                .join('\n');
-
-            target.innerText += "\n" + cleanedText.trim();
-            if(window.navigator.vibrate) window.navigator.vibrate(200);
-            
-        } catch(e) { alert("Error de procesamiento"); }
-        finally { status.style.display = 'none'; closeCam(); }
+    // FUNCIÓN 2: ESCANEAR IMAGEN (Guarda el documento tal cual se ve)
+    function captureImageDoc() {
+        const v = document.getElementById('video');
+        const c = document.createElement('canvas');
+        c.width = v.videoWidth; c.height = v.videoHeight;
+        c.getContext('2d').drawImage(v, 0, 0);
+        
+        const imgTag = document.getElementById('doc-img');
+        imgTag.src = c.toDataURL('image/png');
+        document.getElementById('image-preview').style.display = 'block';
+        closeCam();
     }
 
     function savePDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        const txt = document.getElementById('editable-content').innerText;
-        doc.setFontSize(11);
-        doc.text(doc.splitTextToSize(txt, 180), 15, 20);
-        doc.save("Registro_Limpio.pdf");
+        doc.text(document.getElementById('editable-content').innerText, 15, 20);
+        doc.save("Zion_Doc.pdf");
     }
 
-    async function saveIMG() {
+    async function saveFullIMG() {
         const canvas = await html2canvas(document.getElementById('paper'));
         const link = document.createElement('a');
-        link.download = 'Captura_Zion.png';
+        link.download = 'Myzion_Captura.png';
         link.href = canvas.toDataURL();
         link.click();
     }
 
     function saveCloud() {
-        const txt = document.getElementById('editable-content').innerText;
         window.fb.push(window.fb.ref(window.db, 'registros/'), {
-            detalle: txt, fecha: new Date().toLocaleString()
+            texto: document.getElementById('editable-content').innerText,
+            fecha: new Date().toLocaleString()
         });
-        alert("Sincronizado correctamente.");
+        alert("Enviado a la Nube");
+    }
+
+    function startVoice() {
+        const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const r = new Rec(); r.lang = 'es-ES';
+        r.onresult = (e) => { document.getElementById('editable-content').innerText += " " + e.results[0][0].transcript; };
+        r.start();
     }
 </script>
 </body>

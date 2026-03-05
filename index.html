@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MYZION OS | OMNI-SENTINEL v51.0</title>
+    <title>MYZION OS | OMNI-SENTINEL v51.2</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -16,124 +16,86 @@
         
         body { margin: 0; font-family: 'JetBrains Mono', monospace; background: var(--bg); color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* ARRANQUE NEURONAL */
         #boot-layer { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
-        .pulse-btn { background: none; border: 2px solid var(--green); color: var(--green); padding: 25px 50px; font-family: 'Orbitron'; font-size: 1.2rem; cursor: pointer; transition: 0.4s; border-radius: 5px; box-shadow: 0 0 20px rgba(0, 255, 157, 0.2); text-transform: uppercase; }
-        .pulse-btn:hover { background: var(--green); color: #000; box-shadow: 0 0 50px var(--green); }
+        .pulse-btn { background: none; border: 2px solid var(--green); color: var(--green); padding: 25px 50px; font-family: 'Orbitron'; font-size: 1.2rem; cursor: pointer; transition: 0.4s; border-radius: 5px; box-shadow: 0 0 20px rgba(0, 255, 157, 0.2); }
 
         header { padding: 12px 20px; background: #000; border-bottom: 2px solid var(--purple); display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
-        
-        /* BARRA DE HERRAMIENTAS WORD PRO */
-        .toolbar { background: #1a1d23; padding: 10px; display: flex; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid #333; overflow-x: auto; position: sticky; top: 0; z-index: 500; align-items: center; }
+        .toolbar { background: #1a1d23; padding: 10px; display: flex; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid #333; overflow-x: auto; }
         .tool-group { display: flex; gap: 5px; border-right: 1px solid #444; padding-right: 10px; align-items: center; }
-        .t-btn { background: #222; border: 1px solid #444; color: #fff; padding: 6px 10px; font-size: 0.65rem; cursor: pointer; border-radius: 3px; font-family: 'Orbitron'; transition: 0.2s; }
-        .t-btn:hover { border-color: var(--cyan); background: #333; }
-        select { background: #222; color: #fff; border: 1px solid #444; font-size: 0.7rem; border-radius: 3px; padding: 3px; }
+        .t-btn { background: #222; border: 1px solid #444; color: #fff; padding: 6px 10px; font-size: 0.65rem; cursor: pointer; border-radius: 3px; font-family: 'Orbitron'; }
 
-        /* AREA DE TRABAJO DINÁMICA */
-        .workspace { flex: 1; overflow-y: auto; padding: 40px 15px; display: flex; flex-direction: column; align-items: center; gap: 30px; background: #111; scroll-behavior: smooth; }
-        
-        /* GESTIÓN DE PÁGINAS */
+        .workspace { flex: 1; overflow-y: auto; padding: 40px 15px; display: flex; flex-direction: column; align-items: center; gap: 30px; background: #111; }
         .page-wrapper { position: relative; width: 100%; max-width: 850px; margin-bottom: 40px; }
         .page-sheet { background: #fff; color: #000; width: 100%; min-height: 1100px; padding: 70px; border-radius: 2px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); position: relative; font-family: 'Arial', sans-serif; line-height: 1.6; outline: none; }
-        .page-marker { position: absolute; top: 20px; left: 25px; font-size: 0.6rem; color: #aaa; font-family: 'Orbitron'; pointer-events: none; }
-        .del-page-btn { position: absolute; top: 15px; right: -55px; background: #ff3333; color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 100; display: flex; align-items: center; justify-content: center; }
-
-        /* TABLAS MOVIBLES ESTILO EXCEL */
-        .table-container { width: 100%; margin: 25px 0; padding: 12px; background: #f4f6f8; border: 1px solid #ccc; border-radius: 6px; cursor: move; position: relative; }
-        .move-handle { font-size: 0.5rem; color: var(--purple); font-weight: bold; margin-bottom: 8px; text-transform: uppercase; }
-        table { width: 100%; border-collapse: collapse; background: #fff; border: 2.5px solid #222; }
-        th, td { border: 1px solid #bbb; padding: 12px; min-width: 90px; transition: 0.3s; word-wrap: break-word; }
-        .active-cell { background: rgba(0, 242, 255, 0.12) !important; border: 2px solid var(--cyan) !important; }
-
-        /* INTERFAZ DE CONTROL */
-        .control-panel { background: #000; border-top: 2px solid var(--cyan); padding: 15px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .btn-core { background: #111; border: 1px solid #333; color: #fff; padding: 12px 5px; font-family: 'Orbitron'; font-size: 0.55rem; cursor: pointer; text-transform: uppercase; border-radius: 4px; }
         
-        #voice-hud { position: fixed; top: 85px; left: 50%; transform: translateX(-50%); background: var(--green); color: #000; padding: 8px 30px; border-radius: 30px; font-size: 0.7rem; display: none; z-index: 3000; font-family: 'Orbitron'; font-weight: bold; box-shadow: 0 0 20px var(--green); }
+        .table-container { width: 100%; margin: 25px 0; padding: 12px; background: #f4f6f8; border: 1px solid #ccc; border-radius: 6px; cursor: move; }
+        table { width: 100%; border-collapse: collapse; background: #fff; border: 2.5px solid #222; }
+        th, td { border: 1px solid #bbb; padding: 12px; min-width: 90px; }
+        .active-cell { border: 2.5px solid var(--cyan) !important; background: rgba(0,242,255,0.1) !important; }
+
+        .control-panel { background: #000; border-top: 2px solid var(--cyan); padding: 15px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        #voice-hud { position: fixed; top: 85px; left: 50%; transform: translateX(-50%); background: var(--green); color: #000; padding: 8px 30px; border-radius: 30px; font-size: 0.7rem; display: none; z-index: 3000; font-family: 'Orbitron'; font-weight: bold; }
         
         #hub-sidebar { position: fixed; top: 0; right: -320px; width: 320px; height: 100%; background: var(--glass); border-left: 2px solid var(--cyan); z-index: 2000; transition: 0.5s; padding: 25px; }
         #hub-sidebar.active { right: 0; }
-
-        .shape { display: inline-block; border: 2px solid #000; margin: 10px; vertical-align: middle; }
+        
+        #ocr-overlay { display:none; position:fixed; inset:0; background:#000; z-index:5000; }
+        video { width:100%; height:80%; object-fit:cover; }
     </style>
 </head>
 <body>
 
 <div id="boot-layer">
-    <h1 style="color:var(--cyan); font-family:'Orbitron'; font-size: 2.5rem; margin-bottom: 5px;">MYZION v51</h1>
-    <p style="color:#666; margin-bottom:30px; font-size: 0.8rem;">THE OMNI-SENTINEL ARCHITECTURE</p>
-    <button class="pulse-btn" onclick="startSupremeSystem()">INICIALIZAR CEREBRO IA</button>
+    <h1 style="color:var(--cyan); font-family:'Orbitron';">MYZION v51.2</h1>
+    <button class="pulse-btn" onclick="startSupremeSystem()">INICIALIZAR SISTEMA</button>
 </div>
 
-<div id="voice-hud">SISTEMA ESCUCHANDO...</div>
+<div id="voice-hud">IA: ESCUCHANDO...</div>
 
 <header>
     <div style="font-family:'Orbitron'; font-size:0.85rem; color:var(--cyan)">MYZION <span style="color:var(--purple)">SENTINEL</span></div>
-    <button class="t-btn" style="border-color:var(--cyan); padding: 8px 15px;" onclick="toggleHub()">REPOSITORIO ☰</button>
+    <button class="t-btn" onclick="toggleHub()">MIS ARCHIVOS ☰</button>
 </header>
 
 <div class="toolbar">
     <div class="tool-group">
         <select onchange="document.execCommand('fontName', false, this.value)">
             <option value="Arial">Arial</option>
-            <option value="JetBrains Mono">Mono</option>
             <option value="Verdana">Verdana</option>
         </select>
-        <select onchange="document.execCommand('fontSize', false, this.value)">
-            <option value="3">Normal</option>
-            <option value="5">Grande</option>
-            <option value="7">Título</option>
-        </select>
-    </div>
-    <div class="tool-group">
         <button class="t-btn" onclick="document.execCommand('bold')">B</button>
-        <button class="t-btn" onclick="document.execCommand('italic')">I</button>
-        <input type="color" onchange="document.execCommand('foreColor', false, this.value)" style="width:25px; height:25px; border:none; background:none;">
+        <input type="color" onchange="document.execCommand('foreColor', false, this.value)">
     </div>
-    <div class="tool-group">
-        <button class="t-btn" onclick="insertFigure('rect')">Rect</button>
-        <button class="t-btn" onclick="document.getElementById('img-up').click()">Imagen</button>
-        <input type="file" id="img-up" hidden accept="image/*" onchange="uploadImg(this)">
-    </div>
-    <button class="t-btn" style="color:var(--green); border-color:var(--green)" onclick="readAloud()">LECTURA TOTAL</button>
+    <button class="t-btn" style="color:var(--green)" onclick="readAloud()">LECTURA IA</button>
 </div>
 
 <main class="workspace" id="main-canvas">
     <div class="page-wrapper" id="wrap-p1">
         <div class="page-sheet" contenteditable="true" id="p1" onfocus="activePage='p1'">
-            <div class="page-marker">PÁGINA 1</div>
-            <h1 style="text-align:center; font-family:'Orbitron'; margin-top:50px;">NÚCLEO CENTRAL</h1>
+            <h1 style="text-align:center; font-family:'Orbitron';">SISTEMA LISTO</h1>
+            <p>Toque aquí para empezar...</p>
         </div>
-        <button class="del-page-btn" onclick="deletePage('wrap-p1')">×</button>
     </div>
 </main>
 
 <div class="control-panel">
-    <button class="btn-core" style="color:var(--green)" onclick="createNewPage()">+ PÁGINA</button>
-    <button class="btn-core" style="color:var(--green)" onclick="insertHybridTable()">+ TABLA PRO</button>
-    <button class="btn-core" onclick="initOCR()">OCR SCAN</button>
-    <button class="btn-core" style="color:var(--purple); border-color:var(--purple)" onclick="shareDoc()">COMPARTIR</button>
-    <button id="mic-trigger" class="btn-core" style="grid-column: span 4; border-color: var(--green); margin-top:5px; padding:15px; font-size: 0.8rem;" onclick="toggleDictation()">ACTIVAR VOZ MAESTRA</button>
-</div>
-
-<div style="background:#000; padding:12px; display:flex; gap:10px; border-top:1px solid #222;">
-    <button class="btn-core" style="flex:1" onclick="saveToHub()">GUARDAR</button>
-    <button class="btn-core" style="flex:1" onclick="exportPDF()">EXPORT PDF</button>
+    <button class="t-btn" style="color:var(--green)" onclick="createNewPage()">+ PÁGINA</button>
+    <button class="t-btn" style="color:var(--green)" onclick="insertHybridTable()">+ TABLA EXCEL</button>
+    <button class="t-btn" onclick="initOCR()">OCR SCAN</button>
+    <button class="t-btn" style="color:var(--purple)" onclick="shareDoc()">COMPARTIR</button>
+    <button id="mic-trigger" class="t-btn" style="grid-column: span 4; border-color: var(--green); padding:15px;" onclick="toggleDictation()">ACTIVAR VOZ MAESTRA</button>
 </div>
 
 <div id="hub-sidebar">
-    <h3 style="color:var(--cyan); font-family:'Orbitron'; font-size:0.7rem;">ARCHIVOS GUARDADOS</h3>
-    <div id="file-index" style="margin-top:20px;"></div>
-    <button class="btn-core" style="width:100%; margin-top:20px;" onclick="toggleHub()">CERRAR</button>
+    <h3 style="color:var(--cyan); font-family:'Orbitron'; font-size:0.7rem;">REPOSITORIO</h3>
+    <div id="file-index"></div>
+    <button class="t-btn" style="width:100%; margin-top:20px;" onclick="toggleHub()">CERRAR</button>
 </div>
 
-<div id="ocr-overlay" style="display:none; position:fixed; inset:0; background:#000; z-index:5000;">
-    <video id="camera-stream" autoplay playsinline style="width:100%; height:80%; object-fit:cover;"></video>
-    <div style="height:20%; display:flex; justify-content:space-around; align-items:center;">
-        <button class="btn-core" onclick="closeOCR()">ATRÁS</button>
-        <button class="btn-core" style="background:var(--purple); padding:15px 30px;" onclick="captureText()">CAPTURAR</button>
-    </div>
+<div id="ocr-overlay">
+    <video id="camera-stream" autoplay playsinline></video>
+    <button class="t-btn" onclick="captureText()" style="position:absolute; bottom:20px; right:20px; background:var(--purple); padding:20px;">CAPTURAR</button>
+    <button class="t-btn" onclick="closeOCR()" style="position:absolute; bottom:20px; left:20px;">CERRAR</button>
 </div>
 
 <script>
@@ -145,108 +107,75 @@
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = 'es-ES'; recognition.continuous = true;
 
-    function hablar(texto) {
+    function hablar(t) {
         synth.cancel();
-        const m = new SpeechSynthesisUtterance(texto);
-        m.lang = 'es-ES'; m.rate = 1.0;
+        const m = new SpeechSynthesisUtterance(t);
+        m.lang = 'es-ES';
         synth.speak(m);
     }
 
-    // --- GUÍA IA SUPREMA ---
     function startSupremeSystem() {
         document.getElementById('boot-layer').style.display = 'none';
-        const tour = "Protocolo Sentinel v51 iniciado. Bienvenido a su super aplicación de inteligencia artificial. " +
-        "Primero: Toque el lugar o celda donde desee escribir. " +
-        "Segundo: Use el botón de Voz Maestra para dictar; las tablas se ajustarán solas. " +
-        "Tercero: He activado el control estructural; puede mover tablas arrastrándolas y gestionar sus hojas con los botones de añadir y borrar. " +
-        "Para escanear documentos reales, use el botón O C R. Todos sus archivos se almacenarán en el repositorio lateral. El sistema está bajo su mando.";
-        hablar(tour);
+        hablar("Myzion v51.2 iniciado correctamente. Todas las funciones de Word, Excel y OCR están listas. Toque la pantalla para comenzar su proyecto.");
     }
 
-    // --- GESTIÓN DE PÁGINAS CON REPORTE IA ---
     function createNewPage() {
-        const pageCount = document.querySelectorAll('.page-sheet').length + 1;
         const id = 'p' + Date.now();
         const wrapId = 'wrap-' + id;
+        const pageCount = document.querySelectorAll('.page-sheet').length + 1;
         const wrap = document.createElement('div');
         wrap.className = 'page-wrapper'; wrap.id = wrapId;
-        wrap.innerHTML = `
-            <div class="page-sheet" contenteditable="true" id="${id}" onfocus="activePage='${id}'">
-                <div class="page-marker">PÁGINA ${pageCount}</div>
-            </div>
-            <button class="del-page-btn" onclick="deletePage('${wrapId}')">×</button>`;
+        wrap.innerHTML = `<div class="page-sheet" contenteditable="true" id="${id}" onfocus="activePage='${id}'"><p>Página ${pageCount}</p></div><button style="position:absolute; right:-40px; top:10px; background:red; color:white; border:none; border-radius:50%; cursor:pointer;" onclick="deletePage('${wrapId}')">X</button>`;
         document.getElementById('main-canvas').appendChild(wrap);
-        document.getElementById(id).focus();
-        hablar("Página generada. El documento ahora cuenta con " + pageCount + " páginas.");
+        hablar("Nueva página creada. Total: " + pageCount);
     }
 
-    function deletePage(wrapId) {
-        const total = document.querySelectorAll('.page-sheet').length;
-        if(total > 1) {
-            document.getElementById(wrapId).remove();
-            hablar("Página eliminada. Ahora quedan " + (total - 1) + " páginas.");
-            activePage = document.querySelector('.page-sheet').id;
-        } else {
-            hablar("Acción bloqueada. Se requiere al menos una página activa.");
+    function deletePage(wid) {
+        if(document.querySelectorAll('.page-sheet').length > 1) {
+            document.getElementById(wid).remove();
+            hablar("Página eliminada.");
         }
     }
 
-    // --- TABLAS HÍBRIDAS ADAPTATIVAS Y MOVIBLES ---
     function insertHybridTable() {
         const tid = "tab_" + Date.now();
-        const html = `
-            <div id="${tid}_container" class="table-container" draggable="true" ondragstart="drag(event)" contenteditable="false">
-                <div class="move-handle">☩ ANCLA DE MOVIMIENTO</div>
-                <table id="${tid}">
-                    <tr style="background:#f2f2f2;"><th contenteditable="true">Item</th><th contenteditable="true">Dato</th></tr>
-                    <tr><td contenteditable="true">...</td><td contenteditable="true">...</td></tr>
-                </table>
-                <div style="margin-top:10px; display:flex; gap:8px;">
-                    <button class="t-btn" onclick="addRow('${tid}')">+ Fila</button>
-                    <button class="t-btn" style="color:red; border-color:red" onclick="document.getElementById('${tid}_container').remove()">Borrar</button>
-                </div>
-            </div><br>`;
+        const html = `<div id="${tid}_container" class="table-container" draggable="true" ondragstart="drag(event)" contenteditable="false"><table><tr style="background:#eee;"><th contenteditable="true">A</th><th contenteditable="true">B</th></tr><tr><td contenteditable="true">...</td><td contenteditable="true">...</td></tr></table><button class="t-btn" onclick="addRow('${tid}')">+ Fila</button></div>`;
         document.getElementById(activePage).innerHTML += html;
-        hablar("Tabla adaptativa vinculada al cursor.");
+        hablar("Tabla insertada.");
     }
 
     function addRow(id) {
-        const t = document.getElementById(id);
+        const t = document.querySelector(`#${id}`);
         const r = t.insertRow(-1);
         for(let i=0; i<t.rows[0].cells.length; i++) r.insertCell(i).contentEditable = "true";
     }
 
-    // DRAG & DROP PARA TABLAS
     function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
     document.getElementById('main-canvas').ondragover = (e) => e.preventDefault();
     document.getElementById('main-canvas').ondrop = (e) => {
         e.preventDefault();
         const data = e.dataTransfer.getData("text");
-        if(e.target.classList.contains('page-sheet')) {
-            e.target.appendChild(document.getElementById(data));
-            hablar("Tabla reubicada.");
-        }
+        if(e.target.classList.contains('page-sheet')) e.target.appendChild(document.getElementById(data));
     };
 
-    // --- RECONOCIMIENTO VOCAL ---
     function toggleDictation() {
         const btn = document.getElementById('mic-trigger');
         const hud = document.getElementById('voice-hud');
         if(!isListening) {
             recognition.start(); isListening = true;
-            btn.style.background = var(--green); btn.style.color = "#000";
-            hud.style.display = 'block'; hablar("Sintonía activa.");
+            btn.style.background = "#00ff9d"; btn.style.color = "#000";
+            hud.style.display = 'block'; hablar("Escuchando.");
         } else {
             recognition.stop(); isListening = false;
             btn.style.background = "#111"; btn.style.color = "#fff";
-            hud.style.display = 'none'; hablar("Sintonía en pausa.");
+            hud.style.display = 'none'; hablar("Pausa.");
         }
     }
 
     recognition.onresult = (e) => {
         const t = e.results[e.results.length - 1][0].transcript;
-        if(selectedCell) { selectedCell.innerText = t; }
-        else { document.execCommand('insertText', false, " " + t); }
+        if(selectedCell) selectedCell.innerText = t;
+        else document.execCommand('insertText', false, " " + t);
     };
 
     document.addEventListener('click', (e) => {
@@ -254,31 +183,8 @@
             if(selectedCell) selectedCell.classList.remove('active-cell');
             selectedCell = e.target;
             selectedCell.classList.add('active-cell');
-            hablar("Foco en celda.");
         }
     });
-
-    // --- FUNCIONES MANTENIDAS (OCR, WORD TOOLS, EXPORT) ---
-    function insertFigure(type) {
-        const fig = document.createElement('div');
-        fig.className = 'shape'; fig.contentEditable = "false";
-        if(type==='rect') fig.style = "width:150px; height:70px; background:#333; border:2px solid var(--cyan);";
-        document.getElementById(activePage).appendChild(fig);
-    }
-
-    function uploadImg(input) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = document.createElement('img');
-                img.src = e.target.result; img.style.maxWidth = "100%";
-                document.getElementById(activePage).appendChild(img);
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    function readAloud() { hablar(document.getElementById(activePage).innerText); }
 
     async function initOCR() {
         const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
@@ -292,46 +198,38 @@
     }
 
     async function captureText() {
-        hablar("Analizando imagen...");
         const v = document.getElementById('camera-stream');
         const c = document.createElement('canvas');
         c.width = v.videoWidth; c.height = v.videoHeight;
         c.getContext('2d').drawImage(v, 0, 0);
         const res = await Tesseract.recognize(c.toDataURL(), 'spa');
         document.getElementById(activePage).innerText += "\n" + res.data.text;
-        closeOCR(); hablar("Texto integrado con éxito.");
+        closeOCR(); hablar("Texto procesado.");
     }
 
     function saveToHub() {
-        const name = "ARCH-" + new Date().toLocaleTimeString();
-        fileHistory.push({ name, data: document.getElementById('main-canvas').innerHTML });
-        updateFileList(); hablar("Archivo almacenado en repositorio.");
+        const time = new Date().toLocaleTimeString();
+        fileHistory.push({ name: "DOC-" + time, data: document.getElementById('main-canvas').innerHTML });
+        updateFileList();
+        hablar(`Guardado. El documento tiene ${document.querySelectorAll('.page-sheet').length} páginas y ${document.querySelectorAll('table').length} tablas.`);
     }
 
     function updateFileList() {
         const list = document.getElementById('file-index');
         list.innerHTML = "";
         fileHistory.forEach(f => {
-            const div = document.createElement('div');
-            div.style = "padding:12px; border-bottom:1px solid #333; color:var(--cyan); cursor:pointer; font-size:0.6rem;";
-            div.innerText = "📄 " + f.name;
-            div.onclick = () => { document.getElementById('main-canvas').innerHTML = f.data; toggleHub(); hablar("Documento cargado."); };
-            list.appendChild(div);
+            const d = document.createElement('div');
+            d.style = "padding:10px; border-bottom:1px solid #333; color:var(--cyan); cursor:pointer;";
+            d.innerText = f.name;
+            d.onclick = () => { document.getElementById('main-canvas').innerHTML = f.data; toggleHub(); };
+            list.appendChild(d);
         });
     }
 
     function toggleHub() { document.getElementById('hub-sidebar').classList.toggle('active'); }
-
-    function exportPDF() { 
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        doc.text(document.getElementById(activePage).innerText.substring(0, 1500), 15, 15);
-        doc.save("Myzion_Master.pdf");
-    }
-
-    async function shareDoc() {
-        if(navigator.share) await navigator.share({ title: 'Myzion Sentinel', text: document.getElementById(activePage).innerText });
-    }
+    function readAloud() { hablar(document.getElementById(activePage).innerText); }
+    function exportPDF() { const { jsPDF } = window.jspdf; const doc = new jsPDF(); doc.text(document.getElementById(activePage).innerText.substring(0,1000), 10, 10); doc.save("Myzion.pdf"); }
+    async function shareDoc() { if(navigator.share) await navigator.share({ title: 'Myzion', text: document.getElementById(activePage).innerText }); }
 </script>
 </body>
 </html>

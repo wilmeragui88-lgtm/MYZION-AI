@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MYZION OS | SUPREME v30.0</title>
+    <title>MYZION OS | PRECISION v31.0</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
     
@@ -14,7 +14,7 @@
     
     <style>
         :root {
-            --cyan: #00f2ff; --green: #00ff9d; --purple: #bc13fe; --bg: #010409; --panel: rgba(13, 17, 23, 0.9);
+            --cyan: #00f2ff; --green: #00ff9d; --purple: #bc13fe; --bg: #010409;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -24,138 +24,150 @@
             display: flex; flex-direction: column; overflow: hidden;
         }
 
-        /* HEADER */
         header { 
-            padding: 12px 20px; background: #000; border-bottom: 2px solid var(--purple);
+            padding: 12px 20px; background: #000; border-bottom: 2px solid var(--green);
             display: flex; justify-content: space-between; align-items: center; z-index: 100;
         }
         .brand { font-family: 'Orbitron'; font-size: 0.8rem; color: var(--cyan); letter-spacing: 2px; }
 
-        /* ÁREA DE TRABAJO (EDITOR PROFESIONAL) */
+        /* EDITOR MAESTRO */
         .viewport { flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 10px; }
         #canvas-word { 
             flex: 1; background: #fff; color: #000; border-radius: 4px;
-            padding: 40px; overflow-y: auto; box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            padding: 40px; overflow-y: auto; box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+            position: relative;
         }
         #main-editor { outline: none; font-size: 1rem; line-height: 1.6; font-family: 'Arial', sans-serif; min-height: 100%; }
 
-        /* TABLAS EVITABLES Y DINÁMICAS */
-        .table-wrapper { margin: 20px 0; border: 1px solid #ddd; padding: 10px; background: #fdfdfd; border-radius: 5px; }
-        table { width: 100%; border-collapse: collapse; background: #fff; }
-        th, td { border: 1px solid #444; padding: 10px; text-align: left; min-width: 50px; }
-        th { background: #f0f0f0; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; }
-        .cell-active { background: rgba(0, 242, 255, 0.15) !important; border: 2px solid var(--cyan) !important; }
+        /* TABLAS DINÁMICAS Y SELECCIONABLES */
+        .table-wrapper { margin: 20px 0; border: 1px solid #eee; padding: 15px; background: #fafafa; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; background: #fff; border: 2px solid #333; }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; transition: 0.2s; }
         
-        .table-btns { display: flex; gap: 8px; margin-top: 8px; }
-        .btn-mini { background: #111; color: var(--cyan); border: 1px solid var(--cyan); padding: 4px 8px; font-size: 0.5rem; cursor: pointer; font-family: 'Orbitron'; }
+        /* Efecto cuando la celda tiene el foco de la IA */
+        .cell-focus { 
+            background: rgba(0, 242, 255, 0.1) !important; 
+            border: 2px solid var(--cyan) !important;
+            box-shadow: inset 0 0 10px rgba(0, 242, 255, 0.2);
+        }
 
-        /* PANEL DE COMANDOS */
+        .table-controls { display: flex; gap: 10px; margin-top: 10px; }
+        .btn-action { background: #111; color: #fff; border: 1px solid #444; padding: 5px 12px; font-size: 0.6rem; cursor: pointer; font-family: 'Orbitron'; }
+        .btn-action:hover { border-color: var(--cyan); color: var(--cyan); }
+
+        /* COMANDOS DE LA IA */
         .command-center { 
-            background: var(--panel); border-top: 2px solid var(--purple);
+            background: rgba(0,0,0,0.95); border-top: 2px solid var(--cyan);
             padding: 15px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
         }
         .btn-main {
-            background: rgba(255,255,255,0.05); border: 1px solid #333; color: #fff;
-            padding: 15px; font-family: 'Orbitron'; font-size: 0.6rem; cursor: pointer;
-            transition: 0.3s; text-transform: uppercase;
+            background: rgba(255,255,255,0.03); border: 1px solid #333; color: #fff;
+            padding: 15px; font-family: 'Orbitron'; font-size: 0.6rem; cursor: pointer; text-transform: uppercase;
         }
-        .btn-main:hover { border-color: var(--cyan); background: rgba(0, 242, 255, 0.1); }
-        .btn-ai { border-color: var(--green); color: var(--green); }
-        .btn-voice-active { background: var(--green) !important; color: #000 !important; box-shadow: 0 0 15px var(--green); border: none; }
+        .btn-active { background: var(--green) !important; color: #000 !important; border: none; font-weight: bold; }
 
-        /* HUD & OVERLAYS */
-        #voice-hud { 
+        #voice-status { 
             position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
-            background: var(--purple); color: #fff; padding: 6px 20px; border-radius: 20px;
-            font-size: 0.6rem; font-family: 'Orbitron'; display: none; z-index: 2000;
+            background: var(--green); color: #000; padding: 5px 25px; border-radius: 20px;
+            font-size: 0.6rem; font-family: 'Orbitron'; display: none; z-index: 2000; font-weight: bold;
         }
-        #scanner-layer { display: none; position: fixed; inset: 0; background: #000; z-index: 5000; }
 
-        .export-row { background: #000; padding: 10px; display: flex; justify-content: space-around; gap: 5px; }
+        .footer-tools { background: #000; padding: 10px; display: flex; justify-content: space-around; gap: 5px; border-top: 1px solid #222; }
     </style>
 </head>
 <body onload="bootSystem()">
 
-<div id="voice-hud">SISTEMA ESCUCHANDO...</div>
+<div id="voice-status">IA: ESCUCHANDO</div>
 
 <header>
-    <div class="brand">MYZION <span style="color:var(--purple)">OS</span> v30</div>
-    <div id="sys-time" style="font-size: 0.7rem; color: var(--cyan);">--:--:--</div>
+    <div class="brand">MYZION <span style="color:var(--green)">OS</span> v31</div>
+    <div id="sys-clock" style="font-size: 0.7rem; color: var(--cyan);">00:00:00</div>
 </header>
 
 <main class="viewport">
     <div id="canvas-word">
         <div id="main-editor" contenteditable="true">
-            <h1 style="text-align:center;">NÚCLEO DE TRABAJO v30</h1>
-            <p>Inicie la interfaz de voz para procesar datos.</p>
+            <h1 style="text-align:center;">SISTEMA DE GESTIÓN PRECISA</h1>
+            <p>Seleccione una celda o use los comandos de voz para comenzar.</p>
         </div>
     </div>
 </main>
 
 <div class="command-center">
-    <button class="btn-main btn-ai" onclick="createDynamicTable()">+ TABLA DINÁMICA</button>
-    <button class="btn-main btn-ai" onclick="startGuidedFill()">LLENAR TABLA (VOZ)</button>
-    <button class="btn-main" onclick="openScanner()">ESCANEAR OCR</button>
-    <button class="btn-main" onclick="runAuditory()">AUDITORÍA DE VOZ</button>
-    <button id="master-voice-btn" class="btn-main" style="grid-column: span 2; border-color: var(--cyan); color: var(--cyan);" onclick="toggleVoice()">INICIAR INTERFAZ DE VOZ MAESTRA</button>
+    <button class="btn-main" style="border-color: var(--purple); color: var(--purple);" onclick="insertDynamicTable()">+ TABLA INTELIGENTE</button>
+    <button class="btn-main" onclick="openScanner()">OMNI-SCANNER OCR</button>
+    <button id="v-master" class="btn-main" style="grid-column: span 2; border-color: var(--green); color: var(--green);" onclick="toggleVoice()">ACTIVAR COMANDOS DE VOZ</button>
 </div>
 
-<div class="export-row">
-    <button class="btn-mini" style="flex:1" onclick="exportToPDF()">PDF</button>
-    <button class="btn-mini" style="flex:1" onclick="exportToWord()">WORD</button>
-    <button class="btn-mini" style="flex:1" onclick="exportToPNG()">IMAGEN</button>
-    <button class="btn-mini" style="flex:1; border-color:red; color:red" onclick="resetCanvas()">RESET</button>
+<div class="footer-tools">
+    <button class="btn-action" onclick="exportPDF()">PDF</button>
+    <button class="btn-action" onclick="exportWord()">WORD</button>
+    <button class="btn-action" onclick="exportPNG()">PNG</button>
+    <button class="btn-action" style="color:red" onclick="resetEditor()">BORRAR</button>
 </div>
 
-<div id="scanner-layer">
-    <video id="v-feed" style="width:100%; height:80%; object-fit:cover;" autoplay playsinline></video>
-    <div style="height:20%; display:flex; justify-content:space-around; align-items:center;">
+<div id="scanner-ui" style="display:none; position:fixed; inset:0; background:#000; z-index:5000;">
+    <video id="video" style="width:100%; height:85%; object-fit:cover;" autoplay playsinline></video>
+    <div style="height:15%; display:flex; justify-content:space-around; align-items:center;">
         <button class="btn-main" onclick="closeScanner()">CERRAR</button>
-        <button class="btn-main" style="background:var(--purple)" onclick="captureOCR()">CAPTURAR</button>
+        <button class="btn-main" style="background:var(--purple)" onclick="processOCR()">CAPTURAR</button>
     </div>
 </div>
 
 <script>
     let isListening = false;
-    let isFilling = false;
-    let currentCell = null;
+    let targetCell = null;
+    let isFocusedOnTable = false;
+
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = 'es-ES';
     recognition.continuous = true;
 
-    function speak(txt) {
-        const u = new SpeechSynthesisUtterance(txt);
-        u.lang = 'es-ES'; u.rate = 1.05;
+    function speak(text) {
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'es-ES'; u.rate = 1.1;
         window.speechSynthesis.speak(u);
     }
 
-    // --- PROTOCOLO DE INICIO ---
     function bootSystem() {
-        setInterval(() => { document.getElementById('sys-time').innerText = new Date().toLocaleTimeString(); }, 1000);
+        setInterval(() => { document.getElementById('sys-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
         setTimeout(() => {
-            speak("Sistemas Myzion Supreme v30 iniciados. Bienvenida maestra. " +
-                  "He configurado sus tablas dinámicas, el motor OCR y el sistema de exportación multiformato. " +
-                  "Ahora puede agregar filas y columnas a sus tablas con comandos de voz o botones. " +
-                  "Estoy lista para recibir su primer dictado.");
+            speak("Bienvenido a Myzion 31. He activado la selección de celdas inteligente. " +
+                  "Ahora puede tocar cualquier parte de una tabla y yo escribiré justo ahí. " +
+                  "Todas las funciones de escaneo y exportación están listas.");
         }, 800);
     }
 
-    // --- INTERFAZ DE VOZ ---
+    // --- MANEJO DE SELECCIÓN DE TABLA ---
+    document.addEventListener('click', (e) => {
+        if (e.target.tagName === 'TD' || e.target.tagName === 'TH') {
+            if (targetCell) targetCell.classList.remove('cell-focus');
+            targetCell = e.target;
+            targetCell.classList.add('cell-focus');
+            isFocusedOnTable = true;
+            
+            const colName = targetCell.closest('table').rows[0].cells[targetCell.cellIndex].innerText;
+            speak("Posicionado en " + colName + ". ¿Qué dato ingreso?");
+        } else if (e.target.id === 'main-editor' || e.target.closest('#main-editor')) {
+            if (targetCell) targetCell.classList.remove('cell-focus');
+            isFocusedOnTable = false;
+        }
+    });
+
+    // --- COMANDOS DE VOZ ---
     function toggleVoice() {
-        const btn = document.getElementById('master-voice-btn');
-        const hud = document.getElementById('voice-hud');
+        const btn = document.getElementById('v-master');
+        const hud = document.getElementById('voice-status');
         if(!isListening) {
             recognition.start();
             isListening = true;
-            btn.classList.add('btn-voice-active');
-            btn.innerText = "IA ESCUCHANDO...";
+            btn.classList.add('btn-active');
             hud.style.display = 'block';
-            speak("Escuchando comandos.");
+            speak("Sistemas de escucha activados.");
         } else {
             recognition.stop();
             isListening = false;
-            btn.classList.remove('btn-voice-active');
-            btn.innerText = "INICIAR INTERFAZ DE VOZ MAESTRA";
+            btn.classList.remove('btn-active');
             hud.style.display = 'none';
         }
     }
@@ -164,42 +176,54 @@
         const msg = e.results[e.results.length - 1][0].transcript.toLowerCase();
         const editor = document.getElementById('main-editor');
 
-        if(msg.includes("crear tabla")) { createDynamicTable(); }
-        else if(msg.includes("llenar tabla")) { startGuidedFill(); }
-        else if(msg.includes("auditoría")) { runAuditory(); }
-        else if(msg.includes("limpiar")) { resetCanvas(); }
-        else if(msg.includes("escribir fuera")) { isFilling = false; speak("Dictado libre."); }
+        if(msg.includes("crear tabla")) { insertDynamicTable(); }
+        else if(msg.includes("auditoría")) { speak("Contenido del reporte: " + editor.innerText); }
+        else if(msg.includes("salir de la tabla")) { 
+            if(targetCell) targetCell.classList.remove('cell-focus');
+            isFocusedOnTable = false;
+            speak("Dictado libre activado.");
+        }
         else {
-            if(isFilling && currentCell) {
-                currentCell.innerText = msg;
-                autoNextCell();
+            if(isFocusedOnTable && targetCell) {
+                targetCell.innerText = msg;
+                // Opcional: auto-avanzar a la derecha
+                moveNext();
             } else {
                 editor.innerHTML += " " + msg;
             }
         }
     };
 
-    // --- MOTOR DE TABLAS DINÁMICAS ---
-    function createDynamicTable() {
-        const tid = "tab_" + Date.now();
+    function moveNext() {
+        let next = targetCell.nextElementSibling;
+        if(!next) {
+            let nextRow = targetCell.parentElement.nextElementSibling;
+            if(nextRow) next = nextRow.cells[0];
+        }
+        if(next) {
+            targetCell.classList.remove('cell-focus');
+            targetCell = next;
+            targetCell.classList.add('cell-focus');
+        }
+    }
+
+    // --- FUNCIONES DINÁMICAS ---
+    function insertDynamicTable() {
+        const id = "t_" + Date.now();
         const html = `
-            <div id="${tid}_container" class="table-wrapper">
-                <table id="${tid}">
-                    <thead>
-                        <tr><th contenteditable="true">ENCABEZADO 1</th><th contenteditable="true">ENCABEZADO 2</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td contenteditable="true">...</td><td contenteditable="true">...</td></tr>
-                    </tbody>
+            <div id="${id}_wrap" class="table-wrapper">
+                <table id="${id}">
+                    <thead><tr><th contenteditable="true">CATEGORÍA</th><th contenteditable="true">VALOR</th></tr></thead>
+                    <tbody><tr><td contenteditable="true">...</td><td contenteditable="true">...</td></tr></tbody>
                 </table>
-                <div class="table-btns">
-                    <button class="btn-mini" onclick="addRow('${tid}')">+ FILA</button>
-                    <button class="btn-mini" onclick="addCol('${tid}')">+ COL</button>
-                    <button class="btn-mini" style="color:red; border-color:red" onclick="document.getElementById('${tid}_container').remove()">BORRAR</button>
+                <div class="table-controls">
+                    <button class="btn-action" onclick="addRow('${id}')">+ FILA</button>
+                    <button class="btn-action" onclick="addCol('${id}')">+ COL</button>
+                    <button class="btn-action" style="color:red" onclick="document.getElementById('${id}_wrap').remove()">X</button>
                 </div>
             </div><br>`;
         document.getElementById('main-editor').innerHTML += html;
-        speak("Tabla dinámica generada. ¿Desea que la completemos?");
+        speak("Tabla insertada. Toque cualquier casilla para llenarla.");
     }
 
     function addRow(id) {
@@ -215,90 +239,55 @@
         for(let i=0; i<t.rows.length; i++) {
             let c = t.rows[i].insertCell(-1);
             c.contentEditable = "true";
-            if(i===0) { c.outerHTML = `<th contenteditable="true">NUEVO</th>`; }
-            else { c.innerText = "..."; }
+            if(i===0) c.outerHTML = `<th contenteditable="true">NUEVO</th>`;
+            else c.innerText = "...";
         }
     }
 
-    // --- LLENADO GUIADO IA ---
-    function startGuidedFill() {
-        const tables = document.getElementsByTagName('table');
-        if(tables.length === 0) { speak("No detecto tablas. Creando una nueva."); createDynamicTable(); return; }
-        isFilling = true;
-        const target = tables[tables.length - 1].rows[1].cells[0];
-        focusCell(target);
-    }
-
-    function focusCell(cell) {
-        if(currentCell) currentCell.classList.remove('cell-active');
-        currentCell = cell;
-        cell.classList.add('cell-active');
-        cell.focus();
-        const header = cell.closest('table').rows[0].cells[cell.cellIndex].innerText;
-        speak("Dato para " + header);
-    }
-
-    function autoNextCell() {
-        let next = currentCell.nextElementSibling;
-        if(!next) {
-            let nextRow = currentCell.parentElement.nextElementSibling;
-            if(nextRow) next = nextRow.cells[0];
-        }
-        if(next) focusCell(next);
-        else { isFilling = false; speak("Tabla completada."); currentCell.classList.remove('cell-active'); }
-    }
-
-    // --- OCR & EXPORT ---
+    // --- OCR Y EXPORTACIÓN ---
     async function openScanner() {
         const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-        document.getElementById('v-feed').srcObject = s;
-        document.getElementById('scanner-layer').style.display = 'block';
-        speak("Escáner listo.");
+        document.getElementById('video').srcObject = s;
+        document.getElementById('scanner-ui').style.display = 'block';
     }
-
     function closeScanner() {
-        document.getElementById('v-feed').srcObject.getTracks().forEach(t => t.stop());
-        document.getElementById('scanner-layer').style.display = 'none';
+        document.getElementById('video').srcObject.getTracks().forEach(t => t.stop());
+        document.getElementById('scanner-ui').style.display = 'none';
     }
-
-    async function captureOCR() {
-        speak("Procesando imagen con motor OCR.");
-        const v = document.getElementById('v-feed');
+    async function processOCR() {
+        speak("Escaneando...");
+        const v = document.getElementById('video');
         const c = document.createElement('canvas');
         c.width = v.videoWidth; c.height = v.videoHeight;
         c.getContext('2d').drawImage(v, 0, 0);
         const res = await Tesseract.recognize(c.toDataURL(), 'spa');
         document.getElementById('main-editor').innerText += "\n" + res.data.text.trim();
         closeScanner();
-        speak("Texto integrado al documento.");
+        speak("Texto integrado.");
     }
 
-    function exportToPDF() {
+    function exportPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.text(doc.splitTextToSize(document.getElementById('main-editor').innerText, 180), 10, 20);
-        doc.save("Zion_Supreme_v30.pdf");
-        speak("Exportación a P D F lista.");
+        doc.text(doc.splitTextToSize(document.getElementById('main-editor').innerText, 180), 15, 20);
+        doc.save("Zion_Precision_v31.pdf");
     }
 
-    function exportToWord() {
+    function exportWord() {
         const content = document.getElementById('main-editor').innerText;
         const blob = new Blob(['\ufeff' + content], { type: 'application/msword' });
-        saveAs(blob, "Zion_Document.doc");
-        speak("Archivo Word generado.");
+        saveAs(blob, "Zion_Doc.doc");
     }
 
-    async function exportToPNG() {
+    async function exportPNG() {
         const canvas = await html2canvas(document.getElementById('canvas-word'));
         const link = document.createElement('a');
-        link.download = 'Captura_Supreme.png';
+        link.download = 'Captura_Precision.png';
         link.href = canvas.toDataURL();
         link.click();
-        speak("Imagen de alta resolución guardada.");
     }
 
-    function runAuditory() { speak("Iniciando auditoría de voz: " + document.getElementById('main-editor').innerText); }
-    function resetCanvas() { document.getElementById('main-editor').innerHTML = ""; speak("Documento reiniciado."); }
+    function resetEditor() { document.getElementById('main-editor').innerHTML = ""; speak("Documento borrado."); }
 </script>
 </body>
 </html>

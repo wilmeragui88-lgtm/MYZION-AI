@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MYZION OS | PRECISION v31.0</title>
+    <title>MYZION OS | SUPREME v33.0</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
     
@@ -14,7 +14,7 @@
     
     <style>
         :root {
-            --cyan: #00f2ff; --green: #00ff9d; --purple: #bc13fe; --bg: #010409;
+            --cyan: #00f2ff; --green: #00ff9d; --purple: #bc13fe; --bg: #0a0c10;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -24,146 +24,191 @@
             display: flex; flex-direction: column; overflow: hidden;
         }
 
+        /* HEADER & HUB */
         header { 
-            padding: 12px 20px; background: #000; border-bottom: 2px solid var(--green);
-            display: flex; justify-content: space-between; align-items: center; z-index: 100;
-        }
-        .brand { font-family: 'Orbitron'; font-size: 0.8rem; color: var(--cyan); letter-spacing: 2px; }
-
-        /* EDITOR MAESTRO */
-        .viewport { flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 10px; }
-        #canvas-word { 
-            flex: 1; background: #fff; color: #000; border-radius: 4px;
-            padding: 40px; overflow-y: auto; box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
-            position: relative;
-        }
-        #main-editor { outline: none; font-size: 1rem; line-height: 1.6; font-family: 'Arial', sans-serif; min-height: 100%; }
-
-        /* TABLAS DINÁMICAS Y SELECCIONABLES */
-        .table-wrapper { margin: 20px 0; border: 1px solid #eee; padding: 15px; background: #fafafa; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; background: #fff; border: 2px solid #333; }
-        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; transition: 0.2s; }
-        
-        /* Efecto cuando la celda tiene el foco de la IA */
-        .cell-focus { 
-            background: rgba(0, 242, 255, 0.1) !important; 
-            border: 2px solid var(--cyan) !important;
-            box-shadow: inset 0 0 10px rgba(0, 242, 255, 0.2);
+            padding: 10px 20px; background: #000; border-bottom: 2px solid var(--purple);
+            display: flex; justify-content: space-between; align-items: center; z-index: 1000;
         }
 
-        .table-controls { display: flex; gap: 10px; margin-top: 10px; }
-        .btn-action { background: #111; color: #fff; border: 1px solid #444; padding: 5px 12px; font-size: 0.6rem; cursor: pointer; font-family: 'Orbitron'; }
-        .btn-action:hover { border-color: var(--cyan); color: var(--cyan); }
+        #file-hub {
+            position: fixed; top: 0; right: -320px; width: 320px; height: 100%;
+            background: rgba(5, 5, 10, 0.98); border-left: 2px solid var(--purple);
+            z-index: 2000; transition: 0.5s cubic-bezier(0.1, 0.7, 0.1, 1);
+            padding: 25px; display: flex; flex-direction: column;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.8);
+        }
+        #file-hub.active { right: 0; }
 
-        /* COMANDOS DE LA IA */
+        /* MULTI-PÁGINA WORKSPACE */
+        .workspace-container { 
+            flex: 1; overflow-y: auto; padding: 30px 10px; 
+            display: flex; flex-direction: column; align-items: center; gap: 40px;
+            background: #1c2128; scroll-behavior: smooth;
+        }
+
+        .page-sheet {
+            background: #fff; color: #000; width: 98%; max-width: 850px;
+            min-height: 1100px; padding: 50px; border-radius: 4px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4); position: relative;
+            outline: none; font-family: 'Arial', sans-serif;
+        }
+        .page-tag {
+            position: absolute; top: 15px; left: 20px; 
+            font-size: 0.6rem; color: #aaa; font-family: 'Orbitron';
+        }
+
+        /* TABLAS INTERACTIVAS */
+        .table-box { margin: 20px 0; border: 1px solid #ddd; padding: 10px; background: #f9f9f9; border-radius: 5px; }
+        table { width: 100%; border-collapse: collapse; background: #fff; margin-bottom: 5px; }
+        th, td { border: 1px solid #bbb; padding: 12px; transition: 0.2s; cursor: cell; }
+        .active-cell { background: rgba(0, 242, 255, 0.1) !important; border: 2px solid var(--cyan) !important; }
+
+        /* COMMAND CENTER */
         .command-center { 
-            background: rgba(0,0,0,0.95); border-top: 2px solid var(--cyan);
-            padding: 15px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+            background: #000; border-top: 2px solid var(--cyan);
+            padding: 12px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
         }
-        .btn-main {
-            background: rgba(255,255,255,0.03); border: 1px solid #333; color: #fff;
-            padding: 15px; font-family: 'Orbitron'; font-size: 0.6rem; cursor: pointer; text-transform: uppercase;
+        .btn-core {
+            background: #111; border: 1px solid #333; color: #fff;
+            padding: 12px 5px; font-family: 'Orbitron'; font-size: 0.5rem; cursor: pointer;
+            transition: 0.3s;
         }
-        .btn-active { background: var(--green) !important; color: #000 !important; border: none; font-weight: bold; }
+        .btn-ai-glow { border-color: var(--green); color: var(--green); }
+        .btn-active { background: var(--green) !important; color: #000 !important; font-weight: bold; }
 
-        #voice-status { 
-            position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
-            background: var(--green); color: #000; padding: 5px 25px; border-radius: 20px;
-            font-size: 0.6rem; font-family: 'Orbitron'; display: none; z-index: 2000; font-weight: bold;
-        }
+        .export-footer { background: #000; padding: 10px; display: flex; gap: 8px; border-top: 1px solid #222; }
 
-        .footer-tools { background: #000; padding: 10px; display: flex; justify-content: space-around; gap: 5px; border-top: 1px solid #222; }
+        #hud-msg { position: fixed; top: 70px; left: 50%; transform: translateX(-50%); background: var(--purple); padding: 5px 20px; border-radius: 20px; font-size: 0.6rem; display: none; z-index: 3000; font-family: 'Orbitron'; }
     </style>
 </head>
-<body onload="bootSystem()">
+<body onload="startupProtocol()">
 
-<div id="voice-status">IA: ESCUCHANDO</div>
+<div id="hud-msg">IA ESCUCHANDO...</div>
 
 <header>
-    <div class="brand">MYZION <span style="color:var(--green)">OS</span> v31</div>
-    <div id="sys-clock" style="font-size: 0.7rem; color: var(--cyan);">00:00:00</div>
+    <div style="font-family:'Orbitron'; font-size:0.8rem; color:var(--cyan)">MYZION <span style="color:var(--purple)">SUPREME</span></div>
+    <button class="btn-core" style="border-color:var(--cyan)" onclick="toggleHub()">HUB ARCHIVOS ☰</button>
 </header>
 
-<main class="viewport">
-    <div id="canvas-word">
-        <div id="main-editor" contenteditable="true">
-            <h1 style="text-align:center;">SISTEMA DE GESTIÓN PRECISA</h1>
-            <p>Seleccione una celda o use los comandos de voz para comenzar.</p>
-        </div>
+<div id="file-hub">
+    <h3 style="color:var(--purple); font-family:'Orbitron'; font-size:0.8rem;">REPOSITORIO</h3>
+    <div id="doc-list" style="flex:1; overflow-y:auto; margin: 15px 0;"></div>
+    <button class="btn-core" onclick="toggleHub()">CERRAR</button>
+</div>
+
+<main class="workspace-container" id="workspace">
+    <div class="page-sheet" contenteditable="true" id="p1" onfocus="setCurrentPage('p1')">
+        <div class="page-tag">PÁGINA 1</div>
+        <h2 style="text-align:center; font-family:'Orbitron';">DOCUMENTO MAESTRO</h2>
+        <p>Inicie su dictado aquí...</p>
     </div>
 </main>
 
 <div class="command-center">
-    <button class="btn-main" style="border-color: var(--purple); color: var(--purple);" onclick="insertDynamicTable()">+ TABLA INTELIGENTE</button>
-    <button class="btn-main" onclick="openScanner()">OMNI-SCANNER OCR</button>
-    <button id="v-master" class="btn-main" style="grid-column: span 2; border-color: var(--green); color: var(--green);" onclick="toggleVoice()">ACTIVAR COMANDOS DE VOZ</button>
+    <button class="btn-core btn-ai-glow" onclick="createNewPage()">+ PÁGINA</button>
+    <button class="btn-core btn-ai-glow" onclick="insertDynamicTable()">+ TABLA IA</button>
+    <button class="btn-core" onclick="openScanner()">OCR SCAN</button>
+    <button id="mic-btn" class="btn-core" style="grid-column: span 3; border-color: var(--green); font-size:0.7rem;" onclick="toggleVoiceSystem()">INTERFAZ DE VOZ MAESTRA</button>
 </div>
 
-<div class="footer-tools">
-    <button class="btn-action" onclick="exportPDF()">PDF</button>
-    <button class="btn-action" onclick="exportWord()">WORD</button>
-    <button class="btn-action" onclick="exportPNG()">PNG</button>
-    <button class="btn-action" style="color:red" onclick="resetEditor()">BORRAR</button>
+<div class="export-footer">
+    <button class="btn-core" style="flex:1" onclick="saveDoc()">GUARDAR</button>
+    <button class="btn-core" style="flex:1" onclick="exportPDF()">PDF</button>
+    <button class="btn-core" style="flex:1" onclick="exportWord()">WORD</button>
+    <button class="btn-core" style="flex:1; color:red" onclick="location.reload()">REINICIAR</button>
 </div>
 
-<div id="scanner-ui" style="display:none; position:fixed; inset:0; background:#000; z-index:5000;">
-    <video id="video" style="width:100%; height:85%; object-fit:cover;" autoplay playsinline></video>
-    <div style="height:15%; display:flex; justify-content:space-around; align-items:center;">
-        <button class="btn-main" onclick="closeScanner()">CERRAR</button>
-        <button class="btn-main" style="background:var(--purple)" onclick="processOCR()">CAPTURAR</button>
+<div id="cam-overlay" style="display:none; position:fixed; inset:0; background:#000; z-index:5000;">
+    <video id="v-stream" style="width:100%; height:80%; object-fit:cover;" autoplay playsinline></video>
+    <div style="height:20%; display:flex; justify-content:space-around; align-items:center;">
+        <button class="btn-core" onclick="closeScanner()">CERRAR</button>
+        <button class="btn-core" style="background:var(--purple)" onclick="captureText()">CAPTURAR OCR</button>
     </div>
 </div>
 
 <script>
+    let pageCount = 1;
     let isListening = false;
-    let targetCell = null;
-    let isFocusedOnTable = false;
+    let currentActiveCell = null;
+    let currentPageId = 'p1';
+    let documentLibrary = [];
 
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = 'es-ES';
     recognition.continuous = true;
 
-    function speak(text) {
-        const u = new SpeechSynthesisUtterance(text);
+    function speak(msg) {
+        const u = new SpeechSynthesisUtterance(msg);
         u.lang = 'es-ES'; u.rate = 1.1;
         window.speechSynthesis.speak(u);
     }
 
-    function bootSystem() {
-        setInterval(() => { document.getElementById('sys-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+    // --- PROTOCOLO DE INICIO ---
+    function startupProtocol() {
         setTimeout(() => {
-            speak("Bienvenido a Myzion 31. He activado la selección de celdas inteligente. " +
-                  "Ahora puede tocar cualquier parte de una tabla y yo escribiré justo ahí. " +
-                  "Todas las funciones de escaneo y exportación están listas.");
-        }, 800);
+            speak("Myzion Supreme v33 activo. El Hub de archivos está a su derecha. He habilitado el sistema multi-página y el anclaje de celdas preciso. Todas las funciones de escaneo y exportación están integradas.");
+        }, 1000);
     }
 
-    // --- MANEJO DE SELECCIÓN DE TABLA ---
+    // --- GESTIÓN DE PÁGINAS ---
+    function createNewPage() {
+        pageCount++;
+        const p = document.createElement('div');
+        p.className = 'page-sheet';
+        p.contentEditable = "true";
+        p.id = 'p' + pageCount;
+        p.onfocus = () => setCurrentPage(p.id);
+        p.innerHTML = `<div class="page-tag">PÁGINA ${pageCount}</div>`;
+        document.getElementById('workspace').appendChild(p);
+        p.focus();
+        speak("Página " + pageCount + " integrada.");
+    }
+
+    function setCurrentPage(id) { currentPageId = id; }
+
+    // --- HUB DE ARCHIVOS ---
+    function toggleHub() { document.getElementById('file-hub').classList.toggle('active'); }
+
+    function saveDoc() {
+        const content = document.getElementById('workspace').innerHTML;
+        const name = "DOC-" + new Date().toLocaleTimeString();
+        documentLibrary.push({ name, content });
+        renderHub();
+        speak("Documento guardado exitosamente.");
+    }
+
+    function renderHub() {
+        const list = document.getElementById('doc-list');
+        list.innerHTML = "";
+        documentLibrary.forEach((doc, i) => {
+            const div = document.createElement('div');
+            div.style = "padding:12px; border-bottom:1px solid #222; cursor:pointer; font-size:0.6rem; color:var(--cyan)";
+            div.innerText = "📄 " + doc.name;
+            div.onclick = () => { document.getElementById('workspace').innerHTML = doc.content; toggleHub(); };
+            list.appendChild(div);
+        });
+    }
+
+    // --- SELECCIÓN Y VOZ ---
     document.addEventListener('click', (e) => {
         if (e.target.tagName === 'TD' || e.target.tagName === 'TH') {
-            if (targetCell) targetCell.classList.remove('cell-focus');
-            targetCell = e.target;
-            targetCell.classList.add('cell-focus');
-            isFocusedOnTable = true;
-            
-            const colName = targetCell.closest('table').rows[0].cells[targetCell.cellIndex].innerText;
-            speak("Posicionado en " + colName + ". ¿Qué dato ingreso?");
-        } else if (e.target.id === 'main-editor' || e.target.closest('#main-editor')) {
-            if (targetCell) targetCell.classList.remove('cell-focus');
-            isFocusedOnTable = false;
+            if (currentActiveCell) currentActiveCell.classList.remove('active-cell');
+            currentActiveCell = e.target;
+            currentActiveCell.classList.add('active-cell');
+            const h = currentActiveCell.closest('table').rows[0].cells[currentActiveCell.cellIndex].innerText;
+            speak("Editando en " + h);
         }
     });
 
-    // --- COMANDOS DE VOZ ---
-    function toggleVoice() {
-        const btn = document.getElementById('v-master');
-        const hud = document.getElementById('voice-status');
+    function toggleVoiceSystem() {
+        const btn = document.getElementById('mic-btn');
+        const hud = document.getElementById('hud-msg');
         if(!isListening) {
             recognition.start();
             isListening = true;
             btn.classList.add('btn-active');
             hud.style.display = 'block';
-            speak("Sistemas de escucha activados.");
+            speak("Escuchando.");
         } else {
             recognition.stop();
             isListening = false;
@@ -173,68 +218,63 @@
     }
 
     recognition.onresult = (e) => {
-        const msg = e.results[e.results.length - 1][0].transcript.toLowerCase();
-        const editor = document.getElementById('main-editor');
-
-        if(msg.includes("crear tabla")) { insertDynamicTable(); }
-        else if(msg.includes("auditoría")) { speak("Contenido del reporte: " + editor.innerText); }
-        else if(msg.includes("salir de la tabla")) { 
-            if(targetCell) targetCell.classList.remove('cell-focus');
-            isFocusedOnTable = false;
-            speak("Dictado libre activado.");
-        }
+        const text = e.results[e.results.length - 1][0].transcript.toLowerCase();
+        
+        if(text.includes("nueva página")) createNewPage();
+        else if(text.includes("insertar tabla")) insertDynamicTable();
+        else if(text.includes("guardar")) saveDoc();
         else {
-            if(isFocusedOnTable && targetCell) {
-                targetCell.innerText = msg;
-                // Opcional: auto-avanzar a la derecha
-                moveNext();
+            if(currentActiveCell) {
+                currentActiveCell.innerText = text;
+                moveCell();
             } else {
-                editor.innerHTML += " " + msg;
+                document.getElementById(currentPageId).innerHTML += " " + text;
             }
         }
     };
 
-    function moveNext() {
-        let next = targetCell.nextElementSibling;
-        if(!next) {
-            let nextRow = targetCell.parentElement.nextElementSibling;
-            if(nextRow) next = nextRow.cells[0];
+    function moveCell() {
+        let n = currentActiveCell.nextElementSibling;
+        if(!n) {
+            let nr = currentActiveCell.parentElement.nextElementSibling;
+            if(nr) n = nr.cells[0];
         }
-        if(next) {
-            targetCell.classList.remove('cell-focus');
-            targetCell = next;
-            targetCell.classList.add('cell-focus');
+        if(n) {
+            currentActiveCell.classList.remove('active-cell');
+            currentActiveCell = n;
+            currentActiveCell.classList.add('active-cell');
         }
     }
 
-    // --- FUNCIONES DINÁMICAS ---
+    // --- TABLAS ELÁSTICAS ---
     function insertDynamicTable() {
-        const id = "t_" + Date.now();
+        const id = "t" + Date.now();
         const html = `
-            <div id="${id}_wrap" class="table-wrapper">
+            <div id="${id}_wrap" class="table-box">
                 <table id="${id}">
-                    <thead><tr><th contenteditable="true">CATEGORÍA</th><th contenteditable="true">VALOR</th></tr></thead>
+                    <thead><tr><th contenteditable="true">CATEGORÍA</th><th contenteditable="true">DATO</th></tr></thead>
                     <tbody><tr><td contenteditable="true">...</td><td contenteditable="true">...</td></tr></tbody>
                 </table>
-                <div class="table-controls">
-                    <button class="btn-action" onclick="addRow('${id}')">+ FILA</button>
-                    <button class="btn-action" onclick="addCol('${id}')">+ COL</button>
-                    <button class="btn-action" style="color:red" onclick="document.getElementById('${id}_wrap').remove()">X</button>
+                <div style="display:flex; gap:5px;">
+                    <button class="btn-core" onclick="addTableRow('${id}')">+ FILA</button>
+                    <button class="btn-core" onclick="addTableCol('${id}')">+ COL</button>
+                    <button class="btn-core" style="color:red" onclick="document.getElementById('${id}_wrap').remove()">X</button>
                 </div>
             </div><br>`;
-        document.getElementById('main-editor').innerHTML += html;
-        speak("Tabla insertada. Toque cualquier casilla para llenarla.");
+        document.getElementById(currentPageId).innerHTML += html;
+        speak("Tabla elástica insertada.");
     }
 
-    function addRow(id) {
+    function addTableRow(id) {
         const t = document.getElementById(id);
         const r = t.insertRow(-1);
         for(let i=0; i<t.rows[0].cells.length; i++) {
-            let c = r.insertCell(i); c.contentEditable = "true"; c.innerText = "...";
+            r.insertCell(i).contentEditable = "true";
+            r.cells[i].innerText = "...";
         }
     }
 
-    function addCol(id) {
+    function addTableCol(id) {
         const t = document.getElementById(id);
         for(let i=0; i<t.rows.length; i++) {
             let c = t.rows[i].insertCell(-1);
@@ -244,50 +284,44 @@
         }
     }
 
-    // --- OCR Y EXPORTACIÓN ---
+    // --- OCR & EXPORT ---
     async function openScanner() {
         const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-        document.getElementById('video').srcObject = s;
-        document.getElementById('scanner-ui').style.display = 'block';
+        document.getElementById('v-stream').srcObject = s;
+        document.getElementById('cam-overlay').style.display = 'block';
     }
     function closeScanner() {
-        document.getElementById('video').srcObject.getTracks().forEach(t => t.stop());
-        document.getElementById('scanner-ui').style.display = 'none';
+        document.getElementById('v-stream').srcObject.getTracks().forEach(t => t.stop());
+        document.getElementById('cam-overlay').style.display = 'none';
     }
-    async function processOCR() {
+    async function captureText() {
         speak("Escaneando...");
-        const v = document.getElementById('video');
+        const v = document.getElementById('v-stream');
         const c = document.createElement('canvas');
         c.width = v.videoWidth; c.height = v.videoHeight;
         c.getContext('2d').drawImage(v, 0, 0);
         const res = await Tesseract.recognize(c.toDataURL(), 'spa');
-        document.getElementById('main-editor').innerText += "\n" + res.data.text.trim();
+        document.getElementById(currentPageId).innerText += "\n" + res.data.text.trim();
         closeScanner();
-        speak("Texto integrado.");
+        speak("Sincronización completa.");
     }
 
     function exportPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.text(doc.splitTextToSize(document.getElementById('main-editor').innerText, 180), 15, 20);
-        doc.save("Zion_Precision_v31.pdf");
+        const pages = document.getElementsByClassName('page-sheet');
+        for(let i=0; i<pages.length; i++) {
+            if(i > 0) doc.addPage();
+            doc.text(doc.splitTextToSize(pages[i].innerText, 180), 10, 20);
+        }
+        doc.save("Myzion_Supreme.pdf");
     }
 
     function exportWord() {
-        const content = document.getElementById('main-editor').innerText;
+        const content = document.getElementById('workspace').innerText;
         const blob = new Blob(['\ufeff' + content], { type: 'application/msword' });
-        saveAs(blob, "Zion_Doc.doc");
+        saveAs(blob, "Zion_Export.doc");
     }
-
-    async function exportPNG() {
-        const canvas = await html2canvas(document.getElementById('canvas-word'));
-        const link = document.createElement('a');
-        link.download = 'Captura_Precision.png';
-        link.href = canvas.toDataURL();
-        link.click();
-    }
-
-    function resetEditor() { document.getElementById('main-editor').innerHTML = ""; speak("Documento borrado."); }
 </script>
 </body>
 </html>

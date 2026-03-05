@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MYZION OS | MASTER FINAL v35.0</title>
+    <title>MYZION OS | ORACLE v36.0</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
     
@@ -14,7 +14,7 @@
     
     <style>
         :root {
-            --cyan: #00f2ff; --green: #00ff9d; --purple: #bc13fe; --bg: #05070a; --panel: rgba(10, 12, 16, 0.98);
+            --cyan: #00f2ff; --green: #00ff9d; --purple: #bc13fe; --bg: #05070a;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -24,26 +24,23 @@
             display: flex; flex-direction: column; overflow: hidden;
         }
 
-        /* HEADER & NAVIGATION */
         header { 
-            padding: 12px 20px; background: #000; border-bottom: 2px solid var(--purple);
+            padding: 12px 20px; background: #000; border-bottom: 2px solid var(--green);
             display: flex; justify-content: space-between; align-items: center; z-index: 1000;
         }
 
         #hub-sidebar {
             position: fixed; top: 0; right: -320px; width: 320px; height: 100%;
-            background: var(--panel); border-left: 2px solid var(--purple);
+            background: rgba(10,12,16,0.98); border-left: 2px solid var(--green);
             z-index: 2000; transition: 0.5s cubic-bezier(0.1, 0.7, 0.1, 1);
             padding: 25px; box-shadow: -15px 0 40px rgba(0,0,0,0.9);
-            display: flex; flex-direction: column;
         }
         #hub-sidebar.active { right: 0; }
 
-        /* MULTI-PAGE WORKSPACE */
-        .viewport { 
+        .workspace { 
             flex: 1; overflow-y: auto; padding: 40px 15px; 
-            display: flex; flex-direction: column; align-items: center; gap: 45px;
-            background: #14171c; scroll-behavior: smooth;
+            display: flex; flex-direction: column; align-items: center; gap: 40px;
+            background: #0f1115; scroll-behavior: smooth;
         }
 
         .page-sheet {
@@ -52,177 +49,120 @@
             box-shadow: 0 25px 60px rgba(0,0,0,0.6); position: relative;
             outline: none; font-family: 'Arial', sans-serif;
         }
-        .page-info {
-            position: absolute; top: 20px; left: 25px; 
-            font-size: 0.6rem; color: #bbb; font-family: 'Orbitron';
-        }
 
-        /* TABLAS ELASTICAS CORREGIDAS */
-        .table-wrapper { width: 100%; margin: 25px 0; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; background: #fff; border: 2px solid #222; table-layout: auto; }
-        th, td { border: 1px solid #ccc; padding: 12px; word-wrap: break-word; min-width: 80px; }
-        .cell-focus { background: rgba(0, 242, 255, 0.12) !important; border: 2px solid var(--cyan) !important; box-shadow: inset 0 0 8px rgba(0, 242, 255, 0.3); }
+        .table-wrapper { width: 100%; margin: 20px 0; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; border: 2px solid #333; }
+        th, td { border: 1px solid #ccc; padding: 12px; word-wrap: break-word; }
+        .cell-focus { background: rgba(0, 255, 157, 0.1) !important; border: 2px solid var(--green) !important; }
 
-        /* CONTROL CENTER */
         .control-panel { 
             background: #000; border-top: 2px solid var(--cyan);
             padding: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
         }
-        .btn-action {
+        .btn-ui {
             background: #111; border: 1px solid #333; color: #fff;
-            padding: 14px 5px; font-family: 'Orbitron'; font-size: 0.55rem; cursor: pointer;
-            transition: 0.2s; text-transform: uppercase;
+            padding: 12px 5px; font-family: 'Orbitron'; font-size: 0.5rem; cursor: pointer;
         }
-        .btn-active { background: var(--green) !important; color: #000 !important; font-weight: bold; border-color: var(--green); }
-        .btn-save { border-color: var(--purple); color: var(--purple); }
+        .btn-active { background: var(--green) !important; color: #000 !important; font-weight: bold; }
 
-        #hud-voice { position: fixed; top: 75px; left: 50%; transform: translateX(-50%); background: var(--green); color: #000; padding: 6px 25px; border-radius: 30px; font-size: 0.65rem; display: none; z-index: 3000; font-family: 'Orbitron'; font-weight: bold; }
+        #voice-hud { position: fixed; top: 75px; left: 50%; transform: translateX(-50%); background: var(--green); color: #000; padding: 5px 25px; border-radius: 30px; font-size: 0.6rem; display: none; z-index: 3000; font-family: 'Orbitron'; font-weight: bold; }
     </style>
 </head>
-<body onload="initFinalSystem()">
+<body onload="oracleProtocol()">
 
-<div id="hud-voice">SISTEMA ESCUCHANDO...</div>
+<div id="voice-hud">IA ESCUCHANDO...</div>
 
 <header>
-    <div style="font-family:'Orbitron'; font-size:0.85rem; color:var(--cyan); letter-spacing:1px;">MYZION <span style="color:var(--purple)">SUPREME</span> v35</div>
-    <button class="btn-action" style="border-color:var(--cyan); padding: 5px 15px;" onclick="toggleHub()">HUB ARCHIVOS ☰</button>
+    <div style="font-family:'Orbitron'; font-size:0.85rem; color:var(--cyan)">MYZION <span style="color:var(--green)">ORACLE</span> v36</div>
+    <button class="btn-ui" style="border-color:var(--cyan)" onclick="toggleHub()">HUB ☰</button>
 </header>
 
 <div id="hub-sidebar">
-    <h3 style="color:var(--purple); font-family:'Orbitron'; font-size:0.8rem; margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:10px;">REPOSITORIO LOCAL</h3>
-    <div id="archive-list" style="flex:1; overflow-y:auto;"></div>
-    <button class="btn-action" style="width:100%" onclick="toggleHub()">CERRAR</button>
+    <h3 style="color:var(--green); font-family:'Orbitron'; font-size:0.7rem;">ARCHIVOS GUARDADOS</h3>
+    <div id="file-list" style="flex:1; overflow-y:auto; margin:20px 0;"></div>
+    <button class="btn-ui" style="width:100%" onclick="toggleHub()">CERRAR</button>
 </div>
 
-<main class="viewport" id="main-canvas">
-    <div class="page-sheet" contenteditable="true" id="p1" onfocus="activePageId='p1'">
-        <div class="page-info">PÁGINA 1</div>
-        <h1 style="text-align:center; font-family:'Orbitron'; letter-spacing:2px; margin-top:40px;">DOCUMENTO DE INTELIGENCIA</h1>
-        <hr style="border:0.5px solid #eee; margin:20px 0;">
-        <p>Inicie el dictado o importe datos externos...</p>
+<main class="workspace" id="main-view">
+    <div class="page-sheet" contenteditable="true" id="p1" onfocus="curPage='p1'">
+        <div style="font-size:0.6rem; color:#aaa; font-family:'Orbitron';">PÁGINA 1</div>
+        <h1 style="text-align:center; font-family:'Orbitron'; margin-top:50px;">SISTEMA OPERATIVO MYZION</h1>
+        <p style="text-align:center; color:#666;">Esperando instrucciones del usuario...</p>
     </div>
 </main>
 
 <div class="control-panel">
-    <button class="btn-action" style="color:var(--green)" onclick="createNewPage()">+ PÁGINA</button>
-    <button class="btn-action" style="color:var(--green)" onclick="insertSupremeTable()">+ TABLA IA</button>
-    <button class="btn-action" onclick="openScanner()">SCAN OCR</button>
-    <button id="voice-trigger" class="btn-action" style="grid-column: span 3; border-color: var(--green); font-size:0.75rem; margin-top:5px;" onclick="toggleVoice()">ACTIVAR INTERFAZ DE VOZ MAESTRA</button>
+    <button class="btn-ui" style="color:var(--green)" onclick="addPage()">+ PÁGINA</button>
+    <button class="btn-ui" style="color:var(--green)" onclick="addTable()">+ TABLA</button>
+    <button class="btn-ui" onclick="startScanner()">SCAN OCR</button>
+    <button id="v-btn" class="btn-ui" style="grid-column: span 3; border-color: var(--green); font-size:0.7rem;" onclick="toggleVoice()">ACTIVAR COMANDOS DE VOZ</button>
 </div>
 
-<div style="background:#000; padding:12px; display:flex; gap:10px; border-top:1px solid #222;">
-    <button class="btn-action btn-save" style="flex:1" onclick="saveToArchive()">GUARDAR</button>
-    <button class="btn-action" style="flex:1" onclick="exportPDF()">PDF</button>
-    <button class="btn-action" style="flex:1" onclick="exportWord()">WORD</button>
+<div style="background:#000; padding:10px; display:flex; gap:10px; border-top:1px solid #222;">
+    <button class="btn-ui" style="flex:1" onclick="saveFile()">GUARDAR</button>
+    <button class="btn-ui" style="flex:1" onclick="exportPDF()">PDF</button>
+    <button class="btn-ui" style="flex:1" onclick="exportWord()">WORD</button>
 </div>
 
-<div id="ocr-layer" style="display:none; position:fixed; inset:0; background:#000; z-index:5000;">
-    <video id="cam-feed" style="width:100%; height:82%; object-fit:cover;" autoplay playsinline></video>
-    <div style="height:18%; display:flex; justify-content:space-around; align-items:center; background:#000;">
-        <button class="btn-action" onclick="closeScanner()">VOLVER</button>
-        <button class="btn-action" style="background:var(--purple); padding:15px 30px;" onclick="executeOCR()">CAPTURAR TEXTO</button>
+<div id="ocr-screen" style="display:none; position:fixed; inset:0; background:#000; z-index:5000;">
+    <video id="webcam" style="width:100%; height:80%; object-fit:cover;" autoplay playsinline></video>
+    <div style="height:20%; display:flex; justify-content:space-around; align-items:center;">
+        <button class="btn-ui" onclick="stopScanner()">CANCELAR</button>
+        <button class="btn-ui" style="background:var(--purple)" onclick="captureOCR()">CAPTURAR</button>
     </div>
 </div>
 
 <script>
-    let pageCount = 1;
-    let activePageId = 'p1';
+    let pageTotal = 1;
+    let curPage = 'p1';
     let isListening = false;
-    let focusedCell = null;
-    let savedArchives = [];
+    let focusCell = null;
+    let archives = [];
 
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = 'es-ES';
     recognition.continuous = true;
 
-    function speak(text) {
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = 'es-ES'; u.rate = 1.05;
+    function speak(t, callback) {
+        const u = new SpeechSynthesisUtterance(t);
+        u.lang = 'es-ES'; u.rate = 1.0;
+        u.onend = () => { if(callback) callback(); };
         window.speechSynthesis.speak(u);
     }
 
-    // --- INICIALIZACIÓN ---
-    function initFinalSystem() {
+    // --- PROTOCOLO ORACLE (BIENVENIDA Y GUÍA) ---
+    function oracleProtocol() {
+        const introText = "Bienvenido a Myzion Oracle versión 36. Soy su asistente de inteligencia artificial. " +
+        "He configurado su entorno de trabajo con las siguientes funciones maestras: " +
+        "Primero: Un sistema de páginas infinitas para documentos extensos. " +
+        "Segundo: Tablas elásticas que se adaptan automáticamente a su contenido. " +
+        "Tercero: Un escáner O C R para digitalizar textos físicos. " +
+        "Y cuarto: Un repositorio lateral para gestionar todos sus archivos. " +
+        "Usted puede tocar cualquier celda de una tabla para dictarme directamente. " +
+        "Dígame, ¿por dónde desea comenzar a trabajar hoy?";
+
         setTimeout(() => {
-            speak("Sistemas Myzion Supreme v35 operativos. Le doy la bienvenida a su centro de mando final. " + 
-                  "Utilice el Hub lateral para sus archivos y el control inferior para gestionar páginas y tablas. " +
-                  "He habilitado el sistema de corrección elástica para sus documentos.");
-        }, 800);
+            speak(introText, () => {
+                // Después de la guía, activa el hud visual brevemente
+                const hud = document.getElementById('voice-hud');
+                hud.innerText = "IA: ESPERANDO ORDEN...";
+                hud.style.display = 'block';
+                setTimeout(() => hud.style.display = 'none', 3000);
+            });
+        }, 1000);
     }
-
-    // --- PÁGINAS ---
-    function createNewPage() {
-        pageCount++;
-        const p = document.createElement('div');
-        p.className = 'page-sheet';
-        p.contentEditable = "true";
-        p.id = 'p' + pageCount;
-        p.onfocus = () => activePageId = p.id;
-        p.innerHTML = `<div class="page-info">PÁGINA ${pageCount}</div>`;
-        document.getElementById('main-canvas').appendChild(p);
-        p.focus();
-        speak("Página " + pageCount + " lista.");
-    }
-
-    // --- TABLAS SUPREMAS ---
-    function insertSupremeTable() {
-        const id = "tbl_" + Date.now();
-        const html = `
-            <div id="${id}_container" class="table-wrapper">
-                <table id="${id}">
-                    <thead><tr><th contenteditable="true">CABECERA A</th><th contenteditable="true">CABECERA B</th></tr></thead>
-                    <tbody><tr><td contenteditable="true">...</td><td contenteditable="true">...</td></tr></tbody>
-                </table>
-                <div style="display:flex; gap:8px; margin-top:8px;">
-                    <button class="btn-action" style="padding:4px 10px; font-size:0.5rem;" onclick="addTableRow('${id}')">+ FILA</button>
-                    <button class="btn-action" style="padding:4px 10px; font-size:0.5rem;" onclick="addTableCol('${id}')">+ COL</button>
-                    <button class="btn-action" style="padding:4px 10px; font-size:0.5rem; color:red; border-color:red" onclick="document.getElementById('${id}_container').remove()">X</button>
-                </div>
-            </div><br>`;
-        document.getElementById(activePageId).innerHTML += html;
-        speak("Tabla elástica integrada.");
-    }
-
-    function addTableRow(id) {
-        const t = document.getElementById(id);
-        const r = t.insertRow(-1);
-        for(let i=0; i<t.rows[0].cells.length; i++) {
-            r.insertCell(i).contentEditable = "true";
-            r.cells[i].innerText = "...";
-        }
-    }
-
-    function addTableCol(id) {
-        const t = document.getElementById(id);
-        for(let i=0; i<t.rows.length; i++) {
-            let c = t.rows[i].insertCell(-1);
-            c.contentEditable = "true";
-            if(i===0) c.outerHTML = `<th contenteditable="true">NUEVO</th>`;
-            else c.innerText = "...";
-        }
-    }
-
-    // --- INTERACCIÓN ---
-    document.addEventListener('click', (e) => {
-        if (e.target.tagName === 'TD' || e.target.tagName === 'TH') {
-            if (focusedCell) focusedCell.classList.remove('cell-focus');
-            focusedCell = e.target;
-            focusedCell.classList.add('cell-focus');
-            const col = focusedCell.closest('table').rows[0].cells[focusedCell.cellIndex].innerText;
-            speak("Foco en " + col);
-        }
-    });
 
     // --- VOZ ---
     function toggleVoice() {
-        const btn = document.getElementById('voice-trigger');
-        const hud = document.getElementById('hud-voice');
+        const btn = document.getElementById('v-btn');
+        const hud = document.getElementById('voice-hud');
         if(!isListening) {
             recognition.start();
             isListening = true;
             btn.classList.add('btn-active');
             hud.style.display = 'block';
-            speak("Escuchando comandos.");
+            hud.innerText = "IA ESCUCHANDO...";
+            speak("Sistemas de escucha activos.");
         } else {
             recognition.stop();
             isListening = false;
@@ -233,73 +173,128 @@
 
     recognition.onresult = (e) => {
         const msg = e.results[e.results.length - 1][0].transcript.toLowerCase();
-        if(msg.includes("nueva página")) createNewPage();
-        else if(msg.includes("nueva tabla")) insertSupremeTable();
-        else if(msg.includes("guardar")) saveToArchive();
+        if(msg.includes("nueva página")) addPage();
+        else if(msg.includes("nueva tabla")) addTable();
+        else if(msg.includes("guardar")) saveFile();
         else {
-            if(focusedCell) {
-                focusedCell.innerText = msg;
-                moveToNext();
+            if(focusCell) {
+                focusCell.innerText = msg;
+                moveCell();
             } else {
-                document.getElementById(activePageId).innerHTML += " " + msg;
+                document.getElementById(curPage).innerHTML += " " + msg;
             }
         }
     };
 
-    function moveToNext() {
-        let n = focusedCell.nextElementSibling;
+    function moveCell() {
+        let n = focusCell.nextElementSibling;
         if(!n) {
-            let nr = focusedCell.parentElement.nextElementSibling;
+            let nr = focusCell.parentElement.nextElementSibling;
             if(nr) n = nr.cells[0];
         }
         if(n) {
-            focusedCell.classList.remove('cell-focus');
-            focusedCell = n;
-            focusedCell.classList.add('cell-focus');
+            focusCell.classList.remove('cell-focus');
+            focusCell = n;
+            focusCell.classList.add('cell-focus');
         }
     }
 
-    // --- ARCHIVOS HUB ---
-    function toggleHub() { document.getElementById('hub-sidebar').classList.toggle('active'); }
-    function saveToArchive() {
-        const content = document.getElementById('main-canvas').innerHTML;
-        const name = "DOC-" + new Date().toLocaleTimeString();
-        savedArchives.push({ name, content });
-        renderArchive();
-        speak("Guardado en repositorio local.");
+    // --- PÁGINAS Y TABLAS ---
+    function addPage() {
+        pageTotal++;
+        const p = document.createElement('div');
+        p.className = 'page-sheet';
+        p.contentEditable = "true";
+        p.id = 'p' + pageTotal;
+        p.onfocus = () => curPage = p.id;
+        p.innerHTML = `<div style="font-size:0.6rem; color:#aaa; font-family:'Orbitron';">PÁGINA ${pageTotal}</div>`;
+        document.getElementById('main-view').appendChild(p);
+        p.focus();
+        speak("Página " + pageTotal + " añadida.");
     }
-    function renderArchive() {
-        const list = document.getElementById('archive-list');
-        list.innerHTML = "";
-        savedArchives.forEach((doc) => {
+
+    function addTable() {
+        const id = "t" + Date.now();
+        const html = `
+            <div id="${id}_w" class="table-wrapper">
+                <table id="${id}">
+                    <thead><tr><th contenteditable="true">CABECERA 1</th><th contenteditable="true">CABECERA 2</th></tr></thead>
+                    <tbody><tr><td contenteditable="true">...</td><td contenteditable="true">...</td></tr></tbody>
+                </table>
+                <div style="display:flex; gap:5px; margin-top:10px;">
+                    <button class="btn-ui" onclick="addRow('${id}')">+ FILA</button>
+                    <button class="btn-ui" onclick="addCol('${id}')">+ COL</button>
+                    <button class="btn-ui" style="color:red" onclick="document.getElementById('${id}_w').remove()">ELIMINAR</button>
+                </div>
+            </div><br>`;
+        document.getElementById(curPage).innerHTML += html;
+        speak("Tabla elástica insertada.");
+    }
+
+    function addRow(id) {
+        const t = document.getElementById(id);
+        const r = t.insertRow(-1);
+        for(let i=0; i<t.rows[0].cells.length; i++) r.insertCell(i).contentEditable = "true";
+    }
+
+    function addCol(id) {
+        const t = document.getElementById(id);
+        for(let i=0; i<t.rows.length; i++) {
+            let c = t.rows[i].insertCell(-1);
+            c.contentEditable = "true";
+            if(i===0) c.outerHTML = `<th contenteditable="true">NUEVO</th>`;
+        }
+    }
+
+    document.addEventListener('click', (e) => {
+        if(e.target.tagName === 'TD' || e.target.tagName === 'TH') {
+            if(focusCell) focusCell.classList.remove('cell-focus');
+            focusCell = e.target;
+            focusCell.classList.add('cell-focus');
+            speak("Celda activa.");
+        }
+    });
+
+    // --- OCR & FILES ---
+    function toggleHub() { document.getElementById('hub-sidebar').classList.toggle('active'); }
+    function saveFile() {
+        const content = document.getElementById('main-view').innerHTML;
+        const name = "DOC-" + new Date().toLocaleTimeString();
+        archives.push({ name, content });
+        renderHub();
+        speak("Documento guardado.");
+    }
+    function renderHub() {
+        const l = document.getElementById('file-list');
+        l.innerHTML = "";
+        archives.forEach((d) => {
             const div = document.createElement('div');
-            div.style = "padding:12px; border-bottom:1px solid #222; font-size:0.65rem; cursor:pointer; color:var(--cyan);";
-            div.innerText = "📄 " + doc.name;
-            div.onclick = () => { document.getElementById('main-canvas').innerHTML = doc.content; toggleHub(); };
-            list.appendChild(div);
+            div.style = "padding:10px; border-bottom:1px solid #222; font-size:0.6rem; color:var(--cyan); cursor:pointer;";
+            div.innerText = "📄 " + d.name;
+            div.onclick = () => { document.getElementById('main-view').innerHTML = d.content; toggleHub(); };
+            l.appendChild(div);
         });
     }
 
-    // --- OCR & EXPORT ---
-    async function openScanner() {
+    async function startScanner() {
         const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-        document.getElementById('cam-feed').srcObject = s;
-        document.getElementById('ocr-layer').style.display = 'block';
+        document.getElementById('webcam').srcObject = s;
+        document.getElementById('ocr-screen').style.display = 'block';
     }
-    function closeScanner() {
-        document.getElementById('cam-feed').srcObject.getTracks().forEach(t => t.stop());
-        document.getElementById('ocr-layer').style.display = 'none';
+    function stopScanner() {
+        document.getElementById('webcam').srcObject.getTracks().forEach(t => t.stop());
+        document.getElementById('ocr-screen').style.display = 'none';
     }
-    async function executeOCR() {
-        speak("Procesando visión OCR.");
-        const v = document.getElementById('cam-feed');
+    async function captureOCR() {
+        speak("Procesando.");
+        const v = document.getElementById('webcam');
         const c = document.createElement('canvas');
         c.width = v.videoWidth; c.height = v.videoHeight;
         c.getContext('2d').drawImage(v, 0, 0);
         const res = await Tesseract.recognize(c.toDataURL(), 'spa');
-        document.getElementById(activePageId).innerText += "\n" + res.data.text.trim();
-        closeScanner();
-        speak("Texto integrado correctamente.");
+        document.getElementById(curPage).innerText += "\n" + res.data.text.trim();
+        stopScanner();
+        speak("Texto integrado.");
     }
 
     function exportPDF() {
@@ -310,12 +305,11 @@
             if(i>0) doc.addPage();
             doc.text(doc.splitTextToSize(pgs[i].innerText, 180), 10, 20);
         }
-        doc.save("Zion_Report_v35.pdf");
+        doc.save("Zion_Oracle.pdf");
     }
 
     function exportWord() {
-        const content = document.getElementById('main-canvas').innerText;
-        const blob = new Blob(['\ufeff' + content], { type: 'application/msword' });
+        const blob = new Blob(['\ufeff' + document.getElementById('main-view').innerText], { type: 'application/msword' });
         saveAs(blob, "Zion_Archive.doc");
     }
 </script>

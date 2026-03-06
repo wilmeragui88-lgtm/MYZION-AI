@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MYZION OS | OMNI-SENTINEL v51.2</title>
+    <title>MYZION MASTER | OMNI-WRITER v42.8</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -12,90 +12,103 @@
     
     <style>
         :root { --cyan: #00f2ff; --green: #00ff9d; --purple: #bc13fe; --bg: #05070a; --glass: rgba(15, 17, 21, 0.95); }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
         
         body { margin: 0; font-family: 'JetBrains Mono', monospace; background: var(--bg); color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        #boot-layer { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
-        .pulse-btn { background: none; border: 2px solid var(--green); color: var(--green); padding: 25px 50px; font-family: 'Orbitron'; font-size: 1.2rem; cursor: pointer; transition: 0.4s; border-radius: 5px; box-shadow: 0 0 20px rgba(0, 255, 157, 0.2); }
+        #boot-layer { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .pulse-btn { background: none; border: 2px solid var(--green); color: var(--green); padding: 25px 50px; font-family: 'Orbitron'; font-size: 1.2rem; cursor: pointer; border-radius: 5px; box-shadow: 0 0 20px rgba(0, 255, 157, 0.2); }
 
         header { padding: 12px 20px; background: #000; border-bottom: 2px solid var(--purple); display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
-        .toolbar { background: #1a1d23; padding: 10px; display: flex; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid #333; overflow-x: auto; }
+        
+        .toolbar { background: #1a1d23; padding: 10px; display: flex; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid #333; overflow-x: auto; position: sticky; top: 0; z-index: 500; }
         .tool-group { display: flex; gap: 5px; border-right: 1px solid #444; padding-right: 10px; align-items: center; }
         .t-btn { background: #222; border: 1px solid #444; color: #fff; padding: 6px 10px; font-size: 0.65rem; cursor: pointer; border-radius: 3px; font-family: 'Orbitron'; }
 
-        .workspace { flex: 1; overflow-y: auto; padding: 40px 15px; display: flex; flex-direction: column; align-items: center; gap: 30px; background: #111; }
-        .page-wrapper { position: relative; width: 100%; max-width: 850px; margin-bottom: 40px; }
-        .page-sheet { background: #fff; color: #000; width: 100%; min-height: 1100px; padding: 70px; border-radius: 2px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); position: relative; font-family: 'Arial', sans-serif; line-height: 1.6; outline: none; }
+        .workspace { flex: 1; overflow-y: auto; padding: 40px 15px; display: flex; flex-direction: column; align-items: center; gap: 50px; background: #111; scroll-behavior: smooth; }
+        .page-sheet { background: #fff; color: #000; width: 98%; max-width: 850px; min-height: 1100px; padding: 60px; border-radius: 2px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); position: relative; outline: none; font-family: 'Arial', sans-serif; line-height: 1.6; }
+        .page-marker { position: absolute; top: 20px; left: 25px; font-size: 0.6rem; color: #aaa; font-family: 'Orbitron'; pointer-events: none; }
+
+        /* TABLAS REFORZADAS ESTILO WORD */
+        .table-box { width: 100%; margin: 25px 0; background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #ccc; }
+        .table-controls { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+        .btn-mini { background: #000; color: #fff; border: 1px solid var(--cyan); font-size: 9px; padding: 6px 10px; cursor: pointer; font-family: 'Orbitron'; border-radius: 4px; }
+        .btn-danger { border-color: #ff4444 !important; color: #ff4444 !important; }
         
-        .table-container { width: 100%; margin: 25px 0; padding: 12px; background: #f4f6f8; border: 1px solid #ccc; border-radius: 6px; cursor: move; }
-        table { width: 100%; border-collapse: collapse; background: #fff; border: 2.5px solid #222; }
-        th, td { border: 1px solid #bbb; padding: 12px; min-width: 90px; }
-        .active-cell { border: 2.5px solid var(--cyan) !important; background: rgba(0,242,255,0.1) !important; }
+        table { width: 100%; border-collapse: collapse; border: 2px solid #444; background: #fff; table-layout: fixed; }
+        th, td { border: 1px solid #999; padding: 12px; min-width: 80px; word-break: break-all; color: #000; font-size: 14px; }
+        .active-cell { background: rgba(0, 242, 255, 0.15) !important; border: 2.5px solid var(--cyan) !important; }
 
         .control-panel { background: #000; border-top: 2px solid var(--cyan); padding: 15px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        #voice-hud { position: fixed; top: 85px; left: 50%; transform: translateX(-50%); background: var(--green); color: #000; padding: 8px 30px; border-radius: 30px; font-size: 0.7rem; display: none; z-index: 3000; font-family: 'Orbitron'; font-weight: bold; }
-        
         #hub-sidebar { position: fixed; top: 0; right: -320px; width: 320px; height: 100%; background: var(--glass); border-left: 2px solid var(--cyan); z-index: 2000; transition: 0.5s; padding: 25px; }
         #hub-sidebar.active { right: 0; }
+        #voice-hud { position: fixed; top: 75px; left: 50%; transform: translateX(-50%); background: var(--green); color: #000; padding: 6px 30px; border-radius: 30px; font-size: 0.65rem; display: none; z-index: 3000; font-family: 'Orbitron'; font-weight: bold; }
         
         #ocr-overlay { display:none; position:fixed; inset:0; background:#000; z-index:5000; }
-        video { width:100%; height:80%; object-fit:cover; }
+        #camera-stream { width:100%; height:80%; object-fit:cover; }
     </style>
 </head>
 <body>
 
 <div id="boot-layer">
-    <h1 style="color:var(--cyan); font-family:'Orbitron';">MYZION v51.2</h1>
-    <button class="pulse-btn" onclick="startSupremeSystem()">INICIALIZAR SISTEMA</button>
+    <h1 style="color:var(--cyan); font-family:'Orbitron';">MYZION MASTER v42.8</h1>
+    <button class="pulse-btn" onclick="initializeOracle()">SISTEMA VOCAL ACTIVO</button>
 </div>
 
-<div id="voice-hud">IA: ESCUCHANDO...</div>
+<div id="voice-hud">🎙️ IA ESCUCHANDO...</div>
 
 <header>
-    <div style="font-family:'Orbitron'; font-size:0.85rem; color:var(--cyan)">MYZION <span style="color:var(--purple)">SENTINEL</span></div>
-    <button class="t-btn" onclick="toggleHub()">MIS ARCHIVOS ☰</button>
+    <div style="font-family:'Orbitron'; font-size:0.85rem; color:var(--cyan)">MYZION <span style="color:var(--purple)">MASTER PRO</span></div>
+    <button class="t-btn" style="border-color:var(--cyan)" onclick="toggleHub()">REPOSITORIO ☰</button>
 </header>
 
 <div class="toolbar">
     <div class="tool-group">
-        <select onchange="document.execCommand('fontName', false, this.value)">
-            <option value="Arial">Arial</option>
-            <option value="Verdana">Verdana</option>
-        </select>
-        <button class="t-btn" onclick="document.execCommand('bold')">B</button>
-        <input type="color" onchange="document.execCommand('foreColor', false, this.value)">
+        <button class="t-btn" onclick="execCommand('bold')">B</button>
+        <button class="t-btn" onclick="execCommand('italic')">I</button>
+        <button class="t-btn" onclick="execCommand('underline')">U</button>
+        <input type="color" onchange="execCommand('foreColor', this.value)" style="width:25px; height:25px; border:none;">
     </div>
-    <button class="t-btn" style="color:var(--green)" onclick="readAloud()">LECTURA IA</button>
+    <div class="tool-group">
+        <button class="t-btn" onclick="insertFigure('rect')">Rect</button>
+        <button class="t-btn" onclick="document.getElementById('img-up').click()">Imagen</button>
+        <input type="file" id="img-up" hidden accept="image/*" onchange="uploadImg(this)">
+    </div>
+    <div class="tool-group">
+        <button class="t-btn" style="color:var(--green)" onclick="readFullDocument()">LEER TODO</button>
+    </div>
+</div>
+
+<div id="hub-sidebar">
+    <h3 style="color:var(--cyan); font-family:'Orbitron';">ARCHIVOS GUARDADOS</h3>
+    <div id="file-index"></div>
+    <button class="t-btn" style="width:100%; margin-top:20px;" onclick="toggleHub()">CERRAR</button>
 </div>
 
 <main class="workspace" id="main-canvas">
-    <div class="page-wrapper" id="wrap-p1">
-        <div class="page-sheet" contenteditable="true" id="p1" onfocus="activePage='p1'">
-            <h1 style="text-align:center; font-family:'Orbitron';">SISTEMA LISTO</h1>
-            <p>Toque aquí para empezar...</p>
-        </div>
+    <div class="page-sheet" contenteditable="true" id="p1" onfocus="activePage='p1'">
+        <div class="page-marker">PÁGINA 1</div>
+        <h1 style="text-align:center; font-family:'Orbitron';">EDITOR INTELIGENTE</h1>
     </div>
 </main>
 
 <div class="control-panel">
     <button class="t-btn" style="color:var(--green)" onclick="createNewPage()">+ PÁGINA</button>
-    <button class="t-btn" style="color:var(--green)" onclick="insertHybridTable()">+ TABLA EXCEL</button>
-    <button class="t-btn" onclick="initOCR()">OCR SCAN</button>
-    <button class="t-btn" style="color:var(--purple)" onclick="shareDoc()">COMPARTIR</button>
-    <button id="mic-trigger" class="t-btn" style="grid-column: span 4; border-color: var(--green); padding:15px;" onclick="toggleDictation()">ACTIVAR VOZ MAESTRA</button>
+    <button class="t-btn" style="color:var(--green)" onclick="insertSmartTable()">+ TABLA IA</button>
+    <button class="t-btn" onclick="initOCR()">OCR</button>
+    <button id="mic-trigger" class="t-btn" style="border-color: var(--green); grid-column: span 1;" onclick="toggleDictation()">🎙️ VOZ</button>
 </div>
 
-<div id="hub-sidebar">
-    <h3 style="color:var(--cyan); font-family:'Orbitron'; font-size:0.7rem;">REPOSITORIO</h3>
-    <div id="file-index"></div>
-    <button class="t-btn" style="width:100%; margin-top:20px;" onclick="toggleHub()">CERRAR</button>
+<div style="background:#000; padding:12px; display:flex; gap:10px; border-top:1px solid #222;">
+    <button class="t-btn" style="flex:1" onclick="saveToHub()">GUARDAR</button>
+    <button class="t-btn" style="flex:1" onclick="exportPDF()">PDF</button>
+    <button class="t-btn" style="flex:1" onclick="exportWord()">WORD</button>
 </div>
 
 <div id="ocr-overlay">
     <video id="camera-stream" autoplay playsinline></video>
-    <button class="t-btn" onclick="captureText()" style="position:absolute; bottom:20px; right:20px; background:var(--purple); padding:20px;">CAPTURAR</button>
-    <button class="t-btn" onclick="closeOCR()" style="position:absolute; bottom:20px; left:20px;">CERRAR</button>
+    <button class="t-btn" style="position:absolute; bottom:20px; left:20px;" onclick="closeOCR()">SALIR</button>
+    <button class="t-btn" style="position:absolute; bottom:20px; right:20px; background:var(--purple);" onclick="captureText()">CAPTURAR</button>
 </div>
 
 <script>
@@ -107,84 +120,172 @@
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = 'es-ES'; recognition.continuous = true;
 
-    function hablar(t) {
+    function hablar(texto) {
         synth.cancel();
-        const m = new SpeechSynthesisUtterance(t);
-        m.lang = 'es-ES';
-        synth.speak(m);
+        const m = new SpeechSynthesisUtterance(texto);
+        m.lang = 'es-ES'; synth.speak(m);
     }
 
-    function startSupremeSystem() {
+    function initializeOracle() {
         document.getElementById('boot-layer').style.display = 'none';
-        hablar("Myzion v51.2 iniciado correctamente. Todas las funciones de Word, Excel y OCR están listas. Toque la pantalla para comenzar su proyecto.");
+        hablar("Myzion v42.8. Todas las funciones originales y motor de voz para tablas integrados.");
     }
 
-    function createNewPage() {
-        const id = 'p' + Date.now();
-        const wrapId = 'wrap-' + id;
-        const pageCount = document.querySelectorAll('.page-sheet').length + 1;
+    function execCommand(cmd, val = null) { document.execCommand(cmd, false, val); }
+
+    // --- MOTOR DE TABLAS INTEGRAL ---
+    function insertSmartTable() {
+        const tid = "tab_" + Date.now();
         const wrap = document.createElement('div');
-        wrap.className = 'page-wrapper'; wrap.id = wrapId;
-        wrap.innerHTML = `<div class="page-sheet" contenteditable="true" id="${id}" onfocus="activePage='${id}'"><p>Página ${pageCount}</p></div><button style="position:absolute; right:-40px; top:10px; background:red; color:white; border:none; border-radius:50%; cursor:pointer;" onclick="deletePage('${wrapId}')">X</button>`;
-        document.getElementById('main-canvas').appendChild(wrap);
-        hablar("Nueva página creada. Total: " + pageCount);
+        wrap.className = 'table-box'; wrap.id = tid + "_wrap";
+
+        const ctrls = document.createElement('div');
+        ctrls.className = 'table-controls';
+
+        // Botones de acción total
+        ctrls.append(
+            createBtn("+ FILA", () => addRow(tid)),
+            createBtn("+ COL", () => addCol(tid)),
+            createBtn("- FILA", () => delRow(tid), true),
+            createBtn("BORRAR TABLA", () => wrap.remove(), true)
+        );
+
+        const table = document.createElement('table');
+        table.id = tid;
+        const row = table.insertRow();
+        for(let i=0; i<2; i++) {
+            let c = row.insertCell();
+            c.contentEditable = "true";
+            c.innerText = "...";
+            c.onclick = (e) => { e.stopPropagation(); selectCell(c); };
+        }
+
+        wrap.append(ctrls, table);
+        document.getElementById(activePage).appendChild(wrap);
+        hablar("Tabla activada. Seleccione celda para dictado.");
     }
 
-    function deletePage(wid) {
-        if(document.querySelectorAll('.page-sheet').length > 1) {
-            document.getElementById(wid).remove();
-            hablar("Página eliminada.");
+    function createBtn(txt, fn, danger=false) {
+        const b = document.createElement('button');
+        b.className = 'btn-mini' + (danger ? ' btn-danger' : '');
+        b.innerText = txt;
+        b.onclick = (e) => { e.preventDefault(); e.stopPropagation(); fn(); };
+        return b;
+    }
+
+    function selectCell(c) {
+        if(selectedCell) selectedCell.classList.remove('active-cell');
+        selectedCell = c;
+        selectedCell.classList.add('active-cell');
+        hablar("Celda lista.");
+    }
+
+    window.addRow = function(tid) {
+        if(!selectedCell) return;
+        const t = document.getElementById(tid);
+        const r = t.insertRow(selectedCell.parentElement.rowIndex + 1);
+        for(let i=0; i<t.rows[0].cells.length; i++) {
+            let c = r.insertCell(i);
+            c.contentEditable = "true"; c.innerText = "...";
+            c.onclick = (e) => { e.stopPropagation(); selectCell(c); };
+        }
+        hablar("Fila creada.");
+    }
+
+    window.addCol = function(tid) {
+        if(!selectedCell) return;
+        const t = document.getElementById(tid);
+        const idx = selectedCell.cellIndex + 1;
+        Array.from(t.rows).forEach(row => {
+            let c = row.insertCell(idx);
+            c.contentEditable = "true"; c.innerText = "...";
+            c.onclick = (e) => { e.stopPropagation(); selectCell(c); };
+        });
+        hablar("Columna creada.");
+    }
+
+    window.delRow = function(tid) {
+        if(!selectedCell) return;
+        const t = document.getElementById(tid);
+        if(t.rows.length > 1) {
+            t.deleteRow(selectedCell.parentElement.rowIndex);
+            selectedCell = null;
+            hablar("Fila eliminada.");
         }
     }
 
-    function insertHybridTable() {
-        const tid = "tab_" + Date.now();
-        const html = `<div id="${tid}_container" class="table-container" draggable="true" ondragstart="drag(event)" contenteditable="false"><table><tr style="background:#eee;"><th contenteditable="true">A</th><th contenteditable="true">B</th></tr><tr><td contenteditable="true">...</td><td contenteditable="true">...</td></tr></table><button class="t-btn" onclick="addRow('${tid}')">+ Fila</button></div>`;
-        document.getElementById(activePage).innerHTML += html;
-        hablar("Tabla insertada.");
-    }
-
-    function addRow(id) {
-        const t = document.querySelector(`#${id}`);
-        const r = t.insertRow(-1);
-        for(let i=0; i<t.rows[0].cells.length; i++) r.insertCell(i).contentEditable = "true";
-    }
-
-    function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
-    document.getElementById('main-canvas').ondragover = (e) => e.preventDefault();
-    document.getElementById('main-canvas').ondrop = (e) => {
-        e.preventDefault();
-        const data = e.dataTransfer.getData("text");
-        if(e.target.classList.contains('page-sheet')) e.target.appendChild(document.getElementById(data));
-    };
-
+    // --- RECONOCIMIENTO VOCAL PARA TABLAS Y TEXTO ---
     function toggleDictation() {
-        const btn = document.getElementById('mic-trigger');
-        const hud = document.getElementById('voice-hud');
         if(!isListening) {
             recognition.start(); isListening = true;
-            btn.style.background = "#00ff9d"; btn.style.color = "#000";
-            hud.style.display = 'block'; hablar("Escuchando.");
+            document.getElementById('voice-hud').style.display = 'block';
+            hablar("Modo voz activado.");
         } else {
             recognition.stop(); isListening = false;
-            btn.style.background = "#111"; btn.style.color = "#fff";
-            hud.style.display = 'none'; hablar("Pausa.");
+            document.getElementById('voice-hud').style.display = 'none';
+            hablar("Voz desactivada.");
         }
     }
 
     recognition.onresult = (e) => {
-        const t = e.results[e.results.length - 1][0].transcript;
-        if(selectedCell) selectedCell.innerText = t;
-        else document.execCommand('insertText', false, " " + t);
+        const transcript = e.results[e.results.length - 1][0].transcript;
+        if(selectedCell) {
+            selectedCell.innerText = transcript;
+            hablar("Dato en tabla registrado.");
+        } else {
+            document.execCommand('insertText', false, transcript);
+        }
     };
 
-    document.addEventListener('click', (e) => {
-        if(e.target.tagName === 'TD' || e.target.tagName === 'TH') {
-            if(selectedCell) selectedCell.classList.remove('active-cell');
-            selectedCell = e.target;
-            selectedCell.classList.add('active-cell');
+    // --- FUNCIONES ORIGINALES (OCR, PAGES, FILES) ---
+    function createNewPage() {
+        const id = 'p' + (document.querySelectorAll('.page-sheet').length + 1);
+        const p = document.createElement('div');
+        p.className = 'page-sheet'; p.contentEditable = "true"; p.id = id;
+        p.onfocus = () => activePage = id;
+        p.innerHTML = `<div class="page-marker">PÁGINA ${id.substring(1)}</div>`;
+        document.getElementById('main-canvas').appendChild(p);
+        p.focus();
+    }
+
+    function insertFigure(type) {
+        const fig = document.createElement('div');
+        fig.className = 'shape'; fig.style = "width:100px; height:50px; border:2px solid black; display:inline-block;";
+        document.getElementById(activePage).appendChild(fig);
+    }
+
+    function uploadImg(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                document.getElementById(activePage).appendChild(img);
+            };
+            reader.readAsDataURL(input.files[0]);
         }
-    });
+    }
+
+    function readFullDocument() { hablar(document.getElementById(activePage).innerText); }
+
+    function saveToHub() {
+        fileHistory.push({ name: "DOC-"+new Date().toLocaleTimeString(), data: document.getElementById('main-canvas').innerHTML });
+        updateFileList(); hablar("Guardado en repositorio.");
+    }
+
+    function updateFileList() {
+        const list = document.getElementById('file-index');
+        list.innerHTML = "";
+        fileHistory.forEach(f => {
+            const d = document.createElement('div');
+            d.style = "padding:10px; border-bottom:1px solid #333; color:var(--cyan); cursor:pointer;";
+            d.innerText = "📄 " + f.name;
+            d.onclick = () => { document.getElementById('main-canvas').innerHTML = f.data; toggleHub(); hablar("Cargado."); };
+            list.appendChild(d);
+        });
+    }
+
+    function toggleHub() { document.getElementById('hub-sidebar').classList.toggle('active'); }
 
     async function initOCR() {
         const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
@@ -198,38 +299,27 @@
     }
 
     async function captureText() {
+        hablar("Analizando...");
         const v = document.getElementById('camera-stream');
         const c = document.createElement('canvas');
         c.width = v.videoWidth; c.height = v.videoHeight;
         c.getContext('2d').drawImage(v, 0, 0);
         const res = await Tesseract.recognize(c.toDataURL(), 'spa');
-        document.getElementById(activePage).innerText += "\n" + res.data.text;
-        closeOCR(); hablar("Texto procesado.");
+        document.getElementById(activePage).innerHTML += "<p>" + res.data.text + "</p>";
+        closeOCR(); hablar("Texto extraído.");
     }
 
-    function saveToHub() {
-        const time = new Date().toLocaleTimeString();
-        fileHistory.push({ name: "DOC-" + time, data: document.getElementById('main-canvas').innerHTML });
-        updateFileList();
-        hablar(`Guardado. El documento tiene ${document.querySelectorAll('.page-sheet').length} páginas y ${document.querySelectorAll('table').length} tablas.`);
+    function exportPDF() { 
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text(document.getElementById(activePage).innerText, 10, 10);
+        doc.save("Zion_Master.pdf");
     }
 
-    function updateFileList() {
-        const list = document.getElementById('file-index');
-        list.innerHTML = "";
-        fileHistory.forEach(f => {
-            const d = document.createElement('div');
-            d.style = "padding:10px; border-bottom:1px solid #333; color:var(--cyan); cursor:pointer;";
-            d.innerText = f.name;
-            d.onclick = () => { document.getElementById('main-canvas').innerHTML = f.data; toggleHub(); };
-            list.appendChild(d);
-        });
+    function exportWord() {
+        const blob = new Blob(['\ufeff' + document.getElementById('main-canvas').innerText], { type: 'application/msword' });
+        saveAs(blob, "Zion_Master.doc");
     }
-
-    function toggleHub() { document.getElementById('hub-sidebar').classList.toggle('active'); }
-    function readAloud() { hablar(document.getElementById(activePage).innerText); }
-    function exportPDF() { const { jsPDF } = window.jspdf; const doc = new jsPDF(); doc.text(document.getElementById(activePage).innerText.substring(0,1000), 10, 10); doc.save("Myzion.pdf"); }
-    async function shareDoc() { if(navigator.share) await navigator.share({ title: 'Myzion', text: document.getElementById(activePage).innerText }); }
 </script>
 </body>
 </html>

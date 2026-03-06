@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MYZION MASTER | OMNI-WRITER v43.8</title>
+    <title>MYZION MASTER | TOTAL WORD v44.0</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -16,12 +16,12 @@
         
         body { margin: 0; font-family: 'JetBrains Mono', monospace; background: var(--bg); color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* HEADER & TOOLBAR */
+        /* NAVEGACIÓN */
         header { padding: 12px 20px; background: #000; border-bottom: 2px solid var(--purple); display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
         .toolbar { background: #1a1d23; padding: 10px; display: flex; gap: 8px; border-bottom: 1px solid #333; overflow-x: auto; }
         .t-btn { background: #222; border: 1px solid #444; color: #fff; padding: 8px 14px; font-size: 0.65rem; cursor: pointer; border-radius: 4px; font-family: 'Orbitron'; white-space: nowrap; }
 
-        /* DOCUMENTO ESTILO WORD */
+        /* ÁREA DE TRABAJO WORD */
         .workspace { flex: 1; overflow-y: auto; padding: 30px 10px; background: #111; display: flex; flex-direction: column; align-items: center; }
         .page-sheet { 
             background: #fff; color: #000; width: 100%; max-width: 850px; min-height: 1100px; 
@@ -29,17 +29,31 @@
             outline: none; font-family: 'Arial', sans-serif; line-height: 1.6; position: relative;
         }
 
-        /* TABLAS NATIVAS WORD REFORZADAS */
-        .word-table-wrapper { margin: 25px 0; border: 1px solid #ddd; padding: 10px; background: #fdfdfd; border-radius: 6px; }
+        /* MOTOR DE TABLAS AJUSTABLES */
+        .word-table-wrapper { 
+            margin: 25px 0; 
+            border: 1px solid #ddd; 
+            padding: 10px; 
+            background: #fdfdfd; 
+            border-radius: 6px; 
+            resize: both; /* Permite ajuste manual de tamaño */
+            overflow: auto; 
+            min-width: 200px;
+            max-width: 100%;
+            position: relative;
+        }
+        
         .table-controls { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
         .btn-mini { background: #fff; border: 1px solid #ccc; color: #333; font-size: 10px; padding: 5px 10px; cursor: pointer; font-family: Arial; font-weight: bold; border-radius: 3px; }
         .btn-danger { color: #d00 !important; border-color: #d00 !important; }
 
-        table { width: 100%; border-collapse: collapse; table-layout: fixed; background: #fff; border: 1.5px solid #000; }
-        th, td { border: 1px solid #000; padding: 12px; min-height: 40px; word-break: break-word; font-size: 14px; color: #000; }
-        .active-cell { outline: 3px solid var(--cyan) !important; background: rgba(0, 242, 255, 0.08) !important; }
+        table { width: 100%; border-collapse: collapse; background: #fff; border: 1.5px solid #000; }
+        th, td { border: 1px solid #000; padding: 12px; min-height: 40px; word-break: break-word; font-size: 14px; color: #000; position: relative; }
+        
+        /* Indicador de celda para Voz IA */
+        .active-cell { outline: 3px solid var(--cyan) !important; background: rgba(0, 242, 255, 0.08) !important; z-index: 10; }
 
-        /* INTERFAZ IA */
+        /* HUD Y PANELES */
         .control-panel { background: #000; border-top: 2px solid var(--cyan); padding: 15px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         #voice-hud { position: fixed; top: 85px; left: 50%; transform: translateX(-50%); background: var(--green); color: #000; padding: 8px 35px; border-radius: 30px; font-size: 0.7rem; display: none; z-index: 3000; font-family: 'Orbitron'; font-weight: bold; }
 
@@ -52,10 +66,10 @@
 </head>
 <body>
 
-<div id="voice-hud">🎙️ IA: ESCUCHANDO PARA LLENAR TABLA...</div>
+<div id="voice-hud">🎙️ IA: LLENANDO CELDA...</div>
 
 <header>
-    <div style="font-family:'Orbitron'; font-size:0.85rem; color:var(--cyan)">MYZION <span style="color:var(--purple)">MASTER PRO</span></div>
+    <div style="font-family:'Orbitron'; font-size:0.85rem; color:var(--cyan)">MYZION <span style="color:var(--purple)">MASTER v44.0</span></div>
     <button class="t-btn" onclick="toggleHub()">REPOSITORIO ☰</button>
 </header>
 
@@ -63,27 +77,27 @@
     <button class="t-btn" onclick="exec('bold')">B</button>
     <button class="t-btn" onclick="exec('italic')">I</button>
     <button class="t-btn" onclick="exec('underline')">U</button>
-    <button class="t-btn" style="color:var(--green)" onclick="leerDocumento()">LEER TODO</button>
-    <button class="t-btn" onclick="document.getElementById('img-input').click()">SUBIR IMAGEN</button>
+    <button class="t-btn" style="color:var(--green)" onclick="leerDocumento()">LEER</button>
+    <button class="t-btn" onclick="document.getElementById('img-input').click()">IMAGEN</button>
     <input type="file" id="img-input" hidden accept="image/*" onchange="uploadImg(this)">
 </div>
 
 <div id="hub-sidebar">
-    <h2 style="color:var(--cyan); font-family:'Orbitron';">ARCHIVOS</h2>
+    <h2 style="color:var(--cyan); font-family:'Orbitron';">HISTORIAL</h2>
     <div id="file-list"></div>
     <button class="t-btn" style="width:100%; margin-top:20px;" onclick="toggleHub()">CERRAR</button>
 </div>
 
 <main class="workspace" id="canvas">
     <div class="page-sheet" contenteditable="true" id="p1" onfocus="activePage='p1'">
-        <h1 style="text-align:center; font-family:'Orbitron'; margin-top:40px;">PROYECTO OMNI-WRITER</h1>
-        <p>Seleccione una celda y active la voz para llenarla automáticamente.</p>
+        <h1 style="text-align:center; font-family:'Orbitron'; margin-top:40px;">DOCUMENTO MAESTRO</h1>
+        <p>Ajuste el tamaño de las tablas arrastrando la esquina inferior derecha.</p>
     </div>
 </main>
 
 <div class="control-panel">
     <button class="t-btn" style="color:var(--green)" onclick="createNewPage()">+ PÁGINA</button>
-    <button class="t-btn" style="color:var(--green)" onclick="insertSmartWordTable()">+ TABLA WORD</button>
+    <button class="t-btn" style="color:var(--green)" onclick="insertAdjustableTable()">+ TABLA WORD</button>
     <button class="t-btn" onclick="startOCR()">OCR</button>
     <button id="mic-trigger" class="t-btn" style="border-color:var(--green)" onclick="toggleVoiceIA()">🎙️ VOZ IA</button>
 </div>
@@ -114,8 +128,8 @@
     function hablar(t) { synth.cancel(); const m = new SpeechSynthesisUtterance(t); m.lang = 'es-ES'; synth.speak(m); }
     function exec(cmd) { document.execCommand(cmd, false, null); }
 
-    // --- TABLAS WORD DINÁMICAS ---
-    function insertSmartWordTable() {
+    // --- TABLAS AJUSTABLES WORD ---
+    function insertAdjustableTable() {
         const tid = "tab_" + Date.now();
         const wrapper = document.createElement('div');
         wrapper.className = 'word-table-wrapper';
@@ -125,15 +139,19 @@
         wrapper.innerHTML = `
             <div class="table-controls">
                 <button class="btn-mini" onclick="addRow('${tid}')">+ Fila</button>
-                <button class="btn-mini" onclick="addCol('${tid}')">+ Columna</button>
-                <button class="btn-mini btn-danger" onclick="document.getElementById('${tid}_wrap').remove()">Borrar Tabla</button>
+                <button class="btn-mini" onclick="addCol('${tid}')">+ Col</button>
+                <button class="btn-mini btn-danger" onclick="document.getElementById('${tid}_wrap').remove()">Borrar</button>
+                <span style="font-size:9px; color:#999; margin-left:10px;">↔ Ajuste manual habilitado</span>
             </div>
             <table id="${tid}">
-                <tr><td contenteditable="true" onclick="selectCell(this)">...</td><td contenteditable="true" onclick="selectCell(this)">...</td></tr>
+                <tr>
+                    <td contenteditable="true" onclick="selectCell(this)">...</td>
+                    <td contenteditable="true" onclick="selectCell(this)">...</td>
+                </tr>
             </table>
         `;
         document.getElementById(activePage).appendChild(wrapper);
-        hablar("Tabla Word lista. Toca una celda para dictar.");
+        hablar("Tabla ajustable insertada. Use la esquina para redimensionar.");
     }
 
     function selectCell(cell) {
@@ -163,13 +181,13 @@
         });
     };
 
-    // --- VOZ IA (LLENADO DE TABLAS Y TEXTO) ---
+    // --- VOZ IA (LLENADO INTELIGENTE) ---
     function toggleVoiceIA() {
         if(!isListening) {
             recognition.start(); isListening = true;
             document.getElementById('voice-hud').style.display = 'block';
             document.getElementById('mic-trigger').style.background = 'var(--green)';
-            hablar("Escuchando.");
+            hablar("Sistema de voz listo.");
         } else {
             recognition.stop(); isListening = false;
             document.getElementById('voice-hud').style.display = 'none';
@@ -186,13 +204,13 @@
         }
     };
 
-    // --- FUNCIONES COMPLETAS ---
+    // --- FUNCIONES CORE (OCR, PAGES, REPO) ---
     function createNewPage() {
         const id = 'p' + (document.querySelectorAll('.page-sheet').length + 1);
         const p = document.createElement('div');
         p.className = 'page-sheet'; p.contentEditable = "true"; p.id = id;
         p.onfocus = () => activePage = id;
-        p.innerHTML = `<h3>PÁGINA ${id.slice(1)}</h3>`;
+        p.innerHTML = `<div style="color:#ccc; font-size:10px;">PÁGINA ${id.slice(1)}</div>`;
         document.getElementById('canvas').appendChild(p);
         p.focus();
     }
@@ -204,31 +222,33 @@
     }
 
     function stopOCR() {
-        document.getElementById('camera-stream').srcObject.getTracks().forEach(t => t.stop());
+        if(document.getElementById('camera-stream').srcObject) {
+            document.getElementById('camera-stream').srcObject.getTracks().forEach(t => t.stop());
+        }
         document.getElementById('ocr-overlay').style.display = 'none';
     }
 
     async function snapText() {
-        hablar("Procesando imagen.");
+        hablar("Analizando...");
         const v = document.getElementById('camera-stream');
         const c = document.createElement('canvas');
         c.width = v.videoWidth; c.height = v.videoHeight;
         c.getContext('2d').drawImage(v, 0, 0);
         const res = await Tesseract.recognize(c.toDataURL(), 'spa');
         document.getElementById(activePage).innerHTML += `<p>${res.data.text}</p>`;
-        stopOCR(); hablar("Texto capturado.");
+        stopOCR(); hablar("Texto extraído.");
     }
 
     function saveDoc() {
-        savedDocs.push({ name: "DOC-"+Date.now(), content: document.getElementById('canvas').innerHTML });
-        updateHub(); hablar("Guardado.");
+        savedDocs.push({ name: "MYZ-"+new Date().toLocaleTimeString(), content: document.getElementById('canvas').innerHTML });
+        updateHub(); hablar("Documento guardado.");
     }
 
     function updateHub() {
         const l = document.getElementById('file-list'); l.innerHTML = "";
         savedDocs.forEach(d => {
-            const b = document.createElement('div'); b.className = 't-btn'; b.style="margin-bottom:5px; display:block;";
-            b.innerText = d.name; b.onclick = () => { document.getElementById('canvas').innerHTML = d.content; toggleHub(); };
+            const b = document.createElement('div'); b.className = 't-btn'; b.style="margin-bottom:5px; display:block; text-align:left;";
+            b.innerText = "📄 " + d.name; b.onclick = () => { document.getElementById('canvas').innerHTML = d.content; toggleHub(); };
             l.appendChild(b);
         });
     }
@@ -237,13 +257,12 @@
     function leerDocumento() { hablar(document.getElementById(activePage).innerText); }
 
     function exportFile(type) {
-        const content = document.getElementById(activePage).innerText;
         if(type === 'pdf') {
             const doc = new jspdf.jsPDF();
-            doc.text(content, 10, 10); doc.save("Myzion.pdf");
+            doc.text(document.getElementById(activePage).innerText, 10, 10); doc.save("Export.pdf");
         } else {
             const blob = new Blob(['\ufeff', document.getElementById('canvas').innerHTML], {type: 'application/msword'});
-            saveAs(blob, "Myzion.doc");
+            saveAs(blob, "Export.doc");
         }
     }
 

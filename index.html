@@ -260,32 +260,24 @@
     };
 
     // --- FUNCIONES DE ALMACENAMIENTO Y EXPORTACIÓN ---
-     function saveDoc() {
-    const content = document.getElementById('canvas').innerHTML;
-    localStorage.setItem("myz_master_doc", content);
-    hablar("Documento guardado permanentemente.");
-}
-    
+    function saveDoc() {
+        const n = "MYZ-" + new Date().toLocaleTimeString();
+        savedDocs.push({ name: n, content: document.getElementById('canvas').innerHTML });
+        updateHub(); hablar("Documento guardado.");
+    }
+
     function exportWord() {
         const b = new Blob(['\ufeff', document.getElementById('canvas').innerHTML], { type: 'application/msword' });
         saveAs(b, "Myzion_Master.doc");
         hablar("Word generado.");
     }
 
-function exportPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p','pt','a4');
-
-    doc.html(document.getElementById('canvas'), {
-        callback: function (doc) {
-            doc.save("Myzion_Master.pdf");
-            hablar("PDF generado correctamente.");
-        },
-        x: 20,
-        y: 20,
-        width: 550
-    });
-}
+    function exportPDF() {
+        const doc = new jspdf.jsPDF();
+        doc.text(document.getElementById(activePage).innerText.substring(0, 3000), 15, 15);
+        doc.save("Myzion_Master.pdf");
+        hablar("PDF generado.");
+    }
 
     async function startOCR() {
         const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });

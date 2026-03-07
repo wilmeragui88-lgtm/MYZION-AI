@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MYZION MASTER | OMNI-VOICE v48.0</title>
+    <title>MYZION MASTER | V51.0 TOTAL ESTRUCTURE</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -22,15 +22,24 @@
         .t-btn:active { transform: scale(0.95); background: var(--purple); }
 
         .workspace { flex: 1; overflow-y: auto; padding: 30px 10px; background: #111; display: flex; flex-direction: column; align-items: center; }
+        
+        /* CONTROLES DE PÁGINA */
+        .page-wrapper { position: relative; width: 100%; max-width: 850px; margin-bottom: 50px; transition: 0.3s; }
+        .page-controls { position: absolute; top: 0; right: -55px; display: flex; flex-direction: column; gap: 5px; }
+        .ctrl-p-btn { background: #111; color: #fff; border: 1px solid #444; padding: 8px; cursor: pointer; border-radius: 4px; font-family: 'Orbitron'; font-size: 10px; width: 45px; transition: 0.2s; }
+        .ctrl-p-btn.del { background: #700; border-color: #f44; }
+        .ctrl-p-btn:hover { background: var(--cyan); color: #000; }
+
         .page-sheet { 
-            background: #fff; color: #000; width: 100%; max-width: 850px; min-height: 1100px; 
-            padding: 60px 50px; margin-bottom: 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); 
+            background: #fff; color: #000; width: 100%; min-height: 1100px; 
+            padding: 60px 50px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); 
             outline: none; font-family: 'Arial', sans-serif; line-height: 1.6; position: relative;
         }
 
+        /* TABLAS Y CELDAS */
         .word-table-wrapper { margin: 20px 0; border: 1px solid #ddd; padding: 10px; background: #fdfdfd; border-radius: 6px; }
-        .table-controls { display: flex; gap: 6px; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        .btn-mini { background: #fff; border: 1px solid #ccc; color: #333; font-size: 10px; padding: 5px 10px; cursor: pointer; border-radius: 3px; }
+        .table-controls { display: flex; gap: 4px; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 5px; flex-wrap: wrap; }
+        .btn-mini { background: #fff; border: 1px solid #ccc; color: #333; font-size: 9px; padding: 5px 10px; cursor: pointer; border-radius: 3px; font-weight: bold; }
 
         table { width: 100%; border-collapse: collapse; border: 1.5pt solid black; background: #fff; }
         td { border: 1pt solid black; padding: 12px; min-height: 40px; word-break: break-word; font-size: 14px; color: #000; }
@@ -51,7 +60,7 @@
 <div id="voice-hud">🎙️ IA: ESCUCHANDO...</div>
 
 <header>
-    <div style="font-family:'Orbitron'; font-size:0.85rem; color:var(--cyan)">MYZION <span style="color:var(--purple)">MASTER v48.0</span></div>
+    <div style="font-family:'Orbitron'; font-size:0.85rem; color:var(--cyan)">MYZION <span style="color:var(--purple)">MASTER v51.0</span></div>
     <div style="display:flex; gap:5px;">
         <button class="t-btn" style="border-color:var(--green)" onclick="shareFile()">COMPARTIR 🔗</button>
         <button class="t-btn" onclick="toggleHub()">REPO ☰</button>
@@ -59,16 +68,23 @@
 </header>
 
 <div class="toolbar">
-    <button class="t-btn" onclick="execIA('bold', 'Negrita aplicada')">B</button>
-    <button class="t-btn" onclick="execIA('italic', 'Cursiva aplicada')">I</button>
-    <button class="t-btn" onclick="execIA('underline', 'Subrayado aplicado')">U</button>
+    <button class="t-btn" onclick="execIA('bold', 'Negrita')">B</button>
+    <button class="t-btn" onclick="execIA('italic', 'Cursiva')">I</button>
+    <button class="t-btn" onclick="execIA('underline', 'Subrayado')">U</button>
     <button class="t-btn" style="color:var(--green)" onclick="leerTodo()">LEER DOCUMENTO</button>
 </div>
 
 <main class="workspace" id="canvas">
-    <div class="page-sheet" contenteditable="true" id="p1" onfocus="activePage='p1'">
-        <h1 style="text-align:center; font-family:'Orbitron';">INFORME MYZION MASTER</h1>
-        <p>El sistema de voz está sincronizado. Puede dictar directamente o interactuar con los elementos dinámicos.</p>
+    <div class="page-wrapper" id="wrap-p1">
+        <div class="page-controls">
+            <button class="ctrl-p-btn" title="Subir" onclick="movePage('wrap-p1', 'up')">↑</button>
+            <button class="ctrl-p-btn" title="Bajar" onclick="movePage('wrap-p1', 'down')">↓</button>
+            <button class="ctrl-p-btn del" title="Borrar" onclick="deletePage('wrap-p1')">X</button>
+        </div>
+        <div class="page-sheet" contenteditable="true" id="p1" onfocus="activePage='p1'">
+            <h1 style="text-align:center; font-family:'Orbitron';">MYZION MASTER v51</h1>
+            <p>Sistema estructural avanzado configurado. Use los controles laterales para gestionar las páginas.</p>
+        </div>
     </div>
 </main>
 
@@ -105,30 +121,58 @@
     let selectedCell = null;
     let savedDocs = [];
     
-    // Configuración de Voz
     const synth = window.speechSynthesis;
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    recognition.lang = 'es-ES'; 
-    recognition.continuous = true;
+    recognition.lang = 'es-ES'; recognition.continuous = true;
 
-    function hablar(texto) {
-        synth.cancel();
-        const utterance = new SpeechSynthesisUtterance(texto);
-        utterance.lang = 'es-ES';
-        utterance.rate = 1.1;
-        synth.speak(utterance);
+    function hablar(t) { synth.cancel(); const m = new SpeechSynthesisUtterance(t); m.lang = 'es-ES'; synth.speak(m); }
+    function bienvenidaIA() { hablar("Control estructural total v51 activo. Todas las funciones sincronizadas."); }
+
+    function execIA(cmd, msg) { document.execCommand(cmd, false, null); hablar(msg); }
+
+    // --- MANEJO DE PÁGINAS (SUBIR/BAJAR/BORRAR) ---
+    window.movePage = (id, direction) => {
+        const wrapper = document.getElementById(id);
+        if (direction === 'up' && wrapper.previousElementSibling) {
+            wrapper.parentNode.insertBefore(wrapper, wrapper.previousElementSibling);
+            hablar("Página reubicada arriba.");
+        } else if (direction === 'down' && wrapper.nextElementSibling) {
+            wrapper.parentNode.insertBefore(wrapper.nextElementSibling, wrapper);
+            hablar("Página reubicada abajo.");
+        }
+    };
+
+    window.deletePage = (wrapperId) => {
+        const wrappers = document.querySelectorAll('.page-wrapper');
+        if(wrappers.length > 1) {
+            document.getElementById(wrapperId).remove();
+            activePage = document.querySelector('.page-sheet').id;
+            hablar("Página eliminada.");
+        } else { hablar("Error: El documento debe contener al menos una página."); }
+    };
+
+    function newPage() {
+        const ts = Date.now();
+        const id = 'p' + ts;
+        const wrapId = 'wrap-' + id;
+        const wrap = document.createElement('div');
+        wrap.className = 'page-wrapper'; wrap.id = wrapId;
+        wrap.innerHTML = `
+            <div class="page-controls">
+                <button class="ctrl-p-btn" onclick="movePage('${wrapId}', 'up')">↑</button>
+                <button class="ctrl-p-btn" onclick="movePage('${wrapId}', 'down')">↓</button>
+                <button class="ctrl-p-btn del" onclick="deletePage('${wrapId}')">X</button>
+            </div>
+            <div class="page-sheet" contenteditable="true" id="${id}" onfocus="activePage='${id}'; selectedCell=null;">
+                <hr style="border:0.5px solid #eee">
+                <p style="color:#aaa; font-size:10px;">ID PÁGINA: ${ts}</p>
+            </div>`;
+        document.getElementById('canvas').appendChild(wrap);
+        document.getElementById(id).focus();
+        hablar("Nueva página lista.");
     }
 
-    function bienvenidaIA() {
-        hablar("Bienvenido a Myzion Master versión 48. Sistema de voz activo y listo para redactar.");
-    }
-
-    function execIA(cmd, msg) {
-        document.execCommand(cmd, false, null);
-        hablar(msg);
-    }
-
-    // --- FUNCIONES DE TABLA CON VOZ ---
+    // --- MANEJO DE TABLAS (FILAS/COLUMNAS/BORRAR) ---
     function insertSmartTable() {
         const id = "t" + Date.now();
         const wrap = document.createElement('div');
@@ -136,21 +180,22 @@
         wrap.innerHTML = `
             <div class="table-controls">
                 <button class="btn-mini" onclick="addRowIA('${id}')">+ Fila</button>
+                <button class="btn-mini" onclick="delRowIA('${id}')">- Fila</button>
                 <button class="btn-mini" onclick="addColIA('${id}')">+ Col</button>
-                <button class="btn-mini" style="color:red" onclick="deleteTable('${id}_w')">Eliminar</button>
+                <button class="btn-mini" onclick="delColIA('${id}')">- Col</button>
+                <button class="btn-mini" style="color:red" onclick="deleteTable('${id}_w')">Borrar Tabla</button>
             </div>
             <table id="${id}">
                 <tr><td contenteditable="true" onclick="selectCellIA(this)">...</td><td contenteditable="true" onclick="selectCellIA(this)">...</td></tr>
             </table>`;
         document.getElementById(activePage).appendChild(wrap);
-        hablar("Tabla inteligente insertada. Toque una celda para dictar contenido.");
+        hablar("Tabla insertada.");
     }
 
     function selectCellIA(c) {
         if(selectedCell) selectedCell.classList.remove('active-cell');
-        selectedCell = c; 
-        selectedCell.classList.add('active-cell');
-        hablar("Celda seleccionada. Lista para entrada de voz.");
+        selectedCell = c; selectedCell.classList.add('active-cell');
+        hablar("Celda seleccionada.");
     }
 
     window.addRowIA = (id) => {
@@ -158,7 +203,12 @@
         for(let i=0; i<t.rows[0].cells.length; i++) {
             let c = r.insertCell(); c.contentEditable = "true"; c.innerText = "..."; c.onclick = () => selectCellIA(c);
         }
-        hablar("Fila agregada.");
+        hablar("Fila añadida.");
+    };
+
+    window.delRowIA = (id) => {
+        const t = document.getElementById(id);
+        if(t.rows.length > 1) { t.deleteRow(-1); hablar("Fila quitada."); }
     };
 
     window.addColIA = (id) => {
@@ -166,28 +216,29 @@
         Array.from(t.rows).forEach(r => {
             let c = r.insertCell(); c.contentEditable = "true"; c.innerText = "..."; c.onclick = () => selectCellIA(c);
         });
-        hablar("Columna agregada.");
+        hablar("Columna añadida.");
     };
 
-    window.deleteTable = (id) => {
-        document.getElementById(id).remove();
-        hablar("Tabla eliminada.");
+    window.delColIA = (id) => {
+        const t = document.getElementById(id);
+        if(t.rows[0].cells.length > 1) {
+            Array.from(t.rows).forEach(r => r.deleteCell(-1));
+            hablar("Columna quitada.");
+        }
     };
 
-    // --- RECONOCIMIENTO DE VOZ ---
+    window.deleteTable = (id) => { document.getElementById(id).remove(); hablar("Tabla borrada."); };
+
+    // --- DICTADO UNIVERSAL CORREGIDO ---
     function toggleVoiceIA() {
         if(!isListening) { 
-            try {
-                recognition.start(); 
-                isListening = true; 
-                document.getElementById('voice-hud').style.display = 'block'; 
-                hablar("Dictado iniciado. Hable ahora.");
-            } catch(e) { console.error(e); }
+            recognition.start(); isListening = true; 
+            document.getElementById('voice-hud').style.display = 'block'; 
+            hablar("Escuchando.");
         } else { 
-            recognition.stop(); 
-            isListening = false; 
+            recognition.stop(); isListening = false; 
             document.getElementById('voice-hud').style.display = 'none'; 
-            hablar("Dictado finalizado.");
+            hablar("Procesado.");
         }
     }
 
@@ -195,117 +246,79 @@
         const text = e.results[e.results.length - 1][0].transcript;
         if(selectedCell) { 
             selectedCell.innerText = text; 
-            hablar("Celda actualizada.");
         } else { 
-            document.execCommand('insertText', false, text + " "); 
+            const sel = window.getSelection();
+            if (sel.rangeCount > 0) {
+                const range = sel.getRangeAt(0);
+                range.deleteContents();
+                const node = document.createTextNode(text + " ");
+                range.insertNode(node);
+                range.setStartAfter(node);
+                sel.removeAllRanges(); sel.addRange(range);
+            }
         }
     };
 
-    // --- ARCHIVOS Y EXPORTACIÓN CON VOZ ---
+    // --- FUNCIONES DE ALMACENAMIENTO Y EXPORTACIÓN ---
     function saveDoc() {
-        const name = "DOC-" + new Date().toLocaleTimeString();
-        savedDocs.push({ name: name, content: document.getElementById('canvas').innerHTML });
-        updateHub();
-        hablar("Documento guardado en el repositorio como " + name);
-    }
-
-    async function shareFile() {
-        hablar("Generando enlace de compartición remota.");
-        const html = getCleanHTML();
-        const file = new File(['\ufeff', html], "Myzion_Master.doc", { type: 'application/msword' });
-
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            try { 
-                await navigator.share({ files: [file], title: 'Myzion Master Doc', text: 'Documento generado con IA' }); 
-            } catch (e) { hablar("Envío cancelado."); }
-        } else { 
-            exportWord(); 
-        }
+        const n = "MYZ-" + new Date().toLocaleTimeString();
+        savedDocs.push({ name: n, content: document.getElementById('canvas').innerHTML });
+        updateHub(); hablar("Documento guardado.");
     }
 
     function exportWord() {
-        const blob = new Blob(['\ufeff', getCleanHTML()], { type: 'application/msword' });
-        saveAs(blob, "Myzion_Export.doc");
-        hablar("Exportación a Word completada.");
+        const b = new Blob(['\ufeff', document.getElementById('canvas').innerHTML], { type: 'application/msword' });
+        saveAs(b, "Myzion_Master.doc");
+        hablar("Word generado.");
     }
 
     function exportPDF() {
         const doc = new jspdf.jsPDF();
-        const text = document.getElementById(activePage).innerText.substring(0, 4000);
-        doc.text(text, 15, 15);
-        doc.save("Myzion_Export.pdf");
-        hablar("Exportación a PDF completada.");
-    }
-
-    // --- OCR Y PÁGINAS ---
-    function newPage() {
-        const count = document.querySelectorAll('.page-sheet').length + 1;
-        const id = 'p' + count;
-        const p = document.createElement('div');
-        p.className = 'page-sheet'; p.contentEditable = "true"; p.id = id;
-        p.onfocus = () => activePage = id;
-        p.innerHTML = `<hr><p style="color:#aaa; font-size:10px;">PÁGINA ${count}</p>`;
-        document.getElementById('canvas').appendChild(p);
-        p.focus();
-        hablar("Nueva página creada. Número " + count);
+        doc.text(document.getElementById(activePage).innerText.substring(0, 3000), 15, 15);
+        doc.save("Myzion_Master.pdf");
+        hablar("PDF generado.");
     }
 
     async function startOCR() {
-        hablar("Cámara activa. Enfoque el texto que desea digitalizar.");
         const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
         document.getElementById('camera-stream').srcObject = s;
         document.getElementById('ocr-overlay').style.display = 'block';
+        hablar("Cámara lista.");
     }
 
     async function snapText() {
-        hablar("Capturando y procesando imagen con inteligencia artificial.");
         const v = document.getElementById('camera-stream');
         const c = document.createElement('canvas');
         c.width = v.videoWidth; c.height = v.videoHeight;
         c.getContext('2d').drawImage(v, 0, 0);
         const res = await Tesseract.recognize(c.toDataURL(), 'spa');
         document.getElementById(activePage).innerHTML += `<p>${res.data.text}</p>`;
-        stopOCR(); 
-        hablar("Texto extraído con éxito al documento.");
+        stopOCR(); hablar("Escaneo finalizado.");
     }
 
     function stopOCR() {
         document.getElementById('camera-stream').srcObject?.getTracks().forEach(t => t.stop());
         document.getElementById('ocr-overlay').style.display = 'none';
-        hablar("Cámara cerrada.");
     }
 
-    function toggleHub() { 
-        const isActive = document.getElementById('hub-sidebar').classList.toggle('active'); 
-        hablar(isActive ? "Repositorio abierto." : "Repositorio cerrado.");
-    }
+    function toggleHub() { document.getElementById('hub-sidebar').classList.toggle('active'); }
 
     function updateHub() {
         const l = document.getElementById('file-list'); l.innerHTML = "";
-        savedDocs.forEach((d, idx) => {
-            const b = document.createElement('div'); 
-            b.className = 't-btn'; 
-            b.style="margin-bottom:8px; display:block; text-align:left; width:100%";
-            b.innerText = d.name; 
-            b.onclick = () => { 
-                document.getElementById('canvas').innerHTML = d.content; 
-                hablar("Cargando " + d.name);
-                toggleHub(); 
-            };
+        savedDocs.forEach(d => {
+            const b = document.createElement('div'); b.className = 't-btn'; b.style="margin-bottom:8px; display:block; text-align:left; width:100%";
+            b.innerText = d.name; b.onclick = () => { document.getElementById('canvas').innerHTML = d.content; toggleHub(); hablar("Cargando."); };
             l.appendChild(b);
         });
     }
 
-    function leerTodo() { 
-        const texto = document.getElementById(activePage).innerText;
-        hablar("Iniciando lectura del documento actual: " + texto); 
-    }
+    function leerTodo() { hablar(document.getElementById(activePage).innerText); }
 
-    function getCleanHTML() {
-        const content = document.getElementById('canvas').innerHTML;
-        return `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-        <head><meta charset='utf-8'><style>table{border-collapse:collapse; width:100%;} td{border:1px solid black; padding:8px; font-family:Arial;}</style></head>
-        <body>${content}</body></html>`;
+    async function shareFile() {
+        const b = new Blob(['\ufeff', document.getElementById('canvas').innerHTML], { type: 'application/msword' });
+        const f = new File([b], "Myzion_Master.doc", { type: 'application/msword' });
+        if (navigator.share) navigator.share({ files: [f], title: 'Myzion Master' });
+        else exportWord();
     }
 </script>
 </body>
